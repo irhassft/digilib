@@ -113,7 +113,7 @@ class DocumentController extends Controller
         // Ambil isi file dari Nextcloud
         $fileContent = Storage::disk('nextcloud')->get($document->file_path);
         
-        // Tampilkan sebagai PDF di browser (Inline) hsdgfdsjhgdsf kontol
+        // Tampilkan sebagai PDF di browser (Inline)
         return response($fileContent)
             ->header('Content-Type', 'application/pdf')
             ->header('Content-Disposition', 'inline; filename="' . $document->slug . '.pdf"');
