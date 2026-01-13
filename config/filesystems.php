@@ -62,7 +62,7 @@ return [
 
         'nextcloud' => [
             'driver'     => 'webdav',
-            'baseUri'    => env('NEXTCLOUD_WEBDAV_URL'),
+            'baseUri'    => env('NEXTCLOUD_WEBDAV_BASE_URI', env('NEXTCLOUD_WEBDAV_URL')),
             'userName'   => env('NEXTCLOUD_USERNAME'),
             'password'   => env('NEXTCLOUD_APP_PASSWORD'),
             'pathPrefix' => '', 

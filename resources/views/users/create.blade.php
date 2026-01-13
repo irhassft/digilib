@@ -1,47 +1,89 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">Tambah User Baru</h2>
-    </x-slot>
+<x-new-layout title="Tambah User - RS PKU Digital Library">
+    
+    <x-slot:header>
+        <div class="flex items-center gap-4">
+             <a href="{{ route('users.index') }}" class="w-10 h-10 rounded-full bg-white text-gray-500 flex items-center justify-center hover:bg-gray-100 hover:text-primary transition-all">
+                 <span class="material-symbols-outlined">arrow_back</span>
+             </a>
+             <h2 class="text-xl font-bold text-[#0d1b11] dark:text-white">Tambah User Baru</h2>
+         </div>
+    </x-slot:header>
 
-    {{-- WRAPPER UTAMA: bg-gray-50 --}}
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <form method="POST" action="{{ route('users.store') }}">
+            @csrf
             
-            {{-- KARTU FORM: bg-white --}}
-            <div class="bg-white p-8 shadow-md rounded-xl border-t-4 border-green-600">
-                <form method="POST" action="{{ route('users.store') }}">
-                    @csrf
-                    <div class="mb-4">
-                        <x-input-label for="name" :value="__('Nama Lengkap')" />
-                        <x-text-input id="name" class="block mt-1 w-full p-2.5 bg-white text-gray-900" type="text" name="name" required autofocus />
-                    </div>
-                    <div class="mb-4">
-                        <x-input-label for="email" :value="__('Email')" />
-                        <x-text-input id="email" class="block mt-1 w-full p-2.5 bg-white text-gray-900" type="email" name="email" required />
-                    </div>
-                    <div class="mb-4">
-                        <x-input-label for="role" :value="__('Jabatan / Role')" />
-                        <select name="role" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-900 p-2.5">
-                            @foreach($roles as $role)
-                                <option value="{{ $role->name }}">{{ ucfirst($role->name) }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="mb-4">
-                        <x-input-label for="password" :value="__('Password')" />
-                        <x-text-input id="password" class="block mt-1 w-full p-2.5 bg-white text-gray-900" type="password" name="password" required />
-                    </div>
-                    <div class="mb-8">
-                        <x-input-label for="password_confirmation" :value="__('Konfirmasi Password')" />
-                        <x-text-input id="password_confirmation" class="block mt-1 w-full p-2.5 bg-white text-gray-900" type="password" name="password_confirmation" required />
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
+                
+                <div class="flex gap-4 mb-6 items-center bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl text-blue-800 dark:text-blue-300">
+                     <span class="material-symbols-outlined">info</span>
+                     <p class="text-sm">Password default akan diset. Pastikan user menggantinya saat login pertama.</p>
+                </div>
+
+                <!-- Grid Input -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    
+                    <!-- Nama Lengkap -->
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="name">Nama Lengkap</label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                            id="name" type="text" name="name" required placeholder="Contoh: Dr. Budi Santoso">
                     </div>
 
-                    <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
-                        <a href="{{ route('users.index') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-medium">Batal</a>
-                        <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 shadow-md">Simpan User</button>
+                    <!-- Email -->
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="email">Email</label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                            id="email" type="email" name="email" required placeholder="email@rspku.com">
                     </div>
-                </form>
+
+                    <!-- Role Selection -->
+                    <div class="col-span-2">
+                        <label class="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-300">Hak Akses Role</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            @foreach($roles as $role)
+                            <label class="cursor-pointer">
+                                <input type="radio" name="role" value="{{ $role->name }}" class="peer sr-only" required>
+                                <div class="p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all flex items-center gap-3">
+                                    <div class="w-5 h-5 rounded-full border border-gray-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
+                                        <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                                    </div>
+                                    <span class="text-sm font-bold capitalize">{{ $role->name }}</span>
+                                </div>
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <!-- Password Section -->
+                    <div class="col-span-2 mt-4 pt-6 border-t border-gray-100 dark:border-gray-700">
+                        <h3 class="text-lg font-bold mb-4">Keamanan Akun</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="password">Password</label>
+                                <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                                    id="password" type="password" name="password" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="password_confirmation">Konfirmasi Password</label>
+                                <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                                    id="password_confirmation" type="password" name="password_confirmation" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex justify-end gap-4 mt-8">
+                    <a href="{{ route('users.index') }}" class="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit" class="px-8 py-3 rounded-xl bg-primary text-[#0d1b11] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                        Simpan User Baru
+                    </button>
+                </div>
+
             </div>
-        </div>
+        </form>
     </div>
-</x-app-layout>
+</x-new-layout>

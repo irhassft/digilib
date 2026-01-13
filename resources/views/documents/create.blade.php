@@ -1,216 +1,267 @@
-<x-app-layout>
-    {{-- TAMBAHAN: Load SweetAlert2 --}}
-    <head>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    </head>
+<x-new-layout title="Upload Dokumen - RS PKU Digital Library">
+    
+    <x-slot:header>
+        <div class="flex items-center gap-4">
+             <a href="{{ route('dashboard') }}" class="w-10 h-10 rounded-full bg-white text-gray-500 flex items-center justify-center hover:bg-gray-100 hover:text-primary transition-all">
+                 <span class="material-symbols-outlined">arrow_back</span>
+             </a>
+             <h2 class="text-xl font-bold text-[#0d1b11] dark:text-white">Upload Dokumen Digital</h2>
+         </div>
+    </x-slot:header>
 
-    <x-slot name="header">
-        <h2 class="font-bold text-xl text-gray-800 leading-tight">
-            {{ __('Upload Dokumen Baru') }}
-        </h2>
-    </x-slot>
-
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+        <form id="uploadForm" action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
             
-            <div class="bg-white overflow-hidden shadow-md sm:rounded-xl border-t-4 border-green-600">
-                <div class="p-8 text-gray-900">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex flex-col gap-6">
+                
+                {{-- ERROR CONTAINER --}}
+                <div id="errorContainer" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl text-sm">
+                    <ul class="list-disc list-inside" id="errorList"></ul>
+                </div>
 
-                    @if ($errors->any())
-                        <div class="mb-4 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-                            <ul class="list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
+                {{-- JUDUL & KATEGORI --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Judul Dokumen -->
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="title">Judul Dokumen</label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                            id="title" type="text" name="title" required placeholder="Contoh: SOP Pelayanan Pasien 2024" autofocus>
+                    </div>
 
-                    <form action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data">
-                        @csrf
-
-                        <div class="mb-5">
-                            <x-input-label for="title" :value="__('Judul Dokumen')" />
-                            <x-text-input id="title" class="block mt-1 w-full p-3" type="text" name="title" :value="old('title')" required autofocus placeholder="Masukkan judul dokumen" />
-                        </div>
-
-                        <div class="mb-6" x-data="{ showModal: false, newCategory: '' }">
-                            <x-input-label for="category_id" :value="__('Kategori Dokumen')" class="mb-1" />
+                    <!-- Kategori dengan Alpine JS Modal -->
+                    <div class="col-span-2 md:col-span-1" x-data="{ showModal: false, newCategory: '' }">
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="category_id">Kategori</label>
+                        <div class="flex gap-2">
+                            <div class="relative flex-grow">
+                                <select name="category_id" id="category_id" class="w-full px-4 py-3 rounded-l-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all cursor-pointer">
+                                    <option value="">-- Pilih Kategori --</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             
-                            <div class="flex gap-2">
-                                <div class="relative flex-grow">
-                                    <select name="category_id" id="category_id" class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-l-md rounded-r-none shadow-sm cursor-pointer bg-white text-gray-900 py-2.5">
-                                        <option value="">-- Pilih Kategori --</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                                
-                                {{-- Tombol Tambah --}}
-                                <button type="button" @click="showModal = true" title="Tambah Kategori" class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-none border-l border-green-700 transition flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                                </button>
+                            {{-- Tombol Tambah --}}
+                            <button type="button" @click="showModal = true" class="bg-primary hover:bg-opacity-90 text-[#0d1b11] px-4 rounded-none border-l border-white/20 transition flex items-center justify-center font-bold">
+                                <span class="material-symbols-outlined">add</span>
+                            </button>
 
-                                {{-- Tombol Hapus (DENGAN SWEETALERT) --}}
-                                <button type="button" title="Hapus Kategori" 
-                                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded-r-md transition flex items-center justify-center"
-                                        @click="
-                                            const select = document.getElementById('category_id');
-                                            const id = select.value;
-                                            const name = select.options[select.selectedIndex]?.text;
+                            {{-- Tombol Hapus --}}
+                            <button type="button" class="bg-red-500 hover:bg-red-600 text-white px-4 rounded-r-xl transition flex items-center justify-center font-bold"
+                                @click="
+                                    const select = document.getElementById('category_id');
+                                    const id = select.value;
+                                    const name = select.options[select.selectedIndex]?.text;
+                                    if(!id) { Swal.fire({icon: 'warning', title: 'Pilih Kategori', text: 'Pilih kategori dulu untuk dihapus.', confirmButtonColor: '#13ec49'}); return; }
+                                    Swal.fire({
+                                        title: 'Hapus Kategori?', text: `Yakin hapus '${name}'?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#6b7280', confirmButtonText: 'Hapus', cancelButtonText: 'Batal'
+                                    }).then((res) => {
+                                        if(res.isConfirmed) {
+                                            Swal.showLoading();
+                                            fetch('/categories/' + id + '/ajax', { method: 'DELETE', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } })
+                                            .then(r => r.json()).then(d => {
+                                                if(d.success) { select.remove(select.selectedIndex); select.value = ''; Swal.fire('Sukses', 'Kategori dihapus', 'success'); }
+                                                else { Swal.fire('Gagal', d.message, 'error'); }
+                                            });
+                                        }
+                                    })
+                                ">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
 
-                                            // 1. Cek jika belum pilih kategori
-                                            if(!id) {
-                                                Swal.fire({
-                                                    icon: 'warning',
-                                                    title: 'Pilih Kategori',
-                                                    text: 'Silakan pilih kategori yang ingin dihapus terlebih dahulu.',
-                                                    confirmButtonColor: '#16a34a'
-                                                });
-                                                return;
-                                            }
-
-                                            // 2. Konfirmasi Hapus Modern
-                                            Swal.fire({
-                                                title: 'Hapus Kategori?',
-                                                text: `Anda yakin ingin menghapus kategori '${name}'?`,
-                                                icon: 'warning',
-                                                showCancelButton: true,
-                                                confirmButtonColor: '#ef4444',
-                                                cancelButtonColor: '#6b7280',
-                                                confirmButtonText: 'Ya, Hapus!',
-                                                cancelButtonText: 'Batal'
-                                            }).then((result) => {
-                                                if (result.isConfirmed) {
-                                                    // Tampilkan loading saat proses
-                                                    Swal.fire({title: 'Memproses...', didOpen: () => Swal.showLoading()});
-
-                                                    fetch('/categories/' + id + '/ajax', { 
-                                                        method: 'DELETE', 
-                                                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' } 
-                                                    })
-                                                    .then(res => res.json())
-                                                    .then(data => {
-                                                        if(data.success) {
-                                                            select.remove(select.selectedIndex);
-                                                            select.value = '';
-                                                            // Pesan Sukses
-                                                            Swal.fire({
-                                                                icon: 'success',
-                                                                title: 'Terhapus!',
-                                                                text: 'Kategori berhasil dihapus.',
-                                                                timer: 2000,
-                                                                showConfirmButton: false
-                                                            });
-                                                        } else {
-                                                            // Pesan Gagal (Misal dipakai dokumen lain)
-                                                            Swal.fire({
-                                                                icon: 'error',
-                                                                title: 'Gagal',
-                                                                text: data.message
-                                                            });
-                                                        }
-                                                    })
-                                                    .catch(err => {
-                                                        Swal.fire('Error', 'Terjadi kesalahan sistem.', 'error');
-                                                    });
-                                                }
-                                            })
-                                        ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                                </button>
-                            </div>
-
-                            <div x-show="showModal" style="display: none;" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm" x-transition.opacity>
-                                <div class="bg-white p-6 rounded-xl shadow-2xl w-96">
-                                    <h3 class="text-lg font-bold text-gray-800 mb-4">Tambah Kategori</h3>
-                                    <input type="text" x-model="newCategory" placeholder="Nama Kategori..." class="w-full border-gray-300 rounded-lg mb-4 p-3 focus:ring-green-500 focus:border-green-500 text-gray-900">
-                                    <div class="flex justify-end gap-2">
-                                        <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Batal</button>
-                                        <button type="button" @click="if(!newCategory) return; fetch('{{ route('categories.ajax.store') }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ name: newCategory }) }).then(r => r.json()).then(d => { if(d.success) { const s = document.getElementById('category_id'); s.add(new Option(d.category.name, d.category.id)); s.value = d.category.id; newCategory = ''; showModal = false; Swal.fire({icon: 'success', title: 'Berhasil', text: 'Kategori ditambahkan', timer: 1500, showConfirmButton: false}); } else { Swal.fire('Gagal', 'Mungkin nama sudah ada.', 'error'); } });" class="px-5 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Simpan</button>
-                                    </div>
+                        {{-- MODAL TAMBAH KATEGORI --}}
+                        <div x-show="showModal" style="display: none;" class="fixed inset-0 z-[60] flex items-center justify-center bg-black/50 backdrop-blur-sm" x-transition.opacity>
+                            <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-2xl w-96 transform transition-all scale-100">
+                                <h3 class="text-lg font-bold text-[#0d1b11] dark:text-white mb-4">Buat Kategori Baru</h3>
+                                <input type="text" x-model="newCategory" placeholder="Nama Kategori..." class="w-full border-gray-200 dark:border-gray-700 rounded-xl mb-4 p-3 bg-gray-50 dark:bg-gray-900 focus:ring-primary focus:border-primary">
+                                <div class="flex justify-end gap-2">
+                                    <button type="button" @click="showModal = false" class="px-4 py-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg font-bold">Batal</button>
+                                    <button type="button" @click="if(!newCategory) return; fetch('{{ route('categories.ajax.store') }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ name: newCategory }) }).then(r => r.json()).then(d => { if(d.success) { const s = document.getElementById('category_id'); s.add(new Option(d.category.name, d.category.id)); s.value = d.category.id; newCategory = ''; showModal = false; Swal.fire({icon: 'success', title: 'Berhasil', timer: 1500, showConfirmButton: false}); } else { Swal.fire('Gagal', 'Nama sudah ada', 'error'); } });" class="px-5 py-2 bg-primary text-[#0d1b11] font-bold rounded-lg hover:bg-opacity-90">Simpan</button>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div class="mb-5">
-                            <x-input-label for="description" :value="__('Deskripsi Singkat')" />
-                            <textarea name="description" rows="3" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm focus:border-green-500 focus:ring-green-500 bg-white text-gray-900">{{ old('description') }}</textarea>
-                        </div>
+                </div>
 
-                        <div class="mb-8" x-data="{ 
-                            isDragging: false, 
-                            fileName: '', 
-                            handleDrop(e) {
-                                e.preventDefault();
-                                this.isDragging = false;
-                                if (e.dataTransfer.files.length > 0) {
-                                    const file = e.dataTransfer.files[0];
-                                    if (file.type === 'application/pdf') {
-                                        this.$refs.fileInput.files = e.dataTransfer.files;
-                                        this.fileName = file.name;
-                                    } else {
-                                        // Ganti alert bawaan dengan SweetAlert
-                                        Swal.fire({icon: 'error', title: 'Format Salah', text: 'Hanya file PDF yang diperbolehkan!'});
-                                    }
-                                }
-                            },
-                            handleFileSelect(e) {
-                                if (e.target.files.length > 0) {
-                                    this.fileName = e.target.files[0].name;
-                                }
-                            }
-                        }">
-                            <x-input-label for="document_file" :value="__('File PDF')" class="mb-2" />
-                            
-                            {{-- Area Drag & Drop --}}
-                            <div 
-                                @dragover.prevent="isDragging = true"
-                                @dragleave.prevent="isDragging = false"
-                                @drop.prevent="handleDrop($event)"
-                                @click="$refs.fileInput.click()"
-                                :class="isDragging ? 'border-green-500 bg-green-50 scale-[1.01]' : 'border-gray-300 bg-white hover:bg-gray-50'"
-                                class="mt-2 flex justify-center px-6 pt-10 pb-10 border-2 border-dashed rounded-xl transition-all duration-200 cursor-pointer relative group"
-                            >
-                                <div class="space-y-2 text-center">
-                                    <div x-show="!fileName">
-                                        <div class="mx-auto h-12 w-12 text-gray-400 group-hover:text-green-500 transition-colors">
-                                            <svg stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                        </div>
-                                        <div class="flex text-sm text-gray-600 justify-center mt-2">
-                                            <span class="font-bold text-green-600 hover:text-green-500">
-                                                Klik untuk upload
-                                            </span>
-                                            <p class="pl-1 text-gray-500">atau drag file PDF ke sini</p>
-                                        </div>
-                                        <p class="text-xs text-gray-400 mt-1">Maksimal ukuran 10MB</p>
-                                    </div>
+                {{-- DESKRIPSI --}}
+                <div>
+                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="description">Deskripsi Singkat</label>
+                    <textarea id="description" name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"></textarea>
+                </div>
 
-                                    <div x-show="fileName" style="display: none;" class="flex flex-col items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-red-500 mb-2" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
-                                        </svg>
-                                        <p class="text-sm font-bold text-gray-900" x-text="fileName"></p>
-                                        <p class="text-xs text-green-600 mt-1 font-semibold">Siap diupload (Klik lagi untuk ganti)</p>
-                                    </div>
-
-                                    <input x-ref="fileInput" @change="handleFileSelect($event)" id="document_file" name="document_file" type="file" class="sr-only" accept=".pdf" required>
-                                </div>
+                {{-- DRAG & DROP FILE PDF --}}
+                <div x-data="{ 
+                    isDragging: false, 
+                    fileName: '', 
+                    fileSize: '',
+                    handleDrop(e) {
+                        e.preventDefault();
+                        this.isDragging = false;
+                        if (e.dataTransfer.files.length > 0) {
+                            const file = e.dataTransfer.files[0];
+                            if (file.type === 'application/pdf') { this.setFile(file); } 
+                            else { Swal.fire({icon: 'error', title: 'Format Salah', text: 'Hanya file PDF yang diperbolehkan!'}); }
+                        }
+                    },
+                    handleFileSelect(e) {
+                        if (e.target.files.length > 0) { this.setFile(e.target.files[0]); }
+                    },
+                    setFile(file) {
+                        this.$refs.fileInput.files = this.createFileList(file);
+                        this.fileName = file.name;
+                        this.fileSize = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+                    },
+                    createFileList(file) {
+                        const dt = new DataTransfer(); dt.items.add(file); return dt.files;
+                    }
+                }">
+                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">Upload File (PDF)</label>
+                    
+                    <div 
+                        @dragover.prevent="isDragging = true"
+                        @dragleave.prevent="isDragging = false"
+                        @drop.prevent="handleDrop($event)"
+                        @click="$refs.fileInput.click()"
+                        :class="isDragging ? 'border-primary bg-green-50/50 scale-[1.01]' : 'border-dashed border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'"
+                        class="mt-2 flex flex-col justify-center items-center py-12 px-6 border-2 rounded-2xl transition-all duration-200 cursor-pointer relative group bg-gray-50 dark:bg-gray-900/50"
+                    >
+                        <div x-show="!fileName" class="text-center">
+                            <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
                             </div>
+                            <p class="text-gray-600 dark:text-gray-300 font-medium">Klik untuk upload atau drag file PDF</p>
+                            <p class="text-xs text-gray-400 mt-2">Maksimal ukuran 100 MB</p>
                         </div>
 
-                        <div class="flex items-center justify-end gap-3">
-                            <a href="{{ route('dashboard') }}" class="text-gray-600 hover:text-gray-900 font-medium">Batal</a>
-                            <x-primary-button class="bg-green-600 hover:bg-green-700 active:bg-green-800">
-                                {{ __('Upload Dokumen') }}
-                            </x-primary-button>
+                        <div x-show="fileName" style="display: none;" class="flex flex-col items-center">
+                            <span class="material-symbols-outlined text-5xl text-red-500 mb-2">picture_as_pdf</span>
+                            <p class="text-lg font-bold text-[#0d1b11] dark:text-white" x-text="fileName"></p>
+                            <p class="text-sm text-gray-500" x-text="fileSize"></p>
+                            <p class="text-xs text-primary mt-2 font-bold px-3 py-1 bg-primary/10 rounded-full">Siap Diupload</p>
                         </div>
-                    </form>
+
+                        <input x-ref="fileInput" @change="handleFileSelect($event)" id="document_file" name="document_file" type="file" class="sr-only" accept=".pdf" required>
+                    </div>
+                </div>
+
+                {{-- PROGRESS BAR --}}
+                <div id="progressContainer" class="hidden">
+                    <div class="flex justify-between mb-2">
+                        <span class="text-xs font-bold text-primary animate-pulse">Mengupload ke Server...</span>
+                        <span class="text-xs font-bold text-primary" id="progressPercent">0%</span>
+                    </div>
+                    <div class="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                        <div id="progressBar" class="bg-primary h-full rounded-full transition-all duration-300 shadow-[0_0_10px_rgba(19,236,73,0.5)]" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                {{-- ACTIONS --}}
+                <div class="flex justify-end gap-4 mt-4 pt-6 border-t border-gray-100 dark:border-gray-700">
+                    <a href="{{ route('dashboard') }}" class="px-6 py-3 rounded-xl border border-gray-200 text-gray-600 font-bold hover:bg-gray-50 transition-colors">
+                        Batal
+                    </a>
+                    <button type="submit" id="submitBtn" class="px-8 py-3 rounded-xl bg-primary text-[#0d1b11] font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined">upload_file</span>
+                        <span>Upload Dokumen</span>
+                    </button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-</x-app-layout>
+
+    <x-slot:scripts>
+        <script>
+            document.getElementById('uploadForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                let form = this;
+                let formData = new FormData(form);
+                let progressBar = document.getElementById('progressBar');
+                let progressPercent = document.getElementById('progressPercent');
+                let progressContainer = document.getElementById('progressContainer');
+                let submitBtn = document.getElementById('submitBtn');
+                let errorContainer = document.getElementById('errorContainer');
+                let errorList = document.getElementById('errorList');
+
+                errorContainer.classList.add('hidden');
+                errorList.innerHTML = '';
+
+                if(!document.getElementById('document_file').files.length) {
+                    Swal.fire('Peringatan', 'Mohon pilih file PDF!', 'warning');
+                    return;
+                }
+
+                progressContainer.classList.remove('hidden');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">progress_activity</span> Sedang Mengupload...';
+                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', form.action, true);
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                xhr.setRequestHeader('Accept', 'application/json');
+
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        let percentComplete = Math.round((e.loaded / e.total) * 100);
+                        progressBar.style.width = percentComplete + '%';
+                        progressPercent.innerText = percentComplete + '%';
+                        if(percentComplete === 100) {
+                            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">dns</span> Menyimpan ke Nextcloud...';
+                        }
+                    }
+                };
+
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        try {
+                            let response = JSON.parse(xhr.responseText);
+                            if(response.success) {
+                                Swal.fire({icon: 'success', title: 'Berhasil!', text: 'Dokumen berhasil diupload.', timer: 2000, showConfirmButton: false}).then(() => {
+                                    window.location.href = "{{ route('dashboard') }}";
+                                });
+                            } else {
+                                Swal.fire('Gagal', 'Terjadi kesalahan tidak diketahui.', 'error');
+                                resetForm();
+                            }
+                        } catch(e) {
+                            Swal.fire('Error', 'Respon server tidak valid.', 'error');
+                            resetForm();
+                        }
+                    } else {
+                        let msg = 'Upload Gagal.';
+                        try {
+                            let res = JSON.parse(xhr.responseText);
+                            if(res.message) msg = res.message;
+                            if(res.errors) {
+                                errorContainer.classList.remove('hidden');
+                                for(let key in res.errors) {
+                                     let li = document.createElement('li');
+                                     li.innerText = res.errors[key][0];
+                                     errorList.appendChild(li);
+                                }
+                            }
+                        } catch(e) {}
+                        Swal.fire({icon: 'error', title: 'Gagal Upload', text: msg});
+                        resetForm();
+                    }
+                };
+
+                xhr.onerror = function() { Swal.fire('Error', 'Terjadi kesalahan jaringan.', 'error'); resetForm(); };
+                xhr.send(formData);
+
+                function resetForm() {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<span class="material-symbols-outlined mr-2">upload_file</span> Upload Dokumen';
+                    submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                    progressContainer.classList.add('hidden');
+                    progressBar.style.width = '0%';
+                    progressPercent.innerText = '0%';
+                }
+            });
+        </script>
+    </x-slot:scripts>
+</x-new-layout>
