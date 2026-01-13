@@ -167,25 +167,81 @@ class DocumentController extends Controller
     // 4. DOWNLOAD DOKUMEN
     public function download(Document $document)
     {
-        if (!Storage::disk('nextcloud')->exists($document->file_path)) {
-            return back()->with('error', 'File fisik tidak ditemukan di server Nextcloud.');
+        try {
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            if (empty($baseUri) || empty($document->file_path)) {
+                abort(404, 'File tidak tersedia.');
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $fileUrl = "{$baseUri}/{$document->file_path}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            $response = $client->request('GET', $fileUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            if ($response->getStatusCode() !== 200) {
+                abort(404, 'File tidak ditemukan di server Nextcloud.');
+            }
+            
+            return response($response->getBody()->getContents())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $document->title . '.pdf"');
+        } catch (\Throwable $e) {
+            \Log::error("Download file error: {$e->getMessage()}");
+            abort(500, 'Gagal mengunduh file.');
         }
-
-        return Storage::disk('nextcloud')->download($document->file_path, $document->title . '.pdf');
     }
 
     // 5. PREVIEW DOKUMEN
     public function view(Document $document)
     {
-        if (!Storage::disk('nextcloud')->exists($document->file_path)) {
-            abort(404, 'File tidak ditemukan di server.');
+        try {
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            if (empty($baseUri) || empty($document->file_path)) {
+                abort(404, 'File tidak tersedia.');
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $fileUrl = "{$baseUri}/{$document->file_path}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            $response = $client->request('GET', $fileUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            if ($response->getStatusCode() !== 200) {
+                abort(404, 'File tidak ditemukan di server Nextcloud.');
+            }
+            
+            return response($response->getBody()->getContents())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $document->slug . '.pdf"');
+        } catch (\Throwable $e) {
+            \Log::error("View file error: {$e->getMessage()}");
+            abort(500, 'Gagal membuka file.');
         }
-
-        $fileContent = Storage::disk('nextcloud')->get($document->file_path);
-        
-        return response($fileContent)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $document->slug . '.pdf"');
     }
 
     // 6. HALAMAN EDIT
@@ -255,10 +311,10 @@ class DocumentController extends Controller
             $fullPath = "{$targetFolder}/{$filename}";
 
             try {
-                // Try to delete old file
+                // Try to delete old file via WebDAV
                 try {
-                    if (!empty($document->file_path) && Storage::disk('nextcloud')->exists($document->file_path)) {
-                        Storage::disk('nextcloud')->delete($document->file_path);
+                    if (!empty($document->file_path)) {
+                        $this->deleteFromNextcloud($document->file_path);
                     }
                 } catch (\Throwable $e) {
                     \Log::warning("Nextcloud: Could not delete old file {$document->file_path}: {$e->getMessage()}");
@@ -311,8 +367,12 @@ class DocumentController extends Controller
         }
 
         // Hapus file fisik di Nextcloud jika ada
-        if (Storage::disk('nextcloud')->exists($document->file_path)) {
-            Storage::disk('nextcloud')->delete($document->file_path);
+        if (!empty($document->file_path)) {
+            try {
+                $this->deleteFromNextcloud($document->file_path);
+            } catch (\Throwable $e) {
+                \Log::warning("Could not delete Nextcloud file {$document->file_path}: {$e->getMessage()}");
+            }
         }
 
         // Hapus data dari database
@@ -337,6 +397,12 @@ class DocumentController extends Controller
             
             $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
             $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            \Log::debug("Nextcloud MKCOL Credentials", [
+                'baseUri_empty' => empty($baseUri),
+                'username' => $username,
+                'password_len' => strlen($appPassword ?? ''),
+            ]);
             
             if (empty($baseUri)) {
                 \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
@@ -386,6 +452,12 @@ class DocumentController extends Controller
             $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
             $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
             
+            \Log::debug("Nextcloud PUT Credentials", [
+                'baseUri_empty' => empty($baseUri),
+                'username' => $username,
+                'password_len' => strlen($appPassword ?? ''),
+            ]);
+            
             if (empty($baseUri)) {
                 \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
                 return false;
@@ -419,6 +491,52 @@ class DocumentController extends Controller
         } catch (\Throwable $e) {
             \Log::error("Nextcloud WebDAV PUT exception: {$e->getMessage()}");
             return false;
+        }
+    }
+
+    /**
+     * Delete file from Nextcloud via WebDAV DELETE
+     */
+    private function deleteFromNextcloud($filePath)
+    {
+        try {
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            if (empty($baseUri)) {
+                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+                return false;
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $deleteUrl = "{$baseUri}/{$filePath}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            
+            $response = $client->request('DELETE', $deleteUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            $statusCode = $response->getStatusCode();
+            if (in_array($statusCode, [200, 204])) {
+                \Log::info("Nextcloud file deleted: {$filePath} (HTTP {$statusCode})");
+                return true;
+            } else {
+                \Log::warning("Nextcloud DELETE failed for {$filePath} (HTTP {$statusCode})");
+                \Log::warning("DELETE Response: " . $response->getBody()->getContents());
+                return false;
+            }
+        } catch (\Throwable $e) {
+            \Log::error("Nextcloud WebDAV DELETE exception: {$e->getMessage()}");
+            throw $e;
         }
     }
 }

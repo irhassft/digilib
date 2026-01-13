@@ -79,7 +79,7 @@
                                     1.2k
                                 </span>
                             </div>
-                            <a href="#" class="text-sm font-bold text-[#0d1b11] dark:text-white leading-snug line-clamp-2 visited:text-[#0d1b11]">
+                            <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="text-sm font-bold text-[#0d1b11] dark:text-white leading-snug line-clamp-2 visited:text-[#0d1b11] hover:text-primary transition-colors">
                                 {{ $doc->title }}
                             </a>
                             <div class="flex items-center justify-between mt-1">
