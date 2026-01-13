@@ -54,9 +54,13 @@
                             <span class="material-symbols-outlined text-sm">favorite</span>
                         </div>
 
-                        {{-- Icon Placeholder (PDF Preview) --}}
-                        <div class="h-40 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center relative overflow-hidden">
-                            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 group-hover/card:scale-110 transition-transform duration-500">picture_as_pdf</span>
+                        {{-- Cover Image or PDF Icon --}}
+                        <div class="h-40 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center relative overflow-hidden group-hover/card:shadow-lg transition-all">
+                            @if($doc->cover_image && Storage::disk('public')->exists($doc->cover_image))
+                                <img src="{{ Storage::disk('public')->url($doc->cover_image) }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-500">
+                            @else
+                                <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 group-hover/card:scale-110 transition-transform duration-500">picture_as_pdf</span>
+                            @endif
                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
                         </div>
                         
@@ -65,6 +69,11 @@
                                 <span class="px-2 py-1 rounded-md bg-green-50 dark:bg-green-900/30 text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">
                                     {{ $doc->category->name ?? 'UMUM' }}
                                 </span>
+                                @if($doc->year)
+                                <span class="px-2 py-1 rounded-md bg-blue-50 dark:bg-blue-900/30 text-[10px] font-bold text-blue-600 dark:text-blue-400">
+                                    {{ $doc->year }}
+                                </span>
+                                @endif
                                 <span class="text-[10px] text-gray-400 flex items-center gap-1">
                                     <span class="material-symbols-outlined text-[10px]">visibility</span>
                                     1.2k
@@ -113,13 +122,21 @@
                     <div class="divide-y divide-gray-100 dark:divide-gray-700">
                         @forelse($documents as $doc)
                         <div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer">
-                            <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 shrink-0">
-                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                            <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 shrink-0 overflow-hidden">
+                                @if($doc->cover_image && Storage::disk('public')->exists($doc->cover_image))
+                                    <img src="{{ Storage::disk('public')->url($doc->cover_image) }}" alt="{{ $doc->title }}" class="w-full h-full object-cover">
+                                @else
+                                    <span class="material-symbols-outlined">picture_as_pdf</span>
+                                @endif
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h4 class="font-bold text-sm text-[#0d1b11] dark:text-white truncate group-hover:text-primary transition-colors">{{ $doc->title }}</h4>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-xs text-gray-500">{{ $doc->category->name ?? 'Uncategorized' }}</span>
+                                    @if($doc->year)
+                                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                                    <span class="text-xs text-gray-500">{{ $doc->year }}</span>
+                                    @endif
                                     <span class="w-1 h-1 rounded-full bg-gray-300"></span>
                                     <span class="text-xs text-gray-400">{{ $doc->created_at->format('d M Y') }}</span>
                                 </div>

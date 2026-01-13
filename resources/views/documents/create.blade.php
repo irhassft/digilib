@@ -93,7 +93,23 @@
                     <textarea id="description" name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"></textarea>
                 </div>
 
-                {{-- DRAG & DROP FILE PDF --}}
+                {{-- COVER IMAGE & YEAR --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Cover Image -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="cover_image">Gambar Cover (Opsional)</label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                            id="cover_image" type="file" name="cover_image" accept="image/*" placeholder="Pilih gambar cover">
+                    </div>
+
+                    <!-- Tahun -->
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="year">Tahun Dokumen (Opsional)</label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                            id="year" type="number" name="year" min="1900" max="2100" placeholder="Contoh: 2024">
+                    </div>
+                </div>
+
                 <div x-data="{ 
                     isDragging: false, 
                     fileName: '', 

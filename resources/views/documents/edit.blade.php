@@ -35,6 +35,20 @@
                             <textarea name="description" rows="3" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ $document->description }}</textarea>
                         </div>
 
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <x-input-label for="cover_image" :value="__('Gambar Cover')" />
+                                <input type="file" name="cover_image" accept="image/*" class="block w-full text-sm text-gray-500 mt-1 border-gray-300 rounded-md" />
+                                @if($document->cover_image)
+                                    <p class="text-sm text-gray-600 mt-2">File saat ini: {{ basename($document->cover_image) }}</p>
+                                @endif
+                            </div>
+                            <div>
+                                <x-input-label for="year" :value="__('Tahun')" />
+                                <input type="number" name="year" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm" min="1900" max="2100" value="{{ $document->year }}" />
+                            </div>
+                        </div>
+
                         <div class="mb-6 p-4 bg-gray-50 border rounded-md">
                             <p class="text-sm text-gray-600 mb-2">File saat ini: 
                                 <a href="{{ route('documents.download', $document) }}" class="text-blue-600 underline" target="_blank">{{ $document->title }}.pdf</a>
