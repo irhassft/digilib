@@ -1,336 +1,204 @@
-<x-app-layout>
-    <div class="min-h-screen bg-white">
-        {{-- ========================================== --}}
-        {{-- MODE KARYAWAN (TAMPILAN SEARCH ENGINE)     --}}
-        {{-- ========================================== --}}
-        @unlessrole('admin|super-admin')
-        <div class="flex flex-col items-center justify-center min-h-[80vh] px-4 sm:px-6 lg:px-8">
+<x-new-layout title="Dashboard - RS PKU Digital Library">
+    <x-slot:header>
+        <div class="max-w-6xl mx-auto flex items-center justify-between gap-8 h-full">
+            <div class="flex-1 max-w-2xl">
+                <form action="{{ route('dashboard') }}" method="GET" class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                    </div>
+                    <input name="search" value="{{ request('search') }}" 
+                           class="block w-full pl-11 pr-4 py-2.5 bg-white dark:bg-gray-800 border-none rounded-xl text-sm shadow-sm focus:ring-2 focus:ring-primary transition-all" 
+                           placeholder="Cari dokumen, SOP, atau panduan..." type="text"/>
+                </form>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-primary transition-colors shadow-sm">
+                    <span class="material-symbols-outlined">notifications</span>
+                </button>
+                
+                @hasanyrole('admin|super-admin')
+                <a href="{{ route('documents.create') }}" class="px-4 py-2 bg-primary text-[#0d1b11] text-sm font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+                    <span class="material-symbols-outlined text-sm">upload_file</span>
+                    Upload Riset
+                </a>
+                @endhasanyrole
+            </div>
+        </div>
+    </x-slot:header>
+
+    <div class="max-w-6xl mx-auto flex gap-8">
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col gap-8 min-w-0">
             
-            {{-- 1. Logo & Judul Center --}}
-            <div class="text-center mb-10 animate-fade-in-down">
-                {{-- Logo RSPKU --}}
-                <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RSPKU" class="h-36 mx-auto mb-6 object-contain drop-shadow-md hover:scale-105 transition-transform duration-300">
-                
-                {{-- Teks Judul dengan Font Serif Modern / Sans Profesional --}}
-                <h1 class="text-3xl md:text-5xl font-extrabold text-green-700 tracking-tight mb-2">
-                    DIGITAL LIBRARY
-                </h1>
-                <p class="text-xl md:text-2xl text-gray-500 font-medium tracking-wide">
-                    RS PKU AISYIYAH BOYOLALI
-                </p>
-                <div class="w-24 h-1 bg-green-500 mx-auto mt-4 rounded-full"></div>
-            </div>
-
-            {{-- 2. Form Pencarian Besar & Elegan --}}
-            <div class="w-full max-w-4xl">
-                <form method="GET" action="{{ route('dashboard') }}" class="relative group">
-                    <div class="relative transition-all duration-300 transform group-hover:-translate-y-1">
-                        <div class="absolute inset-y-0 left-0 pl-8 flex items-center pointer-events-none">
-                            <svg class="h-7 w-7 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}" 
-                            class="block w-full pl-20 pr-6 py-5 border-2 border-gray-100 rounded-full leading-5 bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition duration-200 ease-in-out text-lg shadow-lg"
-                            placeholder="Ketik kata kunci dokumen yang ingin anda cari" autofocus>
-                        
-                        {{-- Tombol Cari di dalam Input (Kanan) --}}
-                        <div class="absolute inset-y-2 right-2">
-                            <button type="submit" class="h-full px-8 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full shadow-md transition-all flex items-center gap-2">
-                                Cari
-                            </button>
-                        </div>
-                    </div>
-                </form> 
-            </div>
-        </div>
-        @endunlessrole
-
-        {{-- ========================================== --}}
-        {{-- MODE ADMIN (DASHBOARD MANAJEMEN)        --}}
-        {{-- ========================================== --}}
-        @hasanyrole('admin|super-admin')
-        <div class="pt-8 pb-4">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                
-                {{-- Header Admin --}}
-                <div class="mb-8 flex flex-col md:flex-row justify-between items-end border-b border-gray-200 pb-4 gap-4">
-                    <div>
-                        <h2 class="text-3xl font-bold text-gray-800">Dashboard Pengelola</h2>
-                        <p class="text-sm text-gray-500 mt-1">Pantau statistik dan kelola dokumen rumah sakit.</p>
+            <!-- Recommendations Carousel -->
+            <section class="w-full relative group">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold tracking-tight text-[#0d1b11] dark:text-white">Rekomendasi Untukmu</h2>
+                    <div class="flex gap-2">
+                        <button class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-primary shadow-sm transition-colors prev-btn">
+                            <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        </button>
+                        <button class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-primary shadow-sm transition-colors next-btn">
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
                     </div>
                 </div>
 
-                {{-- STATISTIK KOTAK (HANYA ADMIN) --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    {{-- Card 1 --}}
-                    <div class="bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow rounded-xl border border-gray-100 p-6 relative">
-                        <div class="absolute top-0 right-0 p-4 opacity-10">
-                            <svg class="w-20 h-20 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/></svg>
-                        </div>
-                        <div class="text-green-600 text-xs font-bold uppercase tracking-widest mb-1">Total Dokumen</div>
-                        <div class="text-4xl font-extrabold text-gray-800">{{ $stats['total_documents'] }}</div>
-                        <div class="text-xs text-gray-400 mt-2">Arsip digital tersimpan</div>
-                    </div>
-                    {{-- Card 2 --}}
-                    <div class="bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow rounded-xl border border-gray-100 p-6 relative">
-                        <div class="absolute top-0 right-0 p-4 opacity-10">
-                            <svg class="w-20 h-20 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                        </div>
-                        <div class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-1">Total Diunduh</div>
-                        <div class="text-4xl font-extrabold text-gray-800">{{ $stats['total_downloads'] }}</div>
-                        <div class="text-xs text-gray-400 mt-2">Kali akses dokumen</div>
-                    </div>
-                    {{-- Card 3 --}}
-                    <div class="bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow rounded-xl border border-gray-100 p-6 relative">
-                        <div class="absolute top-0 right-0 p-4 opacity-10">
-                            <svg class="w-20 h-20 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/></svg>
-                        </div>
-                        <div class="text-purple-600 text-xs font-bold uppercase tracking-widest mb-1">Kategori</div>
-                        <div class="text-4xl font-extrabold text-gray-800">{{ $stats['total_categories'] }}</div>
-                        <div class="text-xs text-gray-400 mt-2">Jenis pengelompokan</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endhasanyrole
-
-        {{-- ========================================== --}}
-        {{-- HASIL PENCARIAN / DAFTAR DOKUMEN        --}}
-        {{-- ========================================== --}}
-        
-        @if(Auth::user()->hasAnyRole(['admin', 'super-admin']) || request('search') || !$documents->isEmpty())
-        <div id="hasil-pencarian" class="bg-gray-50 border-t border-gray-200 min-h-screen">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                
-                {{-- Judul Section & Toolbar --}}
-                {{-- PERUBAHAN: items-end diganti items-center agar vertikalnya pas di tengah --}}
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                {{-- Scroll Container --}}
+                <div class="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x scrollbar-hide" id="recommendations-container">
                     
-                    {{-- Kiri: Judul Tabel --}}
-                    <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2 self-start md:self-center">
-                        <span class="w-2 h-8 bg-green-600 rounded-full"></span>
-                        @if(request('search')) 
-                            Hasil: "{{ request('search') }}" 
-                        @else 
-                            @hasanyrole('admin|super-admin') Arsip Dokumen @else Dokumen Terbaru @endhasanyrole
-                        @endif
-                    </h3>
-
-                    {{-- Kanan: Toolbar (Search & Upload SEJAJAR) --}}
-                    @hasanyrole('admin|super-admin')
-                    {{-- PERUBAHAN: Menggunakan flex-row untuk mensejajarkan elemen --}}
-                    <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                    @foreach($documents->take(5) as $doc)
+                    <div class="min-w-[280px] h-[320px] bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-all snap-start border border-gray-100 dark:border-gray-800 group/card">
                         
-                        {{-- 1. Form Pencarian --}}
-                        <form method="GET" action="{{ route('dashboard') }}" class="relative w-full md:w-64">
-                            <input type="text" name="search" placeholder="Cari dokumen..." value="{{ request('search') }}" 
-                                class="w-full pl-3 pr-10 py-2 rounded-lg border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 text-sm bg-white">
-                            
-                            {{-- Ikon Kaca Pembesar --}}
-                            <button type="submit" class="absolute inset-y-0 right-0 px-3 text-gray-400 hover:text-green-600 transition">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </button>
-                        </form>
-
-                        {{-- 2. Tombol Upload --}}
-                        <a href="{{ route('documents.create') }}" class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow text-sm flex items-center justify-center gap-2 transition-transform transform hover:scale-105 whitespace-nowrap">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                            <span>Upload Baru</span>
-                        </a>
-
-                    </div>
-                    @endhasanyrole
-                </div>
-
-                {{-- ========================================== --}}
-                {{-- 1. TAMPILAN MOBILE (CARD VIEW)           --}}
-                {{-- Muncul di HP (md:hidden), Hilang di PC   --}}
-                {{-- ========================================== --}}
-                <div class="block md:hidden space-y-4">
-                    @forelse ($documents as $doc)
-                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-3 active:scale-[0.99] transition-transform duration-100">
-                        
-                        {{-- Header Kartu: Kategori & Tanggal --}}
-                        <div class="flex justify-between items-start">
-                            <span class="px-3 py-1 text-xs font-bold rounded-full bg-green-100 text-green-800 border border-green-200">
-                                {{ $doc->category->name }}
-                            </span>
-                            <span class="text-xs text-gray-400 font-medium">
-                                {{ $doc->created_at->format('d M Y') }}
-                            </span>
+                        <div class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer hover:bg-white hover:text-red-500 text-white">
+                            <span class="material-symbols-outlined text-sm">favorite</span>
                         </div>
 
-                        {{-- Body Kartu: Ikon & Judul --}}
-                        <div class="flex items-start gap-4">
-                            {{-- Ikon PDF Besar --}}
-                            <div class="flex-shrink-0 bg-red-50 p-2 rounded-xl">
-                                <a href="{{ route('documents.view', $doc) }}" target="_blank">
-                                    <svg class="h-10 w-10 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
-                                    </svg>
-                                </a>
+                        {{-- Icon Placeholder (PDF Preview) --}}
+                        <div class="h-40 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center relative overflow-hidden">
+                            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 group-hover/card:scale-110 transition-transform duration-500">picture_as_pdf</span>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
+                        </div>
+                        
+                        <div class="flex flex-col gap-2">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-1 rounded-md bg-green-50 dark:bg-green-900/30 text-[10px] font-bold text-green-600 dark:text-green-400 uppercase tracking-wide">
+                                    {{ $doc->category->name ?? 'UMUM' }}
+                                </span>
+                                <span class="text-[10px] text-gray-400 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-[10px]">visibility</span>
+                                    1.2k
+                                </span>
                             </div>
-                            
-                            {{-- Judul & Deskripsi --}}
-                            <div class="flex-grow">
-                                {{-- Judul sudah ada Link-nya --}}
-                                <a href="{{ route('documents.view', $doc) }}" target="_blank" class="block">
-                                    <h4 class="text-lg font-bold text-gray-800 leading-tight mb-1 cursor-pointer hover:text-green-600">
-                                        {{ $doc->title }}
-                                    </h4>
-                                </a>
-                                <p class="text-sm text-gray-500 line-clamp-2 leading-relaxed">
-                                    {{ $doc->description ?? 'Tidak ada deskripsi.' }}
-                                </p>
+                            <a href="#" class="text-sm font-bold text-[#0d1b11] dark:text-white leading-snug line-clamp-2 visited:text-[#0d1b11]">
+                                {{ $doc->title }}
+                            </a>
+                            <div class="flex items-center justify-between mt-1">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+                                    <span class="text-xs text-gray-500 truncate max-w-[80px]">{{ $doc->user->name ?? 'Admin' }}</span>
+                                </div>
+                                <span class="text-[10px] text-gray-400">{{ $doc->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
+                    </div>
+                    @endforeach
 
-                        {{-- Footer Kartu: Tombol Aksi Full Width --}}
-                        <div class="mt-2 pt-3 border-t border-gray-50 flex gap-2">
-                            {{-- Tombol Lihat --}}
-                            <a href="{{ route('documents.view', $doc) }}" target="_blank" class="flex-1 text-center py-2.5 rounded-lg border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-50 transition">
-                                Lihat
-                            </a>
-                            {{-- Tombol Download --}}
-                            <a href="{{ route('documents.download', $doc) }}" class="flex-1 text-center py-2.5 rounded-lg bg-green-600 text-white font-bold text-sm shadow-md hover:bg-green-700 active:bg-green-800 transition">
-                                Unduh PDF
-                            </a>
+                </div>
+            </section>
+
+            <!-- Categories Grid -->
+            <section>
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold tracking-tight text-[#0d1b11] dark:text-white">Kategori</h2>
+                    <a href="{{ route('dashboard') }}" class="text-xs font-bold text-primary hover:underline">Lihat Semua</a>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    @foreach($categories as $category)
+                    <a href="{{ route('dashboard', ['category_id' => $category->id]) }}" class="group p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all text-left">
+                        <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-[#0d1b11] transition-colors text-gray-400">
+                            <span class="material-symbols-outlined">folder</span> 
                         </div>
-                        
-                        {{-- Admin Action (Mobile) --}}
-                        @hasanyrole('admin|super-admin')
-                        <div class="flex justify-end gap-3 text-xs font-bold pt-1">
-                            <a href="{{ route('documents.edit', $doc) }}" class="text-yellow-600 uppercase tracking-wide">Edit</a>
-                            <form action="{{ route('documents.destroy', $doc) }}" method="POST" onsubmit="return confirm('Hapus?');">
-                                @csrf @method('DELETE')
-                                <button class="text-red-500 uppercase tracking-wide">Hapus</button>
-                            </form>
+                        <h3 class="font-bold text-sm text-[#0d1b11] dark:text-white">{{ $category->name }}</h3>
+                        <p class="text-xs text-gray-400">{{ $category->documents_count ?? 0 }} Dokumen</p>
+                    </a>
+                    @endforeach
+                </div>
+            </section>
+
+            <!-- Latest Documents List -->
+            <section>
+                <h2 class="text-lg font-bold tracking-tight text-[#0d1b11] dark:text-white mb-4">Dokumen Terbaru</h2>
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+                    <div class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse($documents as $doc)
+                        <div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer">
+                            <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 shrink-0">
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="font-bold text-sm text-[#0d1b11] dark:text-white truncate group-hover:text-primary transition-colors">{{ $doc->title }}</h4>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-xs text-gray-500">{{ $doc->category->name ?? 'Uncategorized' }}</span>
+                                    <span class="w-1 h-1 rounded-full bg-gray-300"></span>
+                                    <span class="text-xs text-gray-400">{{ $doc->created_at->format('d M Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <form action="{{ route('documents.download', $doc->id) }}" method="GET" target="_blank"> 
+                                    <button title="Download" class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-sm">download</span>
+                                    </button>
+                                </form>
+                                <a href="{{ route('documents.view', $doc->id) }}" target="_blank" title="Preview" class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-blue-500 hover:text-white transition-colors">
+                                    <span class="material-symbols-outlined text-sm">visibility</span>
+                                </a>
+                                @hasanyrole('admin|super-admin')
+                                <form action="{{ route('documents.destroy', $doc->id) }}" method="POST" onsubmit="return confirm('Hapus dokumen ini?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button title="Hapus" class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                </form>
+                                @endhasanyrole
+                            </div>
                         </div>
-                        @endhasanyrole
-                    </div>
-                    @empty
-                    <div class="text-center py-10 text-gray-400 bg-white rounded-xl border border-dashed border-gray-300">
-                        <p>Tidak ada dokumen ditemukan.</p>
-                    </div>
-                    @endforelse
-                    
-                    {{-- Pagination Mobile --}}
-                    <div class="pt-2">
-                        {{ $documents->links() }} {{-- Laravel otomatis menyesuaikan pagination mobile --}}
+                        @empty
+                        <div class="p-8 text-center text-gray-500">
+                            Belum ada dokumen yang diupload.
+                        </div>
+                        @endforelse
                     </div>
                 </div>
-
-
-                {{-- ========================================== --}}
-                {{-- 2. TAMPILAN DESKTOP (TABLE VIEW)        --}}
-                {{-- Muncul di PC (md:block), Hilang di HP    --}}
-                {{-- ========================================== --}}
-                <div class="hidden md:block bg-white overflow-hidden shadow-lg sm:rounded-xl border border-gray-100">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-green-50">
-                                <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-green-800 uppercase tracking-wider">Judul Dokumen</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-green-800 uppercase tracking-wider">Kategori</th>
-                                    <th class="px-6 py-4 text-left text-xs font-bold text-green-800 uppercase tracking-wider">Tanggal</th>
-                                    <th class="px-6 py-4 text-right text-xs font-bold text-green-800 uppercase tracking-wider">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-100">
-                                @forelse ($documents as $doc)
-                                <tr class="hover:bg-green-50/50 transition-colors duration-200 group">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-start">
-                                            <a href="{{ route('documents.view', $doc) }}" target="_blank" class="flex-shrink-0" title="Baca Dokumen">
-                                                <svg class="h-10 w-10 text-red-500 mr-4 group-hover:scale-110 transition-transform shadow-sm rounded-sm bg-white" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
-                                                </svg>
-                                            </a>
-                                            <div class="flex flex-col">
-                                                <a href="{{ route('documents.view', $doc) }}" target="_blank" class="text-base font-bold text-gray-800 mb-1 hover:text-green-600 hover:underline transition-colors">
-                                                    {{ $doc->title }}
-                                                </a>
-                                                <a href="{{ route('documents.view', $doc) }}" target="_blank" class="text-sm text-gray-500 line-clamp-2 hover:text-green-600 transition-colors cursor-pointer">
-                                                    {{ $doc->description ?? 'Tidak ada deskripsi.' }}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 border border-green-200">
-                                            {{ $doc->category->name }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900 font-medium">{{ $doc->created_at->format('d M Y') }}</div>
-                                        @hasanyrole('admin|super-admin')
-                                            <div class="text-xs text-gray-500 mt-1">Oleh: {{ $doc->uploader->name }}</div>
-                                        @endhasanyrole
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <a href="{{ route('documents.download', $doc) }}" class="inline-flex items-center text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-md text-xs font-bold transition mr-2 shadow-sm">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                                            Unduh
-                                        </a>
-                                        @hasanyrole('admin|super-admin')
-                                            <a href="{{ route('documents.edit', $doc) }}" class="text-yellow-600 hover:text-yellow-800 font-bold mr-2 text-xs uppercase">Edit</a>
-                                            <form action="{{ route('documents.destroy', $doc) }}" method="POST" class="inline-block" onsubmit="return confirm('Hapus?');">
-                                                @csrf @method('DELETE')
-                                                <button class="text-red-500 hover:text-red-700 font-bold text-xs uppercase">Hapus</button>
-                                            </form>
-                                        @endhasanyrole
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="4" class="px-6 py-16 text-center text-gray-500">Belum ada dokumen.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
-                        {{ $documents->links() }}
-                    </div>
+                <div class="mt-4">
+                    {{ $documents->links() }}
                 </div>
-
-            </div>
+            </section>
         </div>
-        @endif
 
-        {{-- Footer --}}
-        <footer class="bg-white py-8 border-t border-gray-100">
-            <div class="max-w-7xl mx-auto px-4 text-center">
-                <p class="text-gray-400 text-sm">
-                    &copy; {{ date('Y') }} RS PKU Aisyiyah Boyolali. All rights reserved.
-                </p>
+        <!-- Right Side Stats (Optional) -->
+        <aside class="w-80 hidden xl:flex flex-col gap-8 shrink-0">
+            <div class="bg-primary/10 rounded-3xl p-6 relative overflow-hidden">
+                <div class="absolute -right-10 -top-10 w-40 h-40 bg-primary/20 rounded-full blur-3xl"></div>
+                <h3 class="font-bold text-lg text-[#0d1b11] relative z-10">Total Arsip</h3>
+                <p class="text-4xl font-bold text-primary mt-2 relative z-10">{{ $totalDocuments }}</p>
+                <p class="text-sm text-gray-600 mt-1 relative z-10">+{{ $documents->where('created_at', '>=', now()->subWeek())->count() }} minggu ini</p>
             </div>
-        </footer>
+
+            <div>
+                <h3 class="font-bold text-[#0d1b11] dark:text-white mb-4">Aktivitas Terbaru</h3>
+                <div class="relative pl-4 border-l-2 border-dashed border-gray-200 dark:border-gray-700 space-y-6">
+                    @foreach($latestUploads as $upload)
+                    <div class="relative">
+                        <div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-primary border-4 border-white dark:border-gray-900"></div>
+                        <p class="text-xs text-gray-400 mb-1">{{ $upload->created_at->diffForHumans() }}</p>
+                        <p class="text-sm font-bold text-[#0d1b11] dark:text-white leading-tight">
+                            {{ $upload->user->name ?? 'Seseorang' }} Mengupload <span class="text-primary">{{ Str::limit($upload->title, 20) }}</span>
+                        </p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+        </aside>
     </div>
 
-    {{-- SCRIPT SCROLL OTOMATIS --}}
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // PERBAIKAN: Bungkus dengan tanda kutip agar VS Code tidak error
-            // Jika ada request search, isinya akan masuk ke variabel string ini
-            const searchKeyword = "{{ request('search') }}";
-            
-            // Cek jika variabel tidak kosong (artinya user sedang mencari)
-            if (searchKeyword) {
-                const element = document.getElementById("hasil-pencarian");
-                if (element) {
-                    setTimeout(() => {
-                        element.scrollIntoView({ 
-                            behavior: "smooth", 
-                            block: "start" 
-                        });
-                    }, 100); 
-                }
+    {{-- Script for auto-scroll recommendations --}}
+    <x-slot:scripts>
+        <script>
+            const container = document.getElementById('recommendations-container');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+
+            if(container) {
+                nextBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: 300, behavior: 'smooth' });
+                });
+                
+                prevBtn.addEventListener('click', () => {
+                    container.scrollBy({ left: -300, behavior: 'smooth' });
+                });
             }
-        });
-    </script>
-    
-</x-app-layout>
+        </script>
+    </x-slot:scripts>
+</x-new-layout>

@@ -7,7 +7,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
-    return view('welcome');
+    $documents = \App\Models\Document::with(['category', 'uploader'])->latest()->take(6)->get();
+    return view('welcome', compact('documents'));
 });
 
 // Grup Route untuk User yang sudah Login
@@ -63,5 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
+
+
 
 require __DIR__.'/auth.php';

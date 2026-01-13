@@ -17,25 +17,25 @@ class RoleSeeder extends Seeder
 
         // 2. Buat Permissions (Izin-izin spesifik)
         // Izin Dokumen
-        Permission::create(['name' => 'view_documents']);
-        Permission::create(['name' => 'download_documents']);
-        Permission::create(['name' => 'upload_documents']);
-        Permission::create(['name' => 'edit_documents']);
-        Permission::create(['name' => 'delete_documents']);
+        Permission::firstOrCreate(['name' => 'view_documents']);
+        Permission::firstOrCreate(['name' => 'download_documents']);
+        Permission::firstOrCreate(['name' => 'upload_documents']);
+        Permission::firstOrCreate(['name' => 'edit_documents']);
+        Permission::firstOrCreate(['name' => 'delete_documents']);
         // Izin Kategori
-        Permission::create(['name' => 'manage_categories']);
+        Permission::firstOrCreate(['name' => 'manage_categories']);
         // Izin User
-        Permission::create(['name' => 'manage_users']);
+        Permission::firstOrCreate(['name' => 'manage_users']);
 
         // 3. Buat Roles & Assign Permissions
 
         // A. Role KARYAWAN (Hanya bisa lihat dan download)
-        $roleEmployee = Role::create(['name' => 'employee']);
-        $roleEmployee->givePermissionTo(['view_documents', 'download_documents']);
+        $roleEmployee = Role::firstOrCreate(['name' => 'employee']);
+        $roleEmployee->syncPermissions(['view_documents', 'download_documents']);
 
         // B. Role ADMIN (Bisa kelola dokumen & kategori)
-        $roleAdmin = Role::create(['name' => 'admin']);
-        $roleAdmin->givePermissionTo([
+        $roleAdmin = Role::firstOrCreate(['name' => 'admin']);
+        $roleAdmin->syncPermissions([
             'view_documents', 
             'download_documents',
             'upload_documents', 
@@ -45,35 +45,41 @@ class RoleSeeder extends Seeder
         ]);
 
         // C. Role SUPER ADMIN (Dewa - Punya semua akses)
-        $roleSuperAdmin = Role::create(['name' => 'super-admin']);
+        $roleSuperAdmin = Role::firstOrCreate(['name' => 'super-admin']);
         // Super admin biasanya di-bypass di AuthServiceProvider, 
         // tapi untuk eksplisit kita beri semua permission:
-        $roleSuperAdmin->givePermissionTo(Permission::all());
+        $roleSuperAdmin->syncPermissions(Permission::all());
 
         // 4. Buat Akun Super Admin Pertama
-        $user = User::create([
-            'name' => 'Super Administrator',
-            'email' => 'super@digilib.com', // Email untuk login
-            'password' => Hash::make('password123'), // Password
-            'email_verified_at' => now(),
-        ]);
+        $user = User::firstOrCreate(
+            ['email' => 'acidprjct@gmail.com'],
+            [
+                'name' => 'Super Administrator',
+                'password' => Hash::make('password123'),
+                'email_verified_at' => now(),
+            ]
+        );
 
         // 5. Berikan Role Super Admin ke User tadi
         $user->assignRole($roleSuperAdmin);
         
         // Opsional: Buat akun Admin Biasa & Karyawan untuk testing nanti
-        $admin = User::create([
-            'name' => 'Admin Divisi',
-            'email' => 'admin@digilib.com',
-            'password' => Hash::make('password123'),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@digilib.com'],
+            [
+                'name' => 'Admin Divisi',
+                'password' => Hash::make('password123'),
+            ]
+        );
         $admin->assignRole($roleAdmin);
 
-        $karyawan = User::create([
-            'name' => 'Budi Karyawan',
-            'email' => 'budi@digilib.com',
-            'password' => Hash::make('password123'),
-        ]);
+        $karyawan = User::firstOrCreate(
+            ['email' => 'budi@digilib.com'],
+            [
+                'name' => 'Budi Karyawan',
+                'password' => Hash::make('password123'),
+            ]
+        );
         $karyawan->assignRole($roleEmployee);
     }
 }

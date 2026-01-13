@@ -12,10 +12,10 @@ class Document extends Model
     // Pastikan 'slug' ada di sini
     protected $fillable = [
         'title',
-        'slug',         // <--- TAMBAHKAN INI
+        'slug',     
         'description',
         'file_path',
-        'file_size',    // <--- TAMBAHKAN INI
+        'file_size', 
         'category_id',
         'user_id',
     ];
@@ -27,6 +27,11 @@ class Document extends Model
     }
 
     public function uploader()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
     }
