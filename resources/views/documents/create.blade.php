@@ -226,7 +226,7 @@
                         progressBar.style.width = percentComplete + '%';
                         progressPercent.innerText = percentComplete + '%';
                         if(percentComplete === 100) {
-                            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">dns</span> Menyimpan ke Nextcloud...';
+                            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin mr-2">dns</span> Menyimpan ke Asics...';
                         }
                     }
                 };

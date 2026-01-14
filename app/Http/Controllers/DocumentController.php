@@ -48,6 +48,62 @@ class DocumentController extends Controller
         return view('dashboard', compact('documents', 'stats', 'categories', 'totalDocuments', 'latestUploads'));
     }
 
+    // 1.a KOLEKSI SAYA - menampilkan kategori dan seluruh daftar dokumen milik user, dengan filter kategori
+    public function collections(Request $request)
+    {
+        $userId = auth()->id();
+        $mode = $request->get('mode', 'mine'); // mine|all|favorites
+
+        // Build categories counts depending on mode
+        $categories = \App\Models\Category::withCount(['documents' => function ($q) use ($userId, $mode) {
+            if ($mode === 'mine') {
+                $q->where('user_id', $userId);
+            } elseif ($mode === 'favorites') {
+                $q->whereHas('favoritedBy', function ($qq) use ($userId) {
+                    $qq->where('user_id', $userId);
+                });
+            }
+            // mode === 'all' leaves query unfiltered
+        }])->get();
+
+        $query = Document::with('category');
+
+        if ($mode === 'mine') {
+            $query->where('user_id', $userId);
+        } elseif ($mode === 'favorites') {
+            $query->whereHas('favoritedBy', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        $documents = $query->latest()->paginate(12)->withQueryString();
+
+        return view('collections.index', compact('categories', 'documents', 'mode'));
+    }
+
+    // Toggle favorite/bookmark for a document (AJAX)
+    public function toggleFavorite(Request $request, Document $document)
+    {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->favorites()->where('document_id', $document->id)->exists()) {
+            $user->favorites()->detach($document->id);
+            $favorited = false;
+        } else {
+            $user->favorites()->attach($document->id);
+            $favorited = true;
+        }
+
+        return response()->json(['success' => true, 'favorited' => $favorited]);
+    }
+
     // 2. HALAMAN FORM UPLOAD
     public function create()
     {
@@ -64,7 +120,7 @@ class DocumentController extends Controller
             'description' => 'nullable|string',
             'cover_image' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
             'year' => 'nullable|integer|min:1900|max:2100',
-            'document_file' => 'required|file|max:5400',
+            'document_file' => 'required|file|max:51200',
             'category_id' => 'required',
         ]);
 

@@ -23,8 +23,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/dashboard', [DocumentController::class, 'index'])->name('dashboard');
 
+    // Koleksi Saya (User only) - show categories and user's documents with optional category filter
+    Route::get('/koleksi-saya', [DocumentController::class, 'collections'])->name('collections.index');
+
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])
     ->name('documents.download');
+
+    // Toggle favorite (bookmark)
+    Route::post('/documents/{document}/favorite', [DocumentController::class, 'toggleFavorite'])->name('documents.favorite.toggle');
 
     // ====================================================
     // 1. GROUP KHUSUS SUPER ADMIN (Hanya Level Tertinggi)

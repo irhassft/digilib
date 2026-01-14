@@ -37,4 +37,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Document::class);
     }
+
+    // Favorites (bookmarks) - dokumen yang ditandai user
+    public function favorites()
+    {
+        return $this->belongsToMany(\App\Models\Document::class, 'bookmarks')->withTimestamps();
+    }
 }
