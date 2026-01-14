@@ -14,10 +14,18 @@ class Document extends Model
         'title',
         'slug',     
         'description',
+        'cover_image',
+        'year',
         'file_path',
         'file_size', 
         'category_id',
         'user_id',
+    ];
+
+    // Type casting for attributes
+    protected $casts = [
+        'year' => 'integer',
+        'file_size' => 'integer',
     ];
 
     // ... relasi lainnya biarkan saja

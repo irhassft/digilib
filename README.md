@@ -57,5 +57,12 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Troubleshooting Nextcloud uploads 🔧
+
+- Symptom: "Unable to check existence for: documents/..." during upload (Nextcloud/WebDAV).
+- Cause: Some WebDAV adapters may throw when checking directory existence.
+- Mitigation: The controller now catches exceptions from Storage::exists() and attempts to create the target folder; ensure your `NEXTCLOUD_*` env vars are correct and the Nextcloud account has permissions to create directories.
+
 # digilib
 # digilib

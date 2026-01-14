@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\Category;
-use App\Models\User; // Tambahkan ini untuk statistik User
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -43,7 +43,7 @@ class DocumentController extends Controller
             'total_users'      => $totalUsers,
         ];
 
-        $categories = Category::withCount('documents')->get(); // Update to include count
+        $categories = Category::withCount('documents')->get();
 
         return view('dashboard', compact('documents', 'stats', 'categories', 'totalDocuments', 'latestUploads'));
     }
@@ -58,10 +58,12 @@ class DocumentController extends Controller
     // 3. PROSES UPLOAD KE NEXTCLOUD
     public function store(Request $request)
     {
-        // 1. Validasi (Max 5MB)
+        // 1. Validasi (Max 5MB for document, 5MB for cover image)
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
+            'year' => 'nullable|integer|min:1900|max:2100',
             'document_file' => 'required|file|max:5400',
             'category_id' => 'required',
         ]);
@@ -70,60 +72,67 @@ class DocumentController extends Controller
             $file = $request->file('document_file');
             $filename = time() . '-' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
 
-            // 2. Mulai Try Block untuk menangkap SEMUA error (DB maupun Upload)
+            // 2. Mulai Try Block
             try {
-                // Simpan ke Database DULU (agar dapat ID)
+                // Handle cover image upload first (if provided)
+                $coverImagePath = null;
+                if ($request->hasFile('cover_image')) {
+                    try {
+                        $coverFile = $request->file('cover_image');
+                        // Use 'public' disk so it's accessible via /storage URL
+                        $coverImagePath = Storage::disk('public')->putFile('cover-images', $coverFile);
+                        \Log::info("Cover image stored publicly: {$coverImagePath}");
+                    } catch (\Throwable $e) {
+                        \Log::warning("Failed to store cover image: {$e->getMessage()}");
+                        // Don't fail the entire upload if cover image fails, just skip it
+                        $coverImagePath = null;
+                    }
+                }
+
+                // Simpan ke Database DULU
                 $document = Document::create([
                     'title' => $request->title,
                     'slug' => Str::slug($request->title) . '-' . time(),
                     'description' => $request->description,
+                    'cover_image' => $coverImagePath,
+                    'year' => $request->year,
                     'category_id' => $request->category_id,
-                    'file_path' => '', // Placeholder sementara
-                    'file_size' => 0,  // Placeholder sementara
+                    'file_path' => '',
+                    'file_size' => 0,
                     'user_id' => auth()->id(),
                 ]);
 
                 // 3. TENTUKAN ALAMAT LENGKAP (Based on Category)
-                // Format: [Prefix] / [Nama Kategori] / [Filename]
-                $prefix = trim(env('NEXTCLOUD_FOLDER_PREFIX', 'documents'), '/');
+                $prefix = trim(
+                    $_ENV['NEXTCLOUD_FOLDER_PREFIX'] 
+                    ?? env('NEXTCLOUD_FOLDER_PREFIX', 'documents')
+                    ?? 'documents',
+                    '/'
+                );
                 
-                // Ambil Kategori manual untuk memastikan tidak null
+                // 4. EKSEKUSI UPLOAD - Create folder and upload with category subfolder structure
                 $category = Category::find($request->category_id);
                 $categoryName = $category ? Str::slug($category->name) : 'general';
                 
                 $targetFolder = "{$prefix}/{$categoryName}";
-
-                // 4. EKSEKUSI UPLOAD
-                // Pastikan folder tujuan ada
-                if (!Storage::disk('nextcloud')->exists($targetFolder)) {
-                    Storage::disk('nextcloud')->makeDirectory($targetFolder);
-                }
-
-                // Method Upload: Pakai Stream (Read Only)
-                $fullPath = $targetFolder . '/' . $filename;
-                $stream = fopen($file->getRealPath(), 'r');
+                $fullPath = "{$targetFolder}/{$filename}";
                 
-                $uploadSuccess = Storage::disk('nextcloud')->put($fullPath, $stream);
+                \Log::info("Nextcloud upload attempt: folder={$targetFolder}, file={$filename}");
                 
-                if (is_resource($stream)) {
-                    fclose($stream);
-                }
+                // Step 1: Ensure folder exists via WebDAV MKCOL
+                $this->ensureNextcloudFolder($targetFolder);
                 
-                // Fallback: Jika stream gagal, coba payload biasa
-                if (!$uploadSuccess) {
-                    $uploadSuccess = Storage::disk('nextcloud')->put($fullPath, file_get_contents($file->getRealPath()));
-                }
+                // Step 2: Upload file using Guzzle
+                $uploadSuccess = $this->uploadToNextcloud($fullPath, $file);
 
                 if (!$uploadSuccess) {
-                    $document->delete(); // Rollback DB
+                    $document->delete();
                     throw new \Exception("Server Nextcloud menolak file (Upload Error). Target: {$fullPath}");
                 }
                 
-                $path = $fullPath;
-                
                 // 5. Update Record dengan Path yang benar
                 $document->update([
-                    'file_path' => $path,
+                    'file_path' => $fullPath,
                     'file_size' => $file->getSize()
                 ]);
 
@@ -134,14 +143,16 @@ class DocumentController extends Controller
                 return redirect()->route('dashboard')->with('success', 'Berhasil Upload!');
 
             } catch (\Exception $e) {
-                // Jika error terjadi setelah dokumen dibuat tapi sebelum upload selesai, hapus dokumen
-                if (isset($document) && $document->existing) { // Correction: 'exists' property or checking ID
-                    $document->delete();
+                // Rollback
+                if (isset($document) && $document->exists) {
+                    try {
+                        $document->delete();
+                    } catch (\Throwable $ex) {
+                        \Log::warning('Gagal menghapus record dokumen setelah kegagalan upload: ' . $ex->getMessage());
+                    }
                 }
-                // Check if document exists using model instance check
-                 if (isset($document) && $document->id) {
-                    $document->delete();
-                }
+
+                \Log::error('Nextcloud upload error: ' . $e->getMessage(), ['exception' => $e]);
 
                 $msg = 'Error System: ' . $e->getMessage();
                 
@@ -156,29 +167,81 @@ class DocumentController extends Controller
     // 4. DOWNLOAD DOKUMEN
     public function download(Document $document)
     {
-        // Cek apakah file ada di Nextcloud
-        if (!Storage::disk('nextcloud')->exists($document->file_path)) {
-            return back()->with('error', 'File fisik tidak ditemukan di server Nextcloud.');
+        try {
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            if (empty($baseUri) || empty($document->file_path)) {
+                abort(404, 'File tidak tersedia.');
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $fileUrl = "{$baseUri}/{$document->file_path}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            $response = $client->request('GET', $fileUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            if ($response->getStatusCode() !== 200) {
+                abort(404, 'File tidak ditemukan di server Nextcloud.');
+            }
+            
+            return response($response->getBody()->getContents())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'attachment; filename="' . $document->title . '.pdf"');
+        } catch (\Throwable $e) {
+            \Log::error("Download file error: {$e->getMessage()}");
+            abort(500, 'Gagal mengunduh file.');
         }
-
-        // Proses download
-        return Storage::disk('nextcloud')->download($document->file_path, $document->title . '.pdf');
     }
 
-    // 5. PREVIEW (LIHAT) DOKUMEN
+    // 5. PREVIEW DOKUMEN
     public function view(Document $document)
     {
-        if (!Storage::disk('nextcloud')->exists($document->file_path)) {
-            abort(404, 'File tidak ditemukan di server.');
+        try {
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            if (empty($baseUri) || empty($document->file_path)) {
+                abort(404, 'File tidak tersedia.');
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $fileUrl = "{$baseUri}/{$document->file_path}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            $response = $client->request('GET', $fileUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            if ($response->getStatusCode() !== 200) {
+                abort(404, 'File tidak ditemukan di server Nextcloud.');
+            }
+            
+            return response($response->getBody()->getContents())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $document->slug . '.pdf"');
+        } catch (\Throwable $e) {
+            \Log::error("View file error: {$e->getMessage()}");
+            abort(500, 'Gagal membuka file.');
         }
-
-        // Ambil isi file dari Nextcloud
-        $fileContent = Storage::disk('nextcloud')->get($document->file_path);
-        
-        // Tampilkan sebagai PDF di browser (Inline)
-        return response($fileContent)
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $document->slug . '.pdf"');
     }
 
     // 6. HALAMAN EDIT
@@ -194,6 +257,8 @@ class DocumentController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'cover_image' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
+            'year' => 'nullable|integer|min:1900|max:2100',
             'category_id' => 'required',
             'document_file' => 'nullable|file|mimes:pdf|max:102400',
         ]);
@@ -201,60 +266,73 @@ class DocumentController extends Controller
         $data = [
             'title' => $request->title,
             'description' => $request->description,
+            'year' => $request->year,
             'category_id' => $request->category_id,
         ];
         
-        // Update slug hanya jika judul berubah (opsional, tapi baik untuk SEO/URL)
         if ($request->title !== $document->title) {
             $data['slug'] = Str::slug($request->title) . '-' . time();
+        }
+
+        // Handle cover image update
+        if ($request->hasFile('cover_image')) {
+            try {
+                // Delete old cover image if exists
+                if ($document->cover_image && Storage::disk('public')->exists($document->cover_image)) {
+                    Storage::disk('public')->delete($document->cover_image);
+                }
+
+                // Store new cover image using public disk
+                $coverFile = $request->file('cover_image');
+                $coverImagePath = Storage::disk('public')->putFile('cover-images', $coverFile);
+                $data['cover_image'] = $coverImagePath;
+                \Log::info("Cover image updated: {$coverImagePath}");
+            } catch (\Throwable $e) {
+                \Log::warning("Failed to update cover image: {$e->getMessage()}");
+                // Don't fail the entire update if cover image fails
+            }
         }
 
         if ($request->hasFile('document_file')) {
             $file = $request->file('document_file');
             $filename = time() . '-' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
             
-            // Dynamic Folder Logic (Based on Category)
-            $prefix = trim(env('NEXTCLOUD_FOLDER_PREFIX', 'documents'), '/');
+            $prefix = trim(
+                $_ENV['NEXTCLOUD_FOLDER_PREFIX'] 
+                ?? env('NEXTCLOUD_FOLDER_PREFIX', 'documents')
+                ?? 'documents',
+                '/'
+            );
             
-            // Ambil nama kategori yang DIPILIH (bukan yang lama)
             $newCategory = Category::find($request->category_id);
             $categoryName = $newCategory ? Str::slug($newCategory->name) : 'uncategorized';
             
             $targetFolder = "{$prefix}/{$categoryName}";
+            $fullPath = "{$targetFolder}/{$filename}";
 
             try {
-                // Hapus file lama di Nextcloud
-                if (Storage::disk('nextcloud')->exists($document->file_path)) {
-                    Storage::disk('nextcloud')->delete($document->file_path);
+                // Try to delete old file via WebDAV
+                try {
+                    if (!empty($document->file_path)) {
+                        $this->deleteFromNextcloud($document->file_path);
+                    }
+                } catch (\Throwable $e) {
+                    \Log::warning("Nextcloud: Could not delete old file {$document->file_path}: {$e->getMessage()}");
                 }
                 
-                // Upload file baru
-                // Pastikan folder tujuan ada
-                if (!Storage::disk('nextcloud')->exists($targetFolder)) {
-                    Storage::disk('nextcloud')->makeDirectory($targetFolder);
-                }
+                \Log::info("Nextcloud update upload attempt: folder={$targetFolder}, file={$filename}");
                 
-                // Method Upload: Pakai Stream (Read Only)
-                $fullPath = $targetFolder . '/' . $filename;
-                $stream = fopen($file->getRealPath(), 'r');
+                // Ensure folder exists
+                $this->ensureNextcloudFolder($targetFolder);
                 
-                $uploadSuccess = Storage::disk('nextcloud')->put($fullPath, $stream);
-                
-                if (is_resource($stream)) {
-                    fclose($stream);
-                }
-
-                if (!$uploadSuccess) {
-                     $uploadSuccess = Storage::disk('nextcloud')->put($fullPath, file_get_contents($file->getRealPath()));
-                }
+                // Upload file
+                $uploadSuccess = $this->uploadToNextcloud($fullPath, $file);
                 
                 if (!$uploadSuccess) {
-                    throw new \Exception("Server Nextcloud menolak file baru. Target: {$fullPath}");
+                    throw new \Exception("Server Nextcloud menolak file baru (Upload Error). Target: {$fullPath}");
                 }
 
-                $path = $fullPath;
-
-                $data['file_path'] = $path;
+                $data['file_path'] = $fullPath;
                 $data['file_size'] = $file->getSize();
 
             } catch (\Exception $e) {
@@ -278,14 +356,187 @@ class DocumentController extends Controller
     // 8. HAPUS DOKUMEN
     public function destroy(Document $document)
     {
+        // Hapus cover image public jika ada
+        if ($document->cover_image && Storage::disk('public')->exists($document->cover_image)) {
+            try {
+                Storage::disk('public')->delete($document->cover_image);
+                \Log::info("Cover image deleted: {$document->cover_image}");
+            } catch (\Throwable $e) {
+                \Log::warning("Failed to delete cover image {$document->cover_image}: {$e->getMessage()}");
+            }
+        }
+
         // Hapus file fisik di Nextcloud jika ada
-        if (Storage::disk('nextcloud')->exists($document->file_path)) {
-            Storage::disk('nextcloud')->delete($document->file_path);
+        if (!empty($document->file_path)) {
+            try {
+                $this->deleteFromNextcloud($document->file_path);
+            } catch (\Throwable $e) {
+                \Log::warning("Could not delete Nextcloud file {$document->file_path}: {$e->getMessage()}");
+            }
         }
 
         // Hapus data dari database
         $document->delete();
 
         return back()->with('success', 'Dokumen berhasil dihapus.');
+    }
+
+    /**
+     * Ensure Nextcloud folder exists via WebDAV MKCOL
+     */
+    private function ensureNextcloudFolder($folderPath)
+    {
+        try {
+            // Use $_ENV first, then env(), with fallback to config
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            \Log::debug("Nextcloud MKCOL Credentials", [
+                'baseUri_empty' => empty($baseUri),
+                'username' => $username,
+                'password_len' => strlen($appPassword ?? ''),
+            ]);
+            
+            if (empty($baseUri)) {
+                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+                return false;
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $folderUrl = "{$baseUri}/{$folderPath}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            
+            // Try MKCOL to create folder - use Basic Auth with username:appPassword
+            $response = $client->request('MKCOL', $folderUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            $statusCode = $response->getStatusCode();
+            if (in_array($statusCode, [200, 201, 204, 405])) { // 405 = folder already exists
+                \Log::info("Nextcloud folder ensured: {$folderPath} (HTTP {$statusCode})");
+                return true;
+            } else {
+                \Log::warning("Nextcloud MKCOL failed for {$folderPath} (HTTP {$statusCode})");
+                \Log::warning("MKCOL Response: " . $response->getBody()->getContents());
+                return false;
+            }
+        } catch (\Throwable $e) {
+            \Log::warning("Nextcloud folder creation exception: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Upload file to Nextcloud via WebDAV PUT
+     */
+    private function uploadToNextcloud($filePath, $file)
+    {
+        try {
+            // Use $_ENV first, then env(), with fallback to config
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            \Log::debug("Nextcloud PUT Credentials", [
+                'baseUri_empty' => empty($baseUri),
+                'username' => $username,
+                'password_len' => strlen($appPassword ?? ''),
+            ]);
+            
+            if (empty($baseUri)) {
+                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+                return false;
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $uploadUrl = "{$baseUri}/{$filePath}";
+            
+            $fileContent = file_get_contents($file->getRealPath());
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            
+            // Use Basic Auth with username:appPassword
+            $response = $client->request('PUT', $uploadUrl, [
+                'auth' => [$username, $appPassword],
+                'body' => $fileContent,
+                'headers' => [
+                    'Content-Type' => $file->getMimeType() ?: 'application/octet-stream',
+                ],
+                'http_errors' => false,
+            ]);
+            
+            $statusCode = $response->getStatusCode();
+            \Log::info("Nextcloud WebDAV PUT {$filePath}: HTTP {$statusCode}");
+            
+            if (!in_array($statusCode, [200, 201, 204])) {
+                \Log::warning("PUT Response: " . $response->getBody()->getContents());
+            }
+            
+            return in_array($statusCode, [200, 201, 204]);
+        } catch (\Throwable $e) {
+            \Log::error("Nextcloud WebDAV PUT exception: {$e->getMessage()}");
+            return false;
+        }
+    }
+
+    /**
+     * Delete file from Nextcloud via WebDAV DELETE
+     */
+    private function deleteFromNextcloud($filePath)
+    {
+        try {
+            $baseUri = trim(
+                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
+                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
+                ?? config('filesystems.disks.nextcloud.baseUri')
+                ?? ''
+            );
+            
+            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
+            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            
+            if (empty($baseUri)) {
+                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+                return false;
+            }
+            
+            $baseUri = rtrim($baseUri, '/');
+            $deleteUrl = "{$baseUri}/{$filePath}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            
+            $response = $client->request('DELETE', $deleteUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            $statusCode = $response->getStatusCode();
+            if (in_array($statusCode, [200, 204])) {
+                \Log::info("Nextcloud file deleted: {$filePath} (HTTP {$statusCode})");
+                return true;
+            } else {
+                \Log::warning("Nextcloud DELETE failed for {$filePath} (HTTP {$statusCode})");
+                \Log::warning("DELETE Response: " . $response->getBody()->getContents());
+                return false;
+            }
+        } catch (\Throwable $e) {
+            \Log::error("Nextcloud WebDAV DELETE exception: {$e->getMessage()}");
+            throw $e;
+        }
     }
 }
