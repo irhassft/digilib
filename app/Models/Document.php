@@ -43,4 +43,17 @@ class Document extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    // Users who bookmarked this document
+    public function favoritedBy()
+    {
+        return $this->belongsToMany(\App\Models\User::class, 'bookmarks')->withTimestamps();
+    }
+
+    // Check if given user has favorited this document
+    public function isFavoritedBy(?\App\Models\User $user)
+    {
+        if (!$user) return false;
+        return $this->favoritedBy()->where('user_id', $user->id)->exists();
+    }
 }

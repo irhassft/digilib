@@ -28,10 +28,18 @@
             </a>
             @endrole
 
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">
+            @if(Route::has('collections.index'))
+            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('collections.*') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
+               href="{{ route('collections.index') }}">
+                <span class="material-symbols-outlined {{ request()->routeIs('collections.*') ? 'fill-1' : '' }}">menu_book</span>
+                <span class="text-sm {{ request()->routeIs('collections.*') ? 'font-semibold' : 'font-medium' }}">Koleksi Saya</span>
+            </a>
+            @else
+            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-500 dark:text-gray-400">
                 <span class="material-symbols-outlined">menu_book</span>
                 <span class="text-sm font-medium">Koleksi Saya</span>
             </a>
+            @endif
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">
                 <span class="material-symbols-outlined">article</span>
                 <span class="text-sm font-medium">Jurnal Terbaru</span>
