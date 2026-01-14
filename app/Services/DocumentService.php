@@ -16,61 +16,44 @@ class DocumentService
      * @param UploadedFile $file File fisik yang diupload
      * @param int $userId ID pengguna yang melakukan upload
      */
-    public function uploadDocument(array $data, UploadedFile $file, int $userId)
+    public function uploadDocument(array $data, UploadedFile $file, int $userId, ?UploadedFile $cover = null)
     {
-        return DB::transaction(function () use ($data, $file, $userId) {
-            
+        return DB::transaction(function () use ($data, $file, $userId, $cover) {
             // 1. Buat SLUG unik untuk URL (misal: sop-keuangan-x7z9)
             $slug = Str::slug($data['title']) . '-' . Str::random(4);
 
             // 2. Buat NAMA FILE unik agar tidak bentrok
-            // Format: waktu_slug.pdf
             $filename = time() . '_' . $slug . '.' . $file->getClientOriginalExtension();
 
-            // 3. Tentukan Folder Penyimpanan
-            // Kita simpan per tahun agar folder tidak terlalu penuh (Scalability)
+            // 3. Tentukan Folder Penyimpanan untuk dokumen
             $folder = 'documents/' . date('Y');
 
-            // 4. UPLOAD FILE (Logika Inti)
-            // 'public' bisa diganti 's3' nanti lewat .env tanpa ubah kode ini
+            // 4. UPLOAD FILE (Logika Inti) ke disk public
             $path = $file->storeAs($folder, $filename, 'public'); 
 
-            // 5. Simpan Data ke Database
-            return Document::create([
+            // 5. Handle optional cover image (simpan ke disk public)
+            $coverPath = null;
+            if ($cover) {
+                try {
+                    $coverPath = Storage::disk('public')->putFile('cover-images', $cover);
+                } catch (\Throwable $e) {
+                    \Log::warning('Failed to store cover image in DocumentService: ' . $e->getMessage());
+                    $coverPath = null;
+                }
+            }
+
+            // 6. Simpan Data ke Database
+            $document = Document::create([
                 'user_id'     => $userId,
                 'category_id' => $data['category_id'],
                 'title'       => $data['title'],
                 'slug'        => $slug,
                 'description' => $data['description'] ?? null,
+                'cover_image' => $coverPath,
                 'file_path'   => $path, 
                 'file_size'   => $file->getSize(), // Byte
                 'mime_type'   => $file->getMimeType(),
                 'download_count' => 0
-            ]);
-            // 1. Jika ada file baru diupload
-            if ($file) {
-                // Hapus file lama fisik
-                if (Storage::disk('public')->exists($document->file_path)) {
-                    Storage::disk('public')->delete($document->file_path);
-                }
-
-                // Upload file baru
-                $filename = time() . '_' . Str::slug($data['title']) . '.' . $file->getClientOriginalExtension();
-                $folder = 'documents/' . date('Y');
-                $path = $file->storeAs($folder, $filename, 'public');
-                
-                // Update path & metadata file
-                $document->file_path = $path;
-                $document->file_size = $file->getSize();
-                $document->mime_type = $file->getMimeType();
-            }
-
-            // 2. Update data teks (Judul, Deskripsi, Kategori)
-            $document->update([
-                'title'       => $data['title'],
-                'slug'        => Str::slug($data['title']) . '-' . Str::random(5), // Update slug juga
-                'category_id' => $data['category_id'],
-                'description' => $data['description'] ?? $document->description,
             ]);
 
             return $document;

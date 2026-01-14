@@ -56,11 +56,26 @@
 
                         {{-- Cover Image or PDF Icon --}}
                         <div class="h-40 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center relative overflow-hidden group-hover/card:shadow-lg transition-all">
-                            @if($doc->cover_image && Storage::disk('public')->exists($doc->cover_image))
-                                <img src="{{ Storage::disk('public')->url($doc->cover_image) }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-500">
+                            @php
+                                $cover = $doc->cover_image;
+                                $publicPath = $cover ? public_path('storage/'.$cover) : null;
+                                $coverUrl = null;
+                                if ($cover) {
+                                    // Prefer serving via public/storage on current host (asset) to avoid APP_URL mismatch
+                                    if ($publicPath && file_exists($publicPath)) {
+                                        $coverUrl = asset('storage/'.$cover);
+                                    } elseif (Storage::disk('public')->exists($cover)) {
+                                        $coverUrl = Storage::disk('public')->url($cover);
+                                    }
+                                }
+                            @endphp
+
+                            @if($coverUrl)
+                                <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-500">
                             @else
                                 <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 group-hover/card:scale-110 transition-transform duration-500">picture_as_pdf</span>
                             @endif
+
                             <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/card:opacity-100 transition-opacity"></div>
                         </div>
                         
@@ -123,8 +138,22 @@
                         @forelse($documents as $doc)
                         <div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer">
                             <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 shrink-0 overflow-hidden">
-                                @if($doc->cover_image && Storage::disk('public')->exists($doc->cover_image))
-                                    <img src="{{ Storage::disk('public')->url($doc->cover_image) }}" alt="{{ $doc->title }}" class="w-full h-full object-cover">
+                                @php
+                                $cover = $doc->cover_image;
+                                $publicPath = $cover ? public_path('storage/'.$cover) : null;
+                                $coverUrl = null;
+                                if ($cover) {
+                                    // Prefer public storage file on current host to avoid URL mismatches
+                                    if ($publicPath && file_exists($publicPath)) {
+                                        $coverUrl = asset('storage/'.$cover);
+                                    } elseif (Storage::disk('public')->exists($cover)) {
+                                        $coverUrl = Storage::disk('public')->url($cover);
+                                    }
+                                }
+                            @endphp
+
+                            @if($coverUrl)
+                                    <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover">
                                 @else
                                     <span class="material-symbols-outlined">picture_as_pdf</span>
                                 @endif
