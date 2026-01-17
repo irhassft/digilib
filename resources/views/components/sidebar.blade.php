@@ -11,39 +11,35 @@
             </div>
         </div>
 
-        {{-- NAVIGATION --}}
-        <nav class="flex flex-col gap-2">
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('dashboard') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
-               href="{{ route('dashboard') }}">
-                <span class="material-symbols-outlined {{ request()->routeIs('dashboard') ? 'fill-1' : '' }}">dashboard</span>
-                <span class="text-sm {{ request()->routeIs('dashboard') ? 'font-semibold' : 'font-medium' }}">Dashboard</span>
-            </a>
-            
-            {{-- Menu Khusus Super Admin --}}
-            @role('super-admin')
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('users.*') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
-               href="{{ route('users.index') }}">
-                <span class="material-symbols-outlined {{ request()->routeIs('users.*') ? 'fill-1' : '' }}">manage_accounts</span>
-                <span class="text-sm {{ request()->routeIs('users.*') ? 'font-semibold' : 'font-medium' }}">Manajemen User</span>
-            </a>
-            @endrole
+            {{-- NAVIGATION --}}
+            <nav class="flex flex-col gap-2">
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('dashboard') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
+                   href="{{ route('dashboard') }}">
+                    <span class="material-symbols-outlined {{ request()->routeIs('dashboard') ? 'fill-1' : '' }}">dashboard</span>
+                    <span class="text-sm {{ request()->routeIs('dashboard') ? 'font-semibold' : 'font-medium' }}">Dashboard</span>
+                </a>
+                
+                @if(Route::has('collections.index'))
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('collections.*') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
+                   href="{{ route('collections.index') }}">
+                    <span class="material-symbols-outlined {{ request()->routeIs('collections.*') ? 'fill-1' : '' }}">menu_book</span>
+                    <span class="text-sm {{ request()->routeIs('collections.*') ? 'font-semibold' : 'font-medium' }}">Koleksi Saya</span>
+                </a>
+                @else
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-500 dark:text-gray-400">
+                    <span class="material-symbols-outlined">menu_book</span>
+                    <span class="text-sm font-medium">Koleksi Saya</span>
+                </a>
+                @endif
 
-            @if(Route::has('collections.index'))
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('collections.*') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
-               href="{{ route('collections.index') }}">
-                <span class="material-symbols-outlined {{ request()->routeIs('collections.*') ? 'fill-1' : '' }}">menu_book</span>
-                <span class="text-sm {{ request()->routeIs('collections.*') ? 'font-semibold' : 'font-medium' }}">Koleksi Saya</span>
-            </a>
-            @else
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-gray-500 dark:text-gray-400">
-                <span class="material-symbols-outlined">menu_book</span>
-                <span class="text-sm font-medium">Koleksi Saya</span>
-            </a>
-            @endif
-            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors" href="#">
-                <span class="material-symbols-outlined">article</span>
-                <span class="text-sm font-medium">Jurnal Terbaru</span>
-            </a>
+                {{-- Menu Khusus Super Admin --}}
+                @role('super-admin')
+                <a class="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors {{ request()->routeIs('users.*') ? 'bg-primary/10 text-primary' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800' }}" 
+                   href="{{ route('users.index') }}">
+                    <span class="material-symbols-outlined {{ request()->routeIs('users.*') ? 'fill-1' : '' }}">manage_accounts</span>
+                    <span class="text-sm {{ request()->routeIs('users.*') ? 'font-semibold' : 'font-medium' }}">Manajemen User</span>
+                </a>
+                @endrole
 
             <div class="my-4 border-t border-gray-100 dark:border-gray-800"></div>
          
