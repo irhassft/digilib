@@ -103,9 +103,26 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-[1200px]">
                     @forelse($documents as $doc)
                     <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-[#152a1a] p-5 shadow-sm hover:shadow-md transition-shadow border border-[#e7f3ea] dark:border-[#22442a] group">
-                        <!-- Placeholder or Gradient for File -->
+                        <!-- Cover Image or Placeholder -->
                         <div class="w-full aspect-[2/1] bg-gradient-to-br from-[#e7f3ea] to-white dark:from-[#1a2e1e] dark:to-[#0d1b11] rounded-lg flex items-center justify-center relative overflow-hidden">
-                             <span class="material-symbols-outlined text-6xl text-primary/40 group-hover:scale-110 transition-transform">description</span>
+                             @php
+                                $cover = $doc->cover_image;
+                                $publicPath = $cover ? public_path('storage/'.$cover) : null;
+                                $coverUrl = null;
+                                if ($cover) {
+                                    if ($publicPath && file_exists($publicPath)) {
+                                        $coverUrl = asset('storage/'.$cover);
+                                    } elseif (Storage::disk('public')->exists($cover)) {
+                                        $coverUrl = Storage::disk('public')->url($cover);
+                                    }
+                                }
+                             @endphp
+
+                             @if($coverUrl)
+                                <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                             @else
+                                <span class="material-symbols-outlined text-6xl text-primary/40 group-hover:scale-110 transition-transform">description</span>
+                             @endif
                              
                              <!-- Category Badge -->
                              <span class="absolute top-2 right-2 px-2 py-1 text-[10px] uppercase font-bold text-[#0d1b11] bg-primary rounded-md">

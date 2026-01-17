@@ -48,9 +48,9 @@
                 <div class="flex gap-4 overflow-x-auto pb-4 scroll-smooth snap-x scrollbar-hide" id="recommendations-container">
                     
                     @foreach($documents->take(5) as $doc)
-                    <div class="min-w-[280px] h-[320px] bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-all snap-start border border-gray-100 dark:border-gray-800 group/card">
+                    <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="min-w-[280px] h-[320px] bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-all snap-start border border-gray-100 dark:border-gray-800 group/card no-underline">
                         
-                        <div class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer hover:bg-white hover:text-red-500 text-white">
+                        <div class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer hover:bg-white hover:text-red-500 text-white" @click.prevent.stop>
                             <span class="material-symbols-outlined text-sm">favorite</span>
                         </div>
 
@@ -94,9 +94,9 @@
                                     1.2k
                                 </span>
                             </div>
-                            <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="text-sm font-bold text-[#0d1b11] dark:text-white leading-snug line-clamp-2 visited:text-[#0d1b11] hover:text-primary transition-colors">
+                            <div class="text-sm font-bold text-[#0d1b11] dark:text-white leading-snug line-clamp-2">
                                 {{ $doc->title }}
-                            </a>
+                            </div>
                             <div class="flex items-center justify-between mt-1">
                                 <div class="flex items-center gap-2">
                                     <div class="w-6 h-6 rounded-full bg-gray-200 dark:bg-gray-700"></div>
@@ -105,7 +105,7 @@
                                 <span class="text-[10px] text-gray-400">{{ $doc->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
-                    </div>
+                    </a>
                     @endforeach
 
                 </div>
@@ -115,16 +115,23 @@
             <section>
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold tracking-tight text-[#0d1b11] dark:text-white">Kategori</h2>
-                    <a href="{{ route('dashboard') }}" class="text-xs font-bold text-primary hover:underline">Lihat Semua</a>
+                    <div class="flex gap-2">
+                        <button class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-primary shadow-sm transition-colors prev-btn-cat">
+                            <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        </button>
+                        <button class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-primary shadow-sm transition-colors next-btn-cat">
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flex gap-3 overflow-x-auto pb-2 scroll-smooth snap-x scrollbar-hide" id="categories-container">
                     @foreach($categories as $category)
-                    <a href="{{ route('dashboard', ['category_id' => $category->id]) }}" class="group p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all text-left">
+                    <a href="{{ route('collections.index', ['category_id' => $category->id, 'mode' => 'all']) }}" class="group min-w-[180px] p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all text-left snap-start flex-shrink-0">
                         <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-[#0d1b11] transition-colors text-gray-400">
                             <span class="material-symbols-outlined">folder</span> 
                         </div>
-                        <h3 class="font-bold text-sm text-[#0d1b11] dark:text-white">{{ $category->name }}</h3>
-                        <p class="text-xs text-gray-400">{{ $category->documents_count ?? 0 }} Dokumen</p>
+                        <h3 class="font-bold text-sm text-[#0d1b11] dark:text-white line-clamp-2">{{ $category->name }}</h3>
+                        <p class="text-xs text-gray-400 mt-1">{{ $category->documents_count ?? 0 }} Dokumen</p>
                     </a>
                     @endforeach
                 </div>
@@ -136,7 +143,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
                     <div class="divide-y divide-gray-100 dark:divide-gray-700">
                         @forelse($documents as $doc)
-                        <div class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer">
+                        <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="p-4 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors group cursor-pointer no-underline">
                             <div class="w-12 h-12 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 shrink-0 overflow-hidden">
                                 @php
                                 $cover = $doc->cover_image;
@@ -170,17 +177,14 @@
                                     <span class="text-xs text-gray-400">{{ $doc->created_at->format('d M Y') }}</span>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity" @click="event.preventDefault(); event.stopPropagation();">
                                 <form action="{{ route('documents.download', $doc->id) }}" method="GET" target="_blank"> 
                                     <button title="Download" class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-primary hover:text-white transition-colors">
                                         <span class="material-symbols-outlined text-sm">download</span>
                                     </button>
                                 </form>
-                                <a href="{{ route('documents.view', $doc->id) }}" target="_blank" title="Preview" class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-blue-500 hover:text-white transition-colors">
-                                    <span class="material-symbols-outlined text-sm">visibility</span>
-                                </a>
                                 @hasanyrole('admin|super-admin')
-                                <form action="{{ route('documents.destroy', $doc->id) }}" method="POST" onsubmit="return confirm('Hapus dokumen ini?');">
+                                <form action="{{ route('documents.destroy', $doc->id) }}" method="POST" onsubmit="event.stopPropagation(); return confirm('Hapus dokumen ini?');">
                                     @csrf
                                     @method('DELETE')
                                     <button title="Hapus" class="w-8 h-8 rounded-lg bg-red-50 dark:bg-red-900/20 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-colors">
@@ -189,7 +193,7 @@
                                 </form>
                                 @endhasanyrole
                             </div>
-                        </div>
+                        </a>
                         @empty
                         <div class="p-8 text-center text-gray-500">
                             Belum ada dokumen yang diupload.
@@ -243,6 +247,21 @@
                 
                 prevBtn.addEventListener('click', () => {
                     container.scrollBy({ left: -300, behavior: 'smooth' });
+                });
+            }
+
+            // Categories carousel
+            const categoriesContainer = document.getElementById('categories-container');
+            const prevBtnCat = document.querySelector('.prev-btn-cat');
+            const nextBtnCat = document.querySelector('.next-btn-cat');
+
+            if(categoriesContainer) {
+                nextBtnCat.addEventListener('click', () => {
+                    categoriesContainer.scrollBy({ left: 300, behavior: 'smooth' });
+                });
+                
+                prevBtnCat.addEventListener('click', () => {
+                    categoriesContainer.scrollBy({ left: -300, behavior: 'smooth' });
                 });
             }
         </script>

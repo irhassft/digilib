@@ -22,7 +22,17 @@
 
                 <div class="flex gap-2 flex-wrap">
                     @foreach($categories as $cat)
-                        <a href="{{ route('collections.index', array_merge(request()->except('page'), ['category_id' => $cat->id])) }}" class="px-3 py-1 rounded-full border {{ request('category_id') == $cat->id ? 'bg-primary text-[#0d1b11]' : 'bg-white text-gray-600' }}">
+                        @php
+                            $isActive = request('category_id') == $cat->id;
+                            $params = request()->except('page');
+                            if ($isActive) {
+                                unset($params['category_id']);
+                            } else {
+                                $params['category_id'] = $cat->id;
+                            }
+                            $url = route('collections.index', $params);
+                        @endphp
+                        <a href="{{ $url }}" class="px-3 py-1 rounded-full border {{ $isActive ? 'bg-primary text-[#0d1b11]' : 'bg-white text-gray-600' }}">
                             {{ $cat->name }} <span class="text-xs text-gray-400">({{ $cat->documents_count }})</span>
                         </a>
                     @endforeach
@@ -33,8 +43,8 @@
             <section>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($documents as $doc)
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 relative">
-                        <div class="absolute right-4 top-4 z-20">
+                    <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 relative no-underline group">
+                        <div class="absolute right-4 top-4 z-20" @click.prevent.stop>
                             @php $isFav = $doc->isFavoritedBy(auth()->user()); @endphp
                             <button class="favorite-btn w-9 h-9 rounded-lg bg-white flex items-center justify-center shadow-sm" data-id="{{ $doc->id }}" aria-pressed="{{ $isFav ? 'true' : 'false' }}">
                                 <span class="material-symbols-outlined text-sm {{ $isFav ? 'text-primary' : 'text-gray-400' }}">{{ $isFav ? 'bookmark' : 'bookmark_border' }}</span>
@@ -61,15 +71,14 @@
                                 <span class="material-symbols-outlined text-6xl text-gray-300">picture_as_pdf</span>
                             @endif
                         </div>
-                        <h3 class="font-bold text-sm mb-1">{{ $doc->title }}</h3>
+                        <h3 class="font-bold text-sm mb-1 text-[#0d1b11] dark:text-white group-hover:text-primary transition-colors">{{ $doc->title }}</h3>
                         <p class="text-xs text-gray-500">{{ $doc->category->name ?? 'Uncategorized' }} • {{ $doc->created_at->format('d M Y') }}</p>
-                        <div class="mt-3 flex items-center justify-between">
-                            <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="text-sm text-primary font-semibold">Preview</a>
+                        <div class="mt-3 flex items-center justify-end" @click.prevent.stop>
                             <form action="{{ route('documents.download', $doc->id) }}" method="GET" target="_blank">
-                                <button class="text-sm px-3 py-1 bg-gray-100 rounded-lg">Download</button>
+                                <button class="text-sm px-3 py-1 bg-gray-100 rounded-lg hover:bg-primary hover:text-white transition-colors">Download</button>
                             </form>
                         </div>
-                    </div>
+                    </a>
                     @empty
                     <div class="p-6 text-center text-gray-500 bg-white rounded-2xl">
                         Anda belum mengunggah dokumen apapun.
