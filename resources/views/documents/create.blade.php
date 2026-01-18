@@ -93,6 +93,28 @@
                     <textarea id="description" name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"></textarea>
                 </div>
 
+                {{-- VISIBILITY --}}
+                <div>
+                    <label class="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-300">Visibilitas Dokumen</label>
+                    <div class="space-y-3">
+                        <label class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all" for="visibility_public">
+                            <input type="radio" id="visibility_public" name="visibility" value="public" required checked class="w-4 h-4 accent-primary cursor-pointer">
+                            <div class="flex-1">
+                                <span class="font-bold text-gray-700 dark:text-gray-300 block">🟢 Public</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Dokumen dapat dilihat dan dicari oleh siapa saja tanpa login</span>
+                            </div>
+                        </label>
+                        
+                        <label class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all" for="visibility_private">
+                            <input type="radio" id="visibility_private" name="visibility" value="private" class="w-4 h-4 accent-primary cursor-pointer">
+                            <div class="flex-1">
+                                <span class="font-bold text-gray-700 dark:text-gray-300 block">🔒 Private</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">Hanya Anda dan admin yang dapat melihat dokumen ini</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 {{-- COVER IMAGE & YEAR --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Cover Image -->

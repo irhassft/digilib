@@ -14,6 +14,7 @@ class Document extends Model
         'title',
         'slug',     
         'description',
+        'visibility',
         'cover_image',
         'year',
         'file_path',
@@ -27,6 +28,40 @@ class Document extends Model
         'year' => 'integer',
         'file_size' => 'integer',
     ];
+
+    // SCOPES FOR VISIBILITY
+    /**
+     * Scope untuk filter dokumen public
+     */
+    public function scopePublic($query)
+    {
+        return $query->where('visibility', 'public');
+    }
+
+    /**
+     * Scope untuk filter dokumen private
+     */
+    public function scopePrivate($query)
+    {
+        return $query->where('visibility', 'private');
+    }
+
+    // HELPER METHODS
+    /**
+     * Check if document is public
+     */
+    public function isPublic()
+    {
+        return $this->visibility === 'public';
+    }
+
+    /**
+     * Check if document is private
+     */
+    public function isPrivate()
+    {
+        return $this->visibility === 'private';
+    }
 
     // ... relasi lainnya biarkan saja
     public function category()

@@ -102,49 +102,51 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-[1200px]">
                     @forelse($documents as $doc)
-                    <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-[#152a1a] p-5 shadow-sm hover:shadow-md transition-shadow border border-[#e7f3ea] dark:border-[#22442a] group">
-                        <!-- Cover Image or Placeholder -->
-                        <div class="w-full aspect-[2/1] bg-gradient-to-br from-[#e7f3ea] to-white dark:from-[#1a2e1e] dark:to-[#0d1b11] rounded-lg flex items-center justify-center relative overflow-hidden">
-                             @php
-                                $cover = $doc->cover_image;
-                                $publicPath = $cover ? public_path('storage/'.$cover) : null;
-                                $coverUrl = null;
-                                if ($cover) {
-                                    if ($publicPath && file_exists($publicPath)) {
-                                        $coverUrl = asset('storage/'.$cover);
-                                    } elseif (Storage::disk('public')->exists($cover)) {
-                                        $coverUrl = Storage::disk('public')->url($cover);
+                        @if($doc->isPublic())
+                        <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-[#152a1a] p-5 shadow-sm hover:shadow-md transition-shadow border border-[#e7f3ea] dark:border-[#22442a] group">
+                            <!-- Cover Image or Placeholder -->
+                            <div class="w-full aspect-[2/1] bg-gradient-to-br from-[#e7f3ea] to-white dark:from-[#1a2e1e] dark:to-[#0d1b11] rounded-lg flex items-center justify-center relative overflow-hidden">
+                                 @php
+                                    $cover = $doc->cover_image;
+                                    $publicPath = $cover ? public_path('storage/'.$cover) : null;
+                                    $coverUrl = null;
+                                    if ($cover) {
+                                        if ($publicPath && file_exists($publicPath)) {
+                                            $coverUrl = asset('storage/'.$cover);
+                                        } elseif (Storage::disk('public')->exists($cover)) {
+                                            $coverUrl = Storage::disk('public')->url($cover);
+                                        }
                                     }
-                                }
-                             @endphp
+                                 @endphp
 
-                             @if($coverUrl)
-                                <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                             @else
-                                <span class="material-symbols-outlined text-6xl text-primary/40 group-hover:scale-110 transition-transform">description</span>
-                             @endif
-                             
-                             <!-- Category Badge -->
-                             <span class="absolute top-2 right-2 px-2 py-1 text-[10px] uppercase font-bold text-[#0d1b11] bg-primary rounded-md">
-                                {{ $doc->category->name ?? 'DOC' }}
-                             </span>
-                        </div>
-
-                        <div class="flex flex-col flex-1 justify-between gap-2">
-                            <div>
-                                <h4 class="text-[#0d1b11] dark:text-white text-lg font-bold leading-tight line-clamp-2" title="{{ $doc->title }}">
-                                    {{ $doc->title }}
-                                </h4>
-                                <div class="flex items-center gap-2 mt-2">
-                                     <div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                                        {{ substr($doc->uploader->name ?? 'A', 0, 1) }}
-                                     </div>
-                                     <p class="text-[#4c9a5f] dark:text-primary/70 text-sm font-normal">{{ $doc->uploader->name ?? 'Admin' }}</p>
-                                </div>
+                                 @if($coverUrl)
+                                    <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                                 @else
+                                    <span class="material-symbols-outlined text-6xl text-primary/40 group-hover:scale-110 transition-transform">description</span>
+                                 @endif
+                                 
+                                 <!-- Category Badge -->
+                                 <span class="absolute top-2 right-2 px-2 py-1 text-[10px] uppercase font-bold text-[#0d1b11] bg-primary rounded-md">
+                                    {{ $doc->category->name ?? 'DOC' }}
+                                 </span>
                             </div>
-                            <p class="text-xs text-gray-400 mt-2">{{ $doc->created_at->diffForHumans() }}</p>
+
+                            <div class="flex flex-col flex-1 justify-between gap-2">
+                                <div>
+                                    <h4 class="text-[#0d1b11] dark:text-white text-lg font-bold leading-tight line-clamp-2" title="{{ $doc->title }}">
+                                        {{ $doc->title }}
+                                    </h4>
+                                    <div class="flex items-center gap-2 mt-2">
+                                         <div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                                            {{ substr($doc->uploader->name ?? 'A', 0, 1) }}
+                                         </div>
+                                         <p class="text-[#4c9a5f] dark:text-primary/70 text-sm font-normal">{{ $doc->uploader->name ?? 'Admin' }}</p>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-2">{{ $doc->created_at->diffForHumans() }}</p>
+                            </div>
                         </div>
-                    </div>
+                        @endif
                     @empty
                     <div class="col-span-3 text-center py-12 text-gray-500">
                         No documents found.

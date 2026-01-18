@@ -14,7 +14,7 @@ class DocumentController extends Controller
     // 1. TAMPILKAN DASHBOARD & LIST DOKUMEN
     public function index(Request $request)
     {
-        // Query Pencarian
+        // Query Pencarian - untuk dashboard user yang login, tampilkan semua dokumen miliknya
         $query = Document::with('category', 'uploader');
 
         if ($request->has('search')) {
@@ -33,8 +33,13 @@ class DocumentController extends Controller
         $totalUsers = User::count();
         $totalCategories = Category::count();
         
-        // Latest Activity for Sidebar
-        $latestUploads = Document::with('user')->latest()->take(5)->get();
+        // Latest Activity for Sidebar - hanya public atau milik user
+        $latestUploads = Document::public()
+            ->orWhere('user_id', auth()->id())
+            ->with('user')
+            ->latest()
+            ->take(5)
+            ->get();
 
         $stats = [
             'total_documents'  => $totalDocuments,
@@ -118,6 +123,7 @@ class DocumentController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'visibility' => 'required|in:public,private',
             'cover_image' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
             'year' => 'nullable|integer|min:1900|max:2100',
             'document_file' => 'required|file|max:51200',
@@ -150,6 +156,7 @@ class DocumentController extends Controller
                     'title' => $request->title,
                     'slug' => Str::slug($request->title) . '-' . time(),
                     'description' => $request->description,
+                    'visibility' => $request->visibility,
                     'cover_image' => $coverImagePath,
                     'year' => $request->year,
                     'category_id' => $request->category_id,
@@ -223,6 +230,15 @@ class DocumentController extends Controller
     // 4. DOWNLOAD DOKUMEN
     public function download(Document $document)
     {
+        // Check authorization - public documents atau user owner
+        if (!auth()->check() && $document->isPrivate()) {
+            return redirect()->route('login')->with('error', 'Anda harus login untuk mengunduh dokumen ini.');
+        }
+
+        if (auth()->check() && $document->isPrivate() && auth()->id() !== $document->user_id && !auth()->user()->hasRole('admin|super-admin')) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
         try {
             $baseUri = trim(
                 $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
@@ -263,6 +279,15 @@ class DocumentController extends Controller
     // 5. PREVIEW DOKUMEN
     public function view(Document $document)
     {
+        // Check authorization - public documents atau user owner
+        if (!auth()->check() && $document->isPrivate()) {
+            return redirect()->route('login')->with('error', 'Anda harus login untuk mengakses dokumen ini.');
+        }
+
+        if (auth()->check() && $document->isPrivate() && auth()->id() !== $document->user_id && !auth()->user()->hasRole('admin|super-admin')) {
+            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
+        }
+
         try {
             $baseUri = trim(
                 $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
@@ -313,6 +338,7 @@ class DocumentController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'visibility' => 'required|in:public,private',
             'cover_image' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
             'year' => 'nullable|integer|min:1900|max:2100',
             'category_id' => 'required',
@@ -322,6 +348,7 @@ class DocumentController extends Controller
         $data = [
             'title' => $request->title,
             'description' => $request->description,
+            'visibility' => $request->visibility,
             'year' => $request->year,
             'category_id' => $request->category_id,
         ];

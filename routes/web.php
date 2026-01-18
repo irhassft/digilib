@@ -7,7 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
 
 Route::get('/', function () {
-    $documents = \App\Models\Document::with(['category', 'uploader'])->latest()->take(6)->get();
+    $documents = \App\Models\Document::public()->with(['category', 'uploader'])->latest()->take(6)->get();
     return view('welcome', compact('documents'));
 });
 
