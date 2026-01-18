@@ -4,10 +4,13 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\Filesystem;
 use League\Flysystem\WebDAV\WebDAVAdapter;
 use Sabre\DAV\Client;
+use App\Models\Document;
+use App\Policies\DocumentPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -18,6 +21,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Register Document policy
+        Gate::policy(Document::class, DocumentPolicy::class);
+
         Storage::extend('webdav', function ($app, $config) {
             $client = new Client($config);
             $adapter = new WebDAVAdapter($client);

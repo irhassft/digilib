@@ -35,6 +35,20 @@
                             <textarea name="description" rows="3" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ $document->description }}</textarea>
                         </div>
 
+                        <div class="mb-4">
+                            <x-input-label :value="__('Visibilitas Dokumen')" />
+                            <div class="mt-2 space-y-2">
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="visibility" value="public" {{ $document->visibility === 'public' ? 'checked' : '' }} required class="rounded-sm accent-primary">
+                                    <span class="text-sm">🟢 Public - Dapat dilihat siapa saja</span>
+                                </label>
+                                <label class="flex items-center gap-2">
+                                    <input type="radio" name="visibility" value="private" {{ $document->visibility === 'private' ? 'checked' : '' }} class="rounded-sm accent-primary">
+                                    <span class="text-sm">🔒 Private - Hanya Anda dan admin</span>
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div>
                                 <x-input-label for="cover_image" :value="__('Gambar Cover')" />

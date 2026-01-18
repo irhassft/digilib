@@ -44,7 +44,18 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     @forelse($documents as $doc)
                     <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 relative no-underline group">
-                        <div class="absolute right-4 top-4 z-20" @click.prevent.stop>
+                        <div class="absolute right-4 top-4 z-20 flex gap-2" @click.prevent.stop>
+                            {{-- Visibility Badge --}}
+                            @if($doc->isPublic())
+                                <span class="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold rounded-lg flex items-center gap-1">
+                                    <span class="text-sm">🟢</span> Public
+                                </span>
+                            @else
+                                <span class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs font-bold rounded-lg flex items-center gap-1">
+                                    <span class="text-sm">🔒</span> Private
+                                </span>
+                            @endif
+
                             @php $isFav = $doc->isFavoritedBy(auth()->user()); @endphp
                             <button class="favorite-btn w-9 h-9 rounded-lg bg-white flex items-center justify-center shadow-sm" data-id="{{ $doc->id }}" aria-pressed="{{ $isFav ? 'true' : 'false' }}">
                                 <span class="material-symbols-outlined text-sm {{ $isFav ? 'text-primary' : 'text-gray-400' }}">{{ $isFav ? 'bookmark' : 'bookmark_border' }}</span>
