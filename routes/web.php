@@ -5,11 +5,9 @@ use App\Http\Controllers\DocumentController; // <--- Import Controller
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\WelcomeController;
 
-Route::get('/', function () {
-    $documents = \App\Models\Document::public()->with(['category', 'uploader'])->latest()->take(6)->get();
-    return view('welcome', compact('documents'));
-});
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // Grup Route untuk User yang sudah Login
 Route::middleware(['auth', 'verified'])->group(function () {

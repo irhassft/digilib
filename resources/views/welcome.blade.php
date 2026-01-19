@@ -3,110 +3,198 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Onboarding &amp; Welcome - Digilib RS PKU</title>
+    <title>Modern Onboarding Experience - Digilib RS PKU</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <style type="text/tailwindcss">
+        :root {
+            --pku-green: #008844;
+            --pku-glow: rgba(0, 136, 68, 0.4);
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-card {
+            background: rgba(16, 34, 21, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .search-glass {
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .search-glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pku-shadow {
+            box-shadow: 0 10px 30px -10px var(--pku-glow);
+        }
+        .pku-glow-text {
+            text-shadow: 0 0 20px var(--pku-glow);
+        }
+    </style>
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#13ec49",
-                        "background-light": "#f6f8f6",
-                        "background-dark": "#102215",
+                        "primary": "#008844",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0A140E",
                     },
-                    fontFamily: {
-                        "display": ["Lexend"]
+                    borderRadius: {
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
                     },
-                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
                 },
             },
         }
     </script>
-    <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body {
-            font-family: 'Lexend', sans-serif;
-        }
-    </style>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-[#0d1b11] dark:text-white antialiased">
-    <div class="relative flex h-auto min-h-screen w-full flex-col group/design-root overflow-x-hidden">
-        <div class="layout-container flex h-full grow flex-col">
-            <!-- TopNavBar Component -->
-            <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#e7f3ea] dark:border-b-[#1a2e1e] px-10 py-3 bg-white dark:bg-background-dark">
-                <div class="flex items-center gap-4 text-[#0d1b11] dark:text-white">
-                    <div class="size-8 text-primary">
-                        <svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+    <div class="relative flex min-h-screen w-full flex-col">
+        <!-- Header -->
+        <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16 py-6 transition-all">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-primary/10 rounded-xl backdrop-blur-md">
+                    <div class="size-7 text-primary">
+                        <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
                             <path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fill-rule="evenodd"></path>
                             <path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fill-rule="evenodd"></path>
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold leading-tight tracking-[-0.015em]">Digilib RS PKU</h2>
                 </div>
-                <div class="flex flex-1 justify-end gap-8">
-                    <div class="flex items-center gap-9">
-                        <a class="text-[#0d1b11] dark:text-white text-sm font-medium leading-normal" href="#">About</a>
-                        <a class="text-[#0d1b11] dark:text-white text-sm font-medium leading-normal" href="#">Help</a>
+                <h2 class="text-xl font-semibold tracking-tight">Digilib <span class="text-primary">PKU</span></h2>
+            </div>
+            <div class="flex items-center gap-10">
+                <nav class="hidden md:flex gap-8">
+                    <a class="text-sm font-medium hover:text-primary transition-colors" href="#catalogue">Catalogue</a>
+                    <a class="text-sm font-medium hover:text-primary transition-colors" href="#features">Research Tools</a>
+                    <a class="text-sm font-medium hover:text-primary transition-colors" href="#footer">Library Help</a>
+                </nav>
+                <a href="{{ route('login') }}" class="px-6 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-[#00773b] transition-all pku-shadow">
+                    Portal Login
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1">
+            <!-- Hero Section -->
+            <section class="relative h-screen min-h-[900px] w-full flex items-center overflow-hidden">
+                <!-- Background -->
+                <div class="absolute inset-0 z-0">
+                    <div class="absolute inset-0 bg-gradient-to-r from-background-light via-background-light/40 to-transparent dark:from-background-dark dark:via-background-dark/40 z-10"></div>
+                    <div class="w-full h-full bg-center bg-cover scale-105" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQ_MAa1tWen910LOcv60KucuwMOwhIU5pdZD21jBTg6M2_af9o7tdW6Uc_E-mm6QFbz4biETefX72YJIzC9xwhzNx1Uqkm5FaRXtkUAYknDSEpq16BHnETGSziN-oxQfuA53cMU06soIoNHaU-xYX4aywWvnO3rg3P2wwY590mafDNd6CHBvFPG13sAxu0q4kDk7FYQthdZrsc89bG-6iNcA6_61OTeQ1PAadq30ILRcRJTXmYBRHfOC3y0hgZXpaBMpFHEV8aLxU");'>
                     </div>
-                    <a href="{{ route('login') }}" class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-primary text-[#0d1b11] text-sm font-bold leading-normal tracking-[0.015em]">
-                        <span class="truncate">Login</span>
-                    </a>
                 </div>
-            </header>
-            
-            <main class="flex-1 flex flex-col items-center py-12 px-4 md:px-20 lg:px-40">
-                <!-- Hero Section -->
-                <div class="max-w-[1200px] w-full bg-white dark:bg-[#152a1a] rounded-xl shadow-xl overflow-hidden mb-10 flex flex-col md:flex-row">
-                    <!-- Hero Image -->
-                    <div class="md:w-1/2 p-1 bg-gradient-to-br from-primary/10 to-transparent">
-                        <div class="w-full h-[300px] md:h-full bg-center bg-no-repeat bg-cover rounded-lg" data-alt="Modern hospital library interior" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQ_MAa1tWen910LOcv60KucuwMOwhIU5pdZD21jBTg6M2_af9o7tdW6Uc_E-mm6QFbz4biETefX72YJIzC9xwhzNx1Uqkm5FaRXtkUAYknDSEpq16BHnETGSziN-oxQfuA53cMU06soIoNHaU-xYX4aywWvnO3rg3P2wwY590mafDNd6CHBvFPG13sAxu0q4kDk7FYQthdZrsc89bG-6iNcA6_61OTeQ1PAadq30ILRcRJTXmYBRHfOC3y0hgZXpaBMpFHEV8aLxU");'></div>
-                    </div>
-                    
-                    <!-- Hero Content with Search -->
-                    <div class="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-                        <span class="text-primary font-bold tracking-widest text-xs uppercase mb-4">Official Archives</span>
-                        <h1 class="text-4xl font-bold leading-tight text-[#0d1b11] dark:text-white mb-4">Welcome to Digilib RS PKU</h1>
-                        <p class="text-[#4c9a5f] dark:text-primary/70 text-lg leading-relaxed mb-6">
-                            The central knowledge hub for medical personnel at RS PKU Aisyiyah Boyolali.
+
+                <!-- Hero Content -->
+                <div class="container mx-auto px-8 md:px-16 relative z-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div class="max-w-xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-8 border border-primary/20">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
+                            Hospital Personnel Onboarding
+                        </div>
+                        <h1 class="text-6xl md:text-7xl font-bold leading-[1.1] mb-8 tracking-tight">
+                            Elevating <span class="text-primary pku-glow-text">Medical</span> Knowledge.
+                        </h1>
+                        <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-300">
+                            Welcome to the next generation of Digilib RS PKU. A sophisticated hub designed specifically for medical professionals to access global research and clinical insights instantly.
                         </p>
 
-                        <!-- SEARCH FORM (INTEGRATED) -->
-                        <form action="{{ route('login') }}" method="GET" class="w-full relative">
-                             <div class="relative flex items-center">
-                                <span class="absolute left-4 text-[#4c9a5f]">
-                                    <span class="material-symbols-outlined">search</span>
-                                </span>
-                                <input type="text" name="search_trigger"
-                                    class="w-full h-14 pl-12 pr-32 rounded-lg border-2 border-[#e7f3ea] dark:border-[#1a2e1e] bg-white dark:bg-[#0d1b11] text-[#0d1b11] dark:text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all shadow-sm"
-                                    placeholder="Search documents...">
-                                <button type="submit" class="absolute right-2 h-10 px-6 bg-primary hover:bg-opacity-90 text-[#0d1b11] font-bold rounded-md transition-colors">
-                                    Search
-                                </button>
-                             </div>
-                        </form>
+                        <!-- Search Bar -->
+                        <div class="relative group mb-10">
+                            <form action="{{ url('/') }}" method="GET">
+                                <div class="search-glass p-2 rounded-2xl flex items-center gap-3 transition-all duration-300 group-focus-within:ring-2 group-focus-within:ring-primary/30 group-focus-within:bg-white/60 dark:group-focus-within:bg-white/10 shadow-lg">
+                                    <div class="flex items-center justify-center pl-4 text-primary">
+                                        <span class="material-symbols-outlined text-3xl">search</span>
+                                    </div>
+                                    <input name="search" value="{{ $searchQuery ?? '' }}" class="bg-transparent border-none focus:ring-0 w-full py-4 text-lg text-slate-800 dark:text-white placeholder:text-slate-500/70 dark:placeholder:text-slate-400/50 font-medium" placeholder="Cari jurnal, buku medis, atau panduan klinis..." type="text"/>
+                                    <button type="submit" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-[#00773b] transition-all shadow-md active:scale-95 hidden sm:block">
+                                        Cari
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- CTA Buttons -->
+                        <div class="flex flex-wrap gap-5">
+                            <a href="#" class="group flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-2xl text-lg font-bold transition-all hover:bg-[#00773b] pku-shadow hover:scale-[1.02]">
+                                Get Started
+                                <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                            </a>
+                            <a href="#catalogue" class="px-8 py-4 bg-white/50 dark:bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl text-lg font-semibold hover:bg-white/80 dark:hover:bg-white/10 transition-all">
+                                Explore Archive
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Smart Access Card (Desktop Only) -->
+                    <div class="hidden lg:block">
+                        <div class="glass-card rounded-3xl p-8 max-w-md ml-auto pku-shadow hover:-translate-y-2 transition-transform duration-500">
+                            <div class="flex gap-4 mb-6">
+                                <div class="size-12 rounded-2xl bg-primary flex items-center justify-center text-white">
+                                    <span class="material-symbols-outlined">menu_book</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold">Smart Access</h3>
+                                    <p class="text-sm text-slate-500">Directly linked to your staff ID</p>
+                                </div>
+                            </div>
+                            <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
+                                Synchronize your reading lists across hospital workstations and personal devices. Access 10,000+ medical journals and peer-reviewed papers seamlessly.
+                            </p>
+                        </div>
                     </div>
                 </div>
+            </section>
 
-                <!-- Latest Documents Grid -->
-                <div class="w-full max-w-[1200px] mb-6">
-                     <h3 class="text-xl font-bold text-[#0d1b11] dark:text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-outlined text-primary">history</span>
-                        Recent Uploads
-                     </h3>
-                </div>
+            <!-- Features Section (Public Documents) -->
+            <section id="features" class="py-24 bg-white dark:bg-[#0c1a11]">
+                <div class="container mx-auto px-8 md:px-16">
+                    @if(isset($searchQuery) && $searchQuery)
+                        <div class="mb-8">
+                            <h2 class="text-3xl font-bold mb-2">Search Results for "{{ $searchQuery }}"</h2>
+                            <p class="text-slate-600 dark:text-slate-400">Found {{ $documents->total() }} document(s)</p>
+                        </div>
+                    @endif
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                        @php
+                            $featureImages = [
+                                'https://lh3.googleusercontent.com/aida-public/AB6AXuAS1NXSsjgl_7QT7lITiEjHcxtc65yt3ufcMFpUqzHaVLROXXviAPsqjcBEAJN0uhtyagvcaOgvbddv4FEAdci0ikMjQR-Uj84M_tLrbaSCK2cfdI-3Ay1qr26Oi8nFav6jSHjMR7XzcDj8GNQDZAqVF_gvqzp4vmHAb6dTxJ50MuJvfkiwqARqwdADrQnR3zfiFRF7p5Kfyfhsk5-GmptMWDIkh_vROxgkd_5S1w5xc7at7MuXLKk_1DDYWfUEpF-wHrkqozEg5Eo',
+                                'https://lh3.googleusercontent.com/aida-public/AB6AXuCrlor8QaTdzJ3WnrITLkmAl3Efn5FQhvxXMjxVIEBovhvnfuSU5VeuVGMW5mhl46D62JQZjWl7t41rhILUy8KRE5ypsPVE8wfcTftkFKAEXrt-6FW94AA6BgGdBgPIZd87vAwzqG6h7ERjinVU1pU6B8-92e8Mvg57Hi1ild6pbMVqOFR3JgikITSkDIBXkhut_1eKE-Qaro-rHSI76Tc346UXT2NbTgRcEuh9D9nKmRxxvY_99IOe9kcvlm8_JUF6tLphm2WKiI0',
+                                'https://lh3.googleusercontent.com/aida-public/AB6AXuCiK2z9Ryq-F99RcBBqu0pRzefJccDVmhytmySGjrrULRs2Gp5LyxFz0qG61dRu6EcDEYYjPB2QYB7k45ZCbTcra5qFb6byAINN1G0dgZp1DC-gMljdqO2PA7KLiE4u3absNNCIAwbJsdBE6VMBy4FJlvHZbV38d1gV_Ep1ICrkkmxFC5rtiCNLoJURw-JRk3-Vqz1GdMNVJbCKm4wrxgvB3r7dW7zaaw-TtjZlzyo2M9KVenqD6mZc_n4KqB7EiVFjeUQVIjyrpaU'
+                            ];
+                            $features = [
+                                ['title' => 'Unified Research', 'subtitle' => 'Knowledge Hub', 'desc' => 'Find and analyze medical journals with our AI-powered semantic search engine.', 'badge' => 'Curated specifically for RS PKU staff'],
+                                ['title' => 'Quick References', 'subtitle' => 'Clinical Guides', 'desc' => 'Access pharmaceutical guides and surgical procedures in seconds during rounds.', 'badge' => 'High-tier pharmaceutical data'],
+                                ['title' => 'Mobile Ready', 'subtitle' => 'Stay Synced', 'desc' => 'Save papers on your desktop and continue reading on your mobile during transit.', 'badge' => 'Cross-device collaboration']
+                            ];
+                            $featureCount = 0;
+                        @endphp
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-[1200px]">
-                    @forelse($documents as $doc)
-                        @if($doc->isPublic())
-                        <div class="flex flex-col gap-4 rounded-xl bg-white dark:bg-[#152a1a] p-5 shadow-sm hover:shadow-md transition-shadow border border-[#e7f3ea] dark:border-[#22442a] group">
-                            <!-- Cover Image or Placeholder -->
-                            <div class="w-full aspect-[2/1] bg-gradient-to-br from-[#e7f3ea] to-white dark:from-[#1a2e1e] dark:to-[#0d1b11] rounded-lg flex items-center justify-center relative overflow-hidden">
-                                 @php
+                        @forelse($documents->take(3) as $doc)
+                            @if($doc->isPublic())
+                                @php
                                     $cover = $doc->cover_image;
                                     $publicPath = $cover ? public_path('storage/'.$cover) : null;
                                     $coverUrl = null;
@@ -117,64 +205,88 @@
                                             $coverUrl = Storage::disk('public')->url($cover);
                                         }
                                     }
-                                 @endphp
+                                    $bgImage = $coverUrl ?? $featureImages[$featureCount % 3];
+                                    $feature = $features[$featureCount % 3];
+                                    $featureCount++;
+                                @endphp
 
-                                 @if($coverUrl)
-                                    <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                                 @else
-                                    <span class="material-symbols-outlined text-6xl text-primary/40 group-hover:scale-110 transition-transform">description</span>
-                                 @endif
-                                 
-                                 <!-- Category Badge -->
-                                 <span class="absolute top-2 right-2 px-2 py-1 text-[10px] uppercase font-bold text-[#0d1b11] bg-primary rounded-md">
-                                    {{ $doc->category->name ?? 'DOC' }}
-                                 </span>
-                            </div>
-
-                            <div class="flex flex-col flex-1 justify-between gap-2">
-                                <div>
-                                    <h4 class="text-[#0d1b11] dark:text-white text-lg font-bold leading-tight line-clamp-2" title="{{ $doc->title }}">
-                                        {{ $doc->title }}
-                                    </h4>
-                                    <div class="flex items-center gap-2 mt-2">
-                                         <div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                                            {{ substr($doc->uploader->name ?? 'A', 0, 1) }}
-                                         </div>
-                                         <p class="text-[#4c9a5f] dark:text-primary/70 text-sm font-normal">{{ $doc->uploader->name ?? 'Admin' }}</p>
+                                <div class="group cursor-pointer">
+                                    <div class="relative overflow-hidden rounded-3xl mb-8 aspect-[4/5] bg-slate-100">
+                                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style='background-image: url("{{ $bgImage }}");'></div>
+                                        <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                        <div class="absolute bottom-6 left-6 right-6">
+                                            <div class="glass-card p-6 rounded-2xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                                                <h4 class="font-bold text-lg mb-1">{{ $doc->category->name ?? $feature['subtitle'] }}</h4>
+                                                <p class="text-sm text-slate-600 dark:text-slate-300">{{ Str::limit($doc->description, 50) ?: $feature['badge'] }}</p>
+                                            </div>
+                                        </div>
                                     </div>
+                                    <h3 class="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">{{ $doc->title }}</h3>
+                                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                                        {{ Str::limit($doc->description, 120) ?: $feature['desc'] }}
+                                    </p>
                                 </div>
-                                <p class="text-xs text-gray-400 mt-2">{{ $doc->created_at->diffForHumans() }}</p>
-                            </div>
-                        </div>
-                        @endif
-                    @empty
-                    <div class="col-span-3 text-center py-12 text-gray-500">
-                        No documents found.
+                            @endif
+                        @empty
+                            @foreach($features as $index => $feature)
+                                <div class="group cursor-pointer">
+                                    <div class="relative overflow-hidden rounded-3xl mb-8 aspect-[4/5] bg-slate-100">
+                                        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style='background-image: url("{{ $featureImages[$index] }}");'></div>
+                                        <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                        <div class="absolute bottom-6 left-6 right-6">
+                                            <div class="glass-card p-6 rounded-2xl opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
+                                                <h4 class="font-bold text-lg mb-1">{{ $feature['subtitle'] }}</h4>
+                                                <p class="text-sm text-slate-600 dark:text-slate-300">{{ $feature['badge'] }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h3 class="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">{{ $feature['title'] }}</h3>
+                                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
+                                        {{ $feature['desc'] }}
+                                    </p>
+                                </div>
+                            @endforeach
+                        @endforelse
                     </div>
-                    @endforelse
+                    
+                    <!-- Pagination -->
+                    @if($documents->hasPages())
+                        <div class="mt-12 flex justify-center">
+                            {{ $documents->links() }}
+                        </div>
+                    @endif
                 </div>
+            </section>
+        </main>
 
-                <!-- Get Started Final Button (Bottom) -->
-                <div class="flex justify-center w-full max-w-[480px] mt-12">
-                    <a href="{{ route('login') }}" class="flex min-w-[200px] cursor-pointer items-center justify-center overflow-hidden rounded-xl h-14 px-8 bg-primary text-[#0d1b11] text-lg font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                        <span class="truncate">Login to Portal</span>
-                    </a>
+        <!-- Footer -->
+        <footer id="footer" class="bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-white/5 py-12">
+            <div class="container mx-auto px-8 md:px-16">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div class="flex items-center gap-3 grayscale opacity-70">
+                        <div class="size-6 text-primary">
+                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-semibold tracking-tight uppercase">Digilib RS PKU</span>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-10">
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="{{ route('login') }}">Hospital Portal</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#features">Ethical Guidelines</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Help Center</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Privacy</a>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-400">
+                        <span class="material-symbols-outlined text-sm">verified_user</span>
+                        <p class="text-xs font-medium uppercase tracking-widest">Medical Content Verified</p>
+                    </div>
                 </div>
-            </main>
-
-            <!-- Footer Component -->
-            <footer class="flex flex-col gap-6 px-40 py-10 text-center @container border-t border-[#e7f3ea] dark:border-t-[#1a2e1e] mt-auto">
-                <div class="flex flex-wrap items-center justify-center gap-6 @[480px]:flex-row @[480px]:justify-around">
-                    <a class="text-[#4c9a5f] dark:text-primary/60 text-base font-normal leading-normal min-w-40 hover:text-primary" href="#">Privacy Policy</a>
-                    <a class="text-[#4c9a5f] dark:text-primary/60 text-base font-normal leading-normal min-w-40 hover:text-primary" href="#">Terms of Service</a>
-                    <a class="text-[#4c9a5f] dark:text-primary/60 text-base font-normal leading-normal min-w-40 hover:text-primary" href="#">Hospital Directory</a>
+                <div class="mt-12 text-center text-slate-400 text-xs">
+                    © {{ date('Y') }} RS PKU Hospital Digital Library Platform. Optimized for medical staff excellence.
                 </div>
-                <div class="flex justify-center gap-4 mb-2">
-                    <span class="material-symbols-outlined text-primary">local_hospital</span>
-                    <p class="text-[#4c9a5f] dark:text-primary/60 text-base font-normal leading-normal">© {{ date('Y') }} RS PKU Hospital Digital Library. All medical content verified.</p>
-                </div>
-            </footer>
-        </div>
+            </div>
+        </footer>
     </div>
 </body>
 </html>
