@@ -18,7 +18,8 @@ class Document extends Model
         'cover_image',
         'year',
         'file_path',
-        'file_size', 
+        'file_size',
+        'mime_type',
         'category_id',
         'user_id',
     ];

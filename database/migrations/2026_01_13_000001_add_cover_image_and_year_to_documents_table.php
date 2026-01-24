@@ -12,8 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->string('cover_image')->nullable()->after('description'); // Path ke gambar cover
-            $table->unsignedSmallInteger('year')->nullable()->after('cover_image'); // Tahun dokumen
+            // Hanya tambah jika belum ada
+            if (!Schema::hasColumn('documents', 'cover_image')) {
+                $table->string('cover_image')->nullable()->after('description');
+            }
+            if (!Schema::hasColumn('documents', 'year')) {
+                $table->unsignedSmallInteger('year')->nullable()->after('cover_image');
+            }
         });
     }
 

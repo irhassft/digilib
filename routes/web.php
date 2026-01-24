@@ -9,6 +9,9 @@ use App\Http\Controllers\WelcomeController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
+// Route Public untuk membuka dokumen publik tanpa login
+Route::get('/documents/{document}/view-public', [DocumentController::class, 'viewPublic'])->name('documents.view-public');
+
 // Grup Route untuk User yang sudah Login
 Route::middleware(['auth', 'verified'])->group(function () {
     
@@ -21,8 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/dashboard', [DocumentController::class, 'index'])->name('dashboard');
 
-    // Koleksi Saya (User only) - show categories and user's documents with optional category filter
-    Route::get('/koleksi-saya', [DocumentController::class, 'collections'])->name('collections.index');
+    // Daftar Dokumen (User only) - show categories and user's documents with optional category filter
+    Route::get('/daftar-dokumen', [DocumentController::class, 'collections'])->name('collections.index');
 
     Route::get('/documents/{document}/download', [DocumentController::class, 'download'])
     ->name('documents.download');

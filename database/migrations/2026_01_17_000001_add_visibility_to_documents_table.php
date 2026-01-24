@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->enum('visibility', ['public', 'private'])->default('public')->after('description');
+            // Hanya tambah jika belum ada
+            if (!Schema::hasColumn('documents', 'visibility')) {
+                $table->enum('visibility', ['public', 'private'])->default('public')->after('description');
+            }
         });
     }
 
