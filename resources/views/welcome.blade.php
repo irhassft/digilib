@@ -45,6 +45,10 @@
         .pku-glow-text {
             text-shadow: 0 0 20px var(--pku-glow);
         }
+        .navbar-hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
     </style>
     <script id="tailwind-config">
         tailwind.config = {
@@ -68,7 +72,7 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
     <div class="relative flex min-h-screen w-full flex-col">
         <!-- Header -->
-        <header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16 py-6 transition-all">
+        <header id="navbar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16 py-6 transition-all duration-300">
             <div class="flex items-center gap-3">
                 <div class="p-2 bg-primary/10 rounded-xl backdrop-blur-md">
                     <div class="size-7 text-primary">
@@ -99,25 +103,18 @@
                 <!-- Background -->
                 <div class="absolute inset-0 z-0">
                     <div class="absolute inset-0 bg-gradient-to-r from-background-light via-background-light/40 to-transparent dark:from-background-dark dark:via-background-dark/40 z-10"></div>
-                    <div class="w-full h-full bg-center bg-cover scale-105" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQ_MAa1tWen910LOcv60KucuwMOwhIU5pdZD21jBTg6M2_af9o7tdW6Uc_E-mm6QFbz4biETefX72YJIzC9xwhzNx1Uqkm5FaRXtkUAYknDSEpq16BHnETGSziN-oxQfuA53cMU06soIoNHaU-xYX4aywWvnO3rg3P2wwY590mafDNd6CHBvFPG13sAxu0q4kDk7FYQthdZrsc89bG-6iNcA6_61OTeQ1PAadq30ILRcRJTXmYBRHfOC3y0hgZXpaBMpFHEV8aLxU");'>
+                    <div class="w-full h-full bg-top bg-cover scale-105" style='background-image: url("{{ asset("img/background_1.jpg") }}");'>
                     </div>
                 </div>
 
                 <!-- Hero Content -->
                 <div class="container mx-auto px-8 md:px-16 relative z-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div class="max-w-xl">
-                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold tracking-widest uppercase mb-8 border border-primary/20">
-                            <span class="relative flex h-2 w-2">
-                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                            </span>
-                            Hospital Personnel Onboarding
-                        </div>
                         <h1 class="text-6xl md:text-7xl font-bold leading-[1.1] mb-8 tracking-tight">
                             Elevating <span class="text-primary pku-glow-text">Medical</span> Knowledge.
                         </h1>
                         <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-300">
-                            Welcome to the next generation of Digilib RS PKU. A sophisticated hub designed specifically for medical professionals to access global research and clinical insights instantly.
+                            Selamat datang di generasi terbaru Digilib RS PKU. Hub canggih yang dirancang khusus untuk profesional medis mengakses riset global dan wawasan klinis secara instan.
                         </p>
 
                         <!-- Search Bar -->
@@ -129,7 +126,7 @@
                                     </div>
                                     <input name="search" value="{{ $searchQuery ?? '' }}" class="bg-transparent border-none focus:ring-0 w-full py-4 text-lg text-slate-800 dark:text-white placeholder:text-slate-500/70 dark:placeholder:text-slate-400/50 font-medium" placeholder="Cari jurnal, buku medis, atau panduan klinis..." type="text"/>
                                     <button type="submit" class="bg-primary text-white px-6 py-3 rounded-xl font-bold hover:bg-[#00773b] transition-all shadow-md active:scale-95 hidden sm:block">
-                                        Cari
+                                        Pencarian
                                     </button>
                                 </div>
                             </form>
@@ -138,11 +135,11 @@
                         <!-- CTA Buttons -->
                         <div class="flex flex-wrap gap-5">
                             <a href="#" class="group flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-2xl text-lg font-bold transition-all hover:bg-[#00773b] pku-shadow hover:scale-[1.02]">
-                                Get Started
+                                Mulai Sekarang
                                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             </a>
                             <a href="#catalogue" class="px-8 py-4 bg-white/50 dark:bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl text-lg font-semibold hover:bg-white/80 dark:hover:bg-white/10 transition-all">
-                                Explore Archive
+                                Jelajahi Arsip
                             </a>
                         </div>
                     </div>
@@ -155,12 +152,12 @@
                                     <span class="material-symbols-outlined">menu_book</span>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold">Smart Access</h3>
-                                    <p class="text-sm text-slate-500">Directly linked to your staff ID</p>
+                                    <h3 class="text-xl font-bold">Akses Pintar</h3>
+                                    <p class="text-sm text-slate-500">Terhubung langsung dengan ID staf Anda</p>
                                 </div>
                             </div>
                             <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                                Synchronize your reading lists across hospital workstations and personal devices. Access 10,000+ medical journals and peer-reviewed papers seamlessly.
+                                Sinkronkan daftar bacaan Anda di berbagai workstation rumah sakit dan perangkat pribadi. Akses 10.000+ jurnal medis dan makalah peer-review dengan lancar.
                             </p>
                         </div>
                     </div>
@@ -172,8 +169,8 @@
                 <div class="container mx-auto px-8 md:px-16">
                     @if(isset($searchQuery) && $searchQuery)
                         <div class="mb-8">
-                            <h2 class="text-3xl font-bold mb-2">Search Results for "{{ $searchQuery }}"</h2>
-                            <p class="text-slate-600 dark:text-slate-400">Found {{ $documents->total() }} document(s)</p>
+                            <h2 class="text-3xl font-bold mb-2">Hasil Pencarian untuk "{{ $searchQuery }}"</h2>
+                            <p class="text-slate-600 dark:text-slate-400">Ditemukan {{ $documents->total() }} dokumen</p>
                         </div>
                     @endif
                     
@@ -185,9 +182,9 @@
                                 'https://lh3.googleusercontent.com/aida-public/AB6AXuCiK2z9Ryq-F99RcBBqu0pRzefJccDVmhytmySGjrrULRs2Gp5LyxFz0qG61dRu6EcDEYYjPB2QYB7k45ZCbTcra5qFb6byAINN1G0dgZp1DC-gMljdqO2PA7KLiE4u3absNNCIAwbJsdBE6VMBy4FJlvHZbV38d1gV_Ep1ICrkkmxFC5rtiCNLoJURw-JRk3-Vqz1GdMNVJbCKm4wrxgvB3r7dW7zaaw-TtjZlzyo2M9KVenqD6mZc_n4KqB7EiVFjeUQVIjyrpaU'
                             ];
                             $features = [
-                                ['title' => 'Unified Research', 'subtitle' => 'Knowledge Hub', 'desc' => 'Find and analyze medical journals with our AI-powered semantic search engine.', 'badge' => 'Curated specifically for RS PKU staff'],
-                                ['title' => 'Quick References', 'subtitle' => 'Clinical Guides', 'desc' => 'Access pharmaceutical guides and surgical procedures in seconds during rounds.', 'badge' => 'High-tier pharmaceutical data'],
-                                ['title' => 'Mobile Ready', 'subtitle' => 'Stay Synced', 'desc' => 'Save papers on your desktop and continue reading on your mobile during transit.', 'badge' => 'Cross-device collaboration']
+                                ['title' => 'Penelitian Terpadu', 'subtitle' => 'Hub Pengetahuan', 'desc' => 'Temukan dan analisis jurnal medis dengan mesin pencarian semantik bertenaga AI kami.', 'badge' => 'Dikurasi khusus untuk staf RS PKU'],
+                                ['title' => 'Referensi Cepat', 'subtitle' => 'Panduan Klinis', 'desc' => 'Akses panduan farmasi dan prosedur bedah dalam hitungan detik saat ronde.', 'badge' => 'Data farmasi tingkat tinggi'],
+                                ['title' => 'Siap Mobile', 'subtitle' => 'Tetap Sinkron', 'desc' => 'Simpan makalah di desktop Anda dan lanjutkan membaca di mobile saat perjalanan.', 'badge' => 'Kolaborasi lintas perangkat']
                             ];
                             $featureCount = 0;
                         @endphp
@@ -210,7 +207,7 @@
                                     $featureCount++;
                                 @endphp
 
-                                <div class="group cursor-pointer">
+                                <a href="{{ route('documents.view-public', $doc->id) }}" target="_blank" class="group cursor-pointer no-underline block">
                                     <div class="relative overflow-hidden rounded-3xl mb-8 aspect-[4/5] bg-slate-100">
                                         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style='background-image: url("{{ $bgImage }}");'></div>
                                         <div class="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -225,7 +222,7 @@
                                     <p class="text-slate-600 dark:text-slate-400 leading-relaxed hover:text-slate-800 dark:hover:text-slate-200 transition-colors">
                                         {{ Str::limit($doc->description, 120) ?: $feature['desc'] }}
                                     </p>
-                                </div>
+                                </a>
                             @endif
                         @empty
                             @foreach($features as $index => $feature)
@@ -272,21 +269,59 @@
                         <span class="text-sm font-semibold tracking-tight uppercase">Digilib RS PKU</span>
                     </div>
                     <div class="flex flex-wrap justify-center gap-10">
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="{{ route('login') }}">Hospital Portal</a>
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#features">Ethical Guidelines</a>
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Help Center</a>
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Privacy</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="{{ route('login') }}">Portal Rumah Sakit</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#features">Panduan Etika</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Pusat Bantuan</a>
+                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Privasi</a>
                     </div>
                     <div class="flex items-center gap-2 text-slate-400">
                         <span class="material-symbols-outlined text-sm">verified_user</span>
-                        <p class="text-xs font-medium uppercase tracking-widest">Medical Content Verified</p>
+                        <p class="text-xs font-medium uppercase tracking-widest">Konten Medis Terverifikasi</p>
                     </div>
                 </div>
                 <div class="mt-12 text-center text-slate-400 text-xs">
-                    © {{ date('Y') }} RS PKU Hospital Digital Library Platform. Optimized for medical staff excellence.
+                    © {{ date('Y') }} Platform Perpustakaan Digital RS PKU. Dioptimalkan untuk keunggulan staf medis.
                 </div>
             </div>
         </footer>
     </div>
+
+    <script>
+        // Auto scroll to search results if search query exists
+        @if(isset($searchQuery) && $searchQuery)
+            document.addEventListener('DOMContentLoaded', function() {
+                const featuresSection = document.getElementById('features');
+                if (featuresSection) {
+                    setTimeout(() => {
+                        featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 100);
+                }
+            });
+        @endif
+
+        // Hide navbar on scroll down
+        let lastScrollTop = 0;
+        const navbar = document.getElementById('navbar');
+        const scrollThreshold = 50;
+
+        window.addEventListener('scroll', function() {
+            let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (currentScroll > scrollThreshold) {
+                if (currentScroll > lastScrollTop) {
+                    // Scrolling DOWN
+                    navbar.classList.add('navbar-hidden');
+                } else {
+                    // Scrolling UP
+                    navbar.classList.remove('navbar-hidden');
+                }
+            } else {
+                // At top of page
+                navbar.classList.remove('navbar-hidden');
+            }
+            
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+    </script>
 </body>
 </html>

@@ -57,7 +57,11 @@ class DocumentController extends Controller
     public function collections(Request $request)
     {
         $userId = auth()->id();
-        $mode = $request->get('mode', 'mine'); // mine|all|favorites
+        $user = auth()->user();
+        
+        // Default mode: 'all' untuk karyawan, 'mine' untuk admin/super-admin
+        $defaultMode = $user->hasAnyRole(['admin', 'super-admin']) ? 'mine' : 'all';
+        $mode = $request->get('mode', $defaultMode); // mine|all|favorites
 
         // Build categories counts depending on mode
         $categories = \App\Models\Category::withCount(['documents' => function ($q) use ($userId, $mode) {
@@ -83,6 +87,11 @@ class DocumentController extends Controller
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->get('search');
+            $query->where('title', 'like', '%' . $search . '%');
         }
 
         $documents = $query->latest()->paginate(12)->withQueryString();
@@ -162,14 +171,13 @@ class DocumentController extends Controller
                     'category_id' => $request->category_id,
                     'file_path' => '',
                     'file_size' => 0,
+                    'mime_type' => $file->getMimeType() ?? 'application/pdf',
                     'user_id' => auth()->id(),
                 ]);
 
                 // 3. TENTUKAN ALAMAT LENGKAP (Based on Category)
                 $prefix = trim(
-                    $_ENV['NEXTCLOUD_FOLDER_PREFIX'] 
-                    ?? env('NEXTCLOUD_FOLDER_PREFIX', 'documents')
-                    ?? 'documents',
+                    config('nextcloud.folder_prefix', 'documents'),
                     '/'
                 );
                 
@@ -230,31 +238,21 @@ class DocumentController extends Controller
     // 4. DOWNLOAD DOKUMEN
     public function download(Document $document)
     {
-        // Check authorization - public documents atau user owner
-        if (!auth()->check() && $document->isPrivate()) {
+        // Check authorization - public documents siapa saja bisa download
+        // Private documents hanya user yang sudah login
+        if ($document->isPrivate() && !auth()->check()) {
             return redirect()->route('login')->with('error', 'Anda harus login untuk mengunduh dokumen ini.');
         }
 
-        if (auth()->check() && $document->isPrivate() && auth()->id() !== $document->user_id && !auth()->user()->hasRole('admin|super-admin')) {
-            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
-        }
-
         try {
-            $baseUri = trim(
-                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
-                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
-                ?? config('filesystems.disks.nextcloud.baseUri')
-                ?? ''
-            );
-            
-            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
-            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            $baseUri = rtrim(config('nextcloud.webdav_base_uri', ''), '/');
+            $username = config('nextcloud.username');
+            $appPassword = config('nextcloud.app_password');
             
             if (empty($baseUri) || empty($document->file_path)) {
                 abort(404, 'File tidak tersedia.');
             }
             
-            $baseUri = rtrim($baseUri, '/');
             $fileUrl = "{$baseUri}/{$document->file_path}";
             
             $client = new \GuzzleHttp\Client(['verify' => false]);
@@ -279,31 +277,59 @@ class DocumentController extends Controller
     // 5. PREVIEW DOKUMEN
     public function view(Document $document)
     {
-        // Check authorization - public documents atau user owner
-        if (!auth()->check() && $document->isPrivate()) {
+        // Check authorization - public documents siapa saja bisa view
+        // Private documents hanya user yang sudah login
+        if ($document->isPrivate() && !auth()->check()) {
             return redirect()->route('login')->with('error', 'Anda harus login untuk mengakses dokumen ini.');
         }
 
-        if (auth()->check() && $document->isPrivate() && auth()->id() !== $document->user_id && !auth()->user()->hasRole('admin|super-admin')) {
-            abort(403, 'Anda tidak memiliki akses ke dokumen ini.');
-        }
-
         try {
-            $baseUri = trim(
-                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
-                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
-                ?? config('filesystems.disks.nextcloud.baseUri')
-                ?? ''
-            );
-            
-            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
-            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            $baseUri = rtrim(config('nextcloud.webdav_base_uri', ''), '/');
+            $username = config('nextcloud.username');
+            $appPassword = config('nextcloud.app_password');
             
             if (empty($baseUri) || empty($document->file_path)) {
                 abort(404, 'File tidak tersedia.');
             }
             
-            $baseUri = rtrim($baseUri, '/');
+            $fileUrl = "{$baseUri}/{$document->file_path}";
+            
+            $client = new \GuzzleHttp\Client(['verify' => false]);
+            $response = $client->request('GET', $fileUrl, [
+                'auth' => [$username, $appPassword],
+                'http_errors' => false,
+            ]);
+            
+            if ($response->getStatusCode() !== 200) {
+                abort(404, 'File tidak ditemukan di server Nextcloud.');
+            }
+            
+            return response($response->getBody()->getContents())
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . $document->slug . '.pdf"');
+        } catch (\Throwable $e) {
+            \Log::error("View file error: {$e->getMessage()}");
+            abort(500, 'Gagal membuka file.');
+        }
+    }
+
+    // Menampilkan dokumen publik tanpa login
+    public function viewPublic(Document $document)
+    {
+        // Hanya dokumen publik yang bisa diakses tanpa login
+        if (!$document->isPublic()) {
+            abort(403, 'Dokumen ini tidak tersedia untuk akses publik.');
+        }
+
+        try {
+            $baseUri = rtrim(config('nextcloud.webdav_base_uri', ''), '/');
+            $username = config('nextcloud.username');
+            $appPassword = config('nextcloud.app_password');
+            
+            if (empty($baseUri) || empty($document->file_path)) {
+                abort(404, 'File tidak tersedia.');
+            }
+            
             $fileUrl = "{$baseUri}/{$document->file_path}";
             
             $client = new \GuzzleHttp\Client(['verify' => false]);
@@ -381,9 +407,7 @@ class DocumentController extends Controller
             $filename = time() . '-' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
             
             $prefix = trim(
-                $_ENV['NEXTCLOUD_FOLDER_PREFIX'] 
-                ?? env('NEXTCLOUD_FOLDER_PREFIX', 'documents')
-                ?? 'documents',
+                config('nextcloud.folder_prefix', 'documents'),
                 '/'
             );
             
@@ -470,16 +494,10 @@ class DocumentController extends Controller
     private function ensureNextcloudFolder($folderPath)
     {
         try {
-            // Use $_ENV first, then env(), with fallback to config
-            $baseUri = trim(
-                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
-                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
-                ?? config('filesystems.disks.nextcloud.baseUri')
-                ?? ''
-            );
-            
-            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
-            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            // Get credentials from config
+            $baseUri = rtrim(config('nextcloud.webdav_base_uri', ''), '/');
+            $username = config('nextcloud.username');
+            $appPassword = config('nextcloud.app_password');
             
             \Log::debug("Nextcloud MKCOL Credentials", [
                 'baseUri_empty' => empty($baseUri),
@@ -487,12 +505,15 @@ class DocumentController extends Controller
                 'password_len' => strlen($appPassword ?? ''),
             ]);
             
-            if (empty($baseUri)) {
-                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+            if (empty($baseUri) || empty($username) || empty($appPassword)) {
+                \Log::error("Nextcloud credentials not configured properly", [
+                    'baseUri' => $baseUri,
+                    'username' => $username,
+                    'app_password' => $appPassword,
+                ]);
                 return false;
             }
             
-            $baseUri = rtrim($baseUri, '/');
             $folderUrl = "{$baseUri}/{$folderPath}";
             
             $client = new \GuzzleHttp\Client(['verify' => false]);
@@ -524,16 +545,10 @@ class DocumentController extends Controller
     private function uploadToNextcloud($filePath, $file)
     {
         try {
-            // Use $_ENV first, then env(), with fallback to config
-            $baseUri = trim(
-                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
-                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
-                ?? config('filesystems.disks.nextcloud.baseUri')
-                ?? ''
-            );
-            
-            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
-            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
+            // Get credentials from config
+            $baseUri = rtrim(config('nextcloud.webdav_base_uri', ''), '/');
+            $username = config('nextcloud.username');
+            $appPassword = config('nextcloud.app_password');
             
             \Log::debug("Nextcloud PUT Credentials", [
                 'baseUri_empty' => empty($baseUri),
@@ -541,12 +556,11 @@ class DocumentController extends Controller
                 'password_len' => strlen($appPassword ?? ''),
             ]);
             
-            if (empty($baseUri)) {
-                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+            if (empty($baseUri) || empty($username) || empty($appPassword)) {
+                \Log::error("Nextcloud credentials not configured properly");
                 return false;
             }
             
-            $baseUri = rtrim($baseUri, '/');
             $uploadUrl = "{$baseUri}/{$filePath}";
             
             $fileContent = file_get_contents($file->getRealPath());
@@ -583,22 +597,15 @@ class DocumentController extends Controller
     private function deleteFromNextcloud($filePath)
     {
         try {
-            $baseUri = trim(
-                $_ENV['NEXTCLOUD_WEBDAV_BASE_URI'] 
-                ?? env('NEXTCLOUD_WEBDAV_BASE_URI') 
-                ?? config('filesystems.disks.nextcloud.baseUri')
-                ?? ''
-            );
+            $baseUri = rtrim(config('nextcloud.webdav_base_uri', ''), '/');
+            $username = config('nextcloud.username');
+            $appPassword = config('nextcloud.app_password');
             
-            $username = $_ENV['NEXTCLOUD_USERNAME'] ?? env('NEXTCLOUD_USERNAME');
-            $appPassword = $_ENV['NEXTCLOUD_APP_PASSWORD'] ?? env('NEXTCLOUD_APP_PASSWORD');
-            
-            if (empty($baseUri)) {
-                \Log::error("NEXTCLOUD_WEBDAV_BASE_URI is not configured");
+            if (empty($baseUri) || empty($username) || empty($appPassword)) {
+                \Log::error("Nextcloud credentials not configured properly");
                 return false;
             }
             
-            $baseUri = rtrim($baseUri, '/');
             $deleteUrl = "{$baseUri}/{$filePath}";
             
             $client = new \GuzzleHttp\Client(['verify' => false]);

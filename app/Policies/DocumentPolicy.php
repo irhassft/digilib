@@ -9,27 +9,28 @@ class DocumentPolicy
 {
     /**
      * Determine whether the user can view the model.
-     * Public documents dapat dilihat siapa saja
-     * Private documents hanya bisa dilihat owner atau admin
+     * - Public documents: Siapa saja bisa lihat (login atau tidak)
+     * - Private documents: Hanya user yang sudah login yang bisa lihat
      */
     public function view(?User $user, Document $document): bool
     {
-        // Public documents bisa dilihat siapa saja (termasuk yang belum login)
+        // Public documents - siapa saja bisa lihat
         if ($document->isPublic()) {
             return true;
         }
 
-        // Private documents hanya bisa dilihat jika sudah login dan owner
+        // Private documents - hanya user yang sudah login
         if ($user === null) {
             return false; // Belum login, akses ditolak
         }
 
-        // Owner atau admin bisa lihat dokumen private miliknya
-        return $user->id === $document->user_id || $user->hasRole('admin|super-admin');
+        // Semua user yang sudah login bisa akses private documents
+        return true;
     }
 
     /**
      * Determine whether the user can download the model.
+     * Same as view - public docs for everyone, private docs for authenticated users only
      */
     public function download(?User $user, Document $document): bool
     {

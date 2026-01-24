@@ -25,10 +25,15 @@ return new class extends Migration
         $table->text('description')->nullable(); // Deskripsi (opsional)
         
         // Informasi File Teknis
-        $table->string('file_path'); // Lokasi file disimpan (misal: documents/file.pdf)
+        $table->string('file_path')->default(''); // Lokasi file disimpan (misal: documents/file.pdf)
         $table->string('mime_type')->default('application/pdf'); // Tipe file
-        $table->unsignedBigInteger('file_size'); // Ukuran file (dalam bytes)
+        $table->unsignedBigInteger('file_size')->default(0); // Ukuran file (dalam bytes)
         $table->unsignedInteger('download_count')->default(0); // Hitung berapa kali didownload
+        
+        // Visibility & year
+        $table->enum('visibility', ['public', 'private'])->default('private');
+        $table->string('cover_image')->nullable();
+        $table->year('year')->nullable();
         
         $table->timestamps();
         });
