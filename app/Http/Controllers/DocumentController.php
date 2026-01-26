@@ -89,6 +89,16 @@ class DocumentController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
+        // Filter by visibility (public/private)
+        if ($request->filled('visibility')) {
+            $visibility = $request->get('visibility');
+            if ($visibility === 'public') {
+                $query->public();
+            } elseif ($visibility === 'private') {
+                $query->private();
+            }
+        }
+
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where('title', 'like', '%' . $search . '%');

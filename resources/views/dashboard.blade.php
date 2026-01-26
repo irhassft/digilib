@@ -19,7 +19,7 @@
                 @hasanyrole('admin|super-admin')
                 <a href="{{ route('documents.create') }}" class="px-4 py-2 bg-primary text-[#0d1b11] text-sm font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-sm">upload_file</span>
-                    Upload Riset
+                    Upload
                 </a>
                 @endhasanyrole
             </div>
@@ -102,14 +102,22 @@
                 </div>
             </section>
 
-            <!-- Categories Grid -->
-            <section>
+            <!-- Categories Carousel -->
+            <section class="w-full relative group">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold tracking-tight text-[#0d1b11] dark:text-white">Kategori</h2>
+                    <div class="flex gap-2">
+                        <button class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-primary shadow-sm transition-colors categories-prev-btn">
+                            <span class="material-symbols-outlined text-sm">arrow_back</span>
+                        </button>
+                        <button class="w-8 h-8 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center text-gray-400 hover:text-primary shadow-sm transition-colors categories-next-btn">
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </button>
+                    </div>
                 </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3" id="categories-container">
+                <div class="flex gap-3 overflow-x-auto pb-4 scroll-smooth snap-x scrollbar-hide" id="categories-container">
                     @foreach($categories as $category)
-                    <a href="{{ route('collections.index', ['category_id' => $category->id, 'mode' => 'all']) }}" class="group p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all text-left h-48 flex flex-col">
+                    <a href="{{ route('collections.index', ['category_id' => $category->id, 'mode' => 'all']) }}" class="group min-w-[180px] p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 transition-all text-left h-48 flex flex-col snap-start">
                         <div class="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-700 flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-[#0d1b11] transition-colors text-gray-400">
                             <span class="material-symbols-outlined">folder</span> 
                         </div>
@@ -149,20 +157,36 @@
         </aside>
     </div>
 
-    {{-- Script for auto-scroll recommendations --}}
+    {{-- Script for auto-scroll recommendations and categories --}}
     <x-slot:scripts>
         <script>
-            const container = document.getElementById('recommendations-container');
-            const prevBtn = document.querySelector('.prev-btn');
-            const nextBtn = document.querySelector('.next-btn');
+            // Recommendations carousel
+            const recContainer = document.getElementById('recommendations-container');
+            const recPrevBtn = document.querySelector('.prev-btn');
+            const recNextBtn = document.querySelector('.next-btn');
 
-            if(container) {
-                nextBtn.addEventListener('click', () => {
-                    container.scrollBy({ left: 300, behavior: 'smooth' });
+            if(recContainer) {
+                recNextBtn.addEventListener('click', () => {
+                    recContainer.scrollBy({ left: 300, behavior: 'smooth' });
                 });
                 
-                prevBtn.addEventListener('click', () => {
-                    container.scrollBy({ left: -300, behavior: 'smooth' });
+                recPrevBtn.addEventListener('click', () => {
+                    recContainer.scrollBy({ left: -300, behavior: 'smooth' });
+                });
+            }
+
+            // Categories carousel
+            const catContainer = document.getElementById('categories-container');
+            const catPrevBtn = document.querySelector('.categories-prev-btn');
+            const catNextBtn = document.querySelector('.categories-next-btn');
+
+            if(catContainer) {
+                catNextBtn.addEventListener('click', () => {
+                    catContainer.scrollBy({ left: 300, behavior: 'smooth' });
+                });
+                
+                catPrevBtn.addEventListener('click', () => {
+                    catContainer.scrollBy({ left: -300, behavior: 'smooth' });
                 });
             }
         </script>

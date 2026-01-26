@@ -10,7 +10,7 @@
     <style type="text/tailwindcss">
         :root {
             --pku-green: #008844;
-            --pku-glow: rgba(0, 136, 68, 0.4);
+            --pku-glow: rgba(0, 136, 68, 0.4);  
         }
         body {
             font-family: 'Inter', sans-serif;
