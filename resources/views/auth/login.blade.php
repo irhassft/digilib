@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Login SSO - RS PKU Digital Library</title>
+    <title>Masuk - Perpustakaan Digital RS PKU</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -52,9 +52,6 @@
             </div>
             <h2 class="text-lg font-bold leading-tight tracking-tight">PKU Digital Library</h2>
         </div>
-        <button class="flex min-w-[84px] cursor-pointer items-center justify-center rounded-lg h-10 px-4 bg-primary text-[#0d1b11] text-sm font-bold leading-normal">
-            <span>IT Support</span>
-        </button>
     </header>
 
     <main class="flex-grow flex items-center justify-center p-6 bg-medical-pattern">
@@ -68,12 +65,12 @@
                         <h1 class="text-2xl font-black text-[#0d1b11] dark:text-white">PKU Digital Library</h1>
                     </div>
                     <div class="space-y-4">
-                        <p class="text-3xl font-black leading-tight text-[#0d1b11] dark:text-white">Knowledge at your fingertips.</p>
-                        <p class="text-[#4c9a5f] text-lg">Access medical journals, latest research papers, and hospital internal documents instantly.</p>
+                        <p class="text-3xl font-black leading-tight text-[#0d1b11] dark:text-white">Pengetahuan dalam genggaman Anda.</p>
+                        <p class="text-[#4c9a5f] text-lg">Akses jurnal medis, makalah penelitian terbaru, dan dokumen internal rumah sakit secara instan.</p>
                     </div>
                 </div>
                 <div class="rounded-lg overflow-hidden border-2 border-primary/20">
-                    <div class="w-full h-48 bg-center bg-cover" data-alt="Modern medical library interior with clean white shelves" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAMQa1bEje3HAM7R4YxDxeBplPs1D37AFBh3en0vaTep21M-V7_tZY4GfKAaHLjSXrEm5jJ9qzeohRowm6_OK31ZI9U9tvcFd217z6VXxm9hp2IZjbXkhtenN-WSkslaw4LGMeGXwnFDsr66AfvJH-KB73Csrre9j9ikmGDBD4d3uPthAvSir1wuCDA3QsS9FrppnBCOd_R23WeazF7juHDe9sed08mLejawT-qN9cF07pnB-cptRQOVI7Q-0KdxQrVgVJlqxUI434");'></div>
+                    <div class="w-full h-48 bg-center bg-cover" data-alt="Modern medical library interior with clean white shelves" style='background-image: url("{{ asset("img/background_1.jpg") }}");'></div>
                 </div>
                 <p class="text-xs text-[#4c9a5f]/80 italic">Supporting excellence in healthcare education since 2026.</p>
             </div>
@@ -81,8 +78,8 @@
             <!-- Right Side: Login Form -->
             <div class="p-8 md:p-12 flex flex-col justify-center">
                 <div class="mb-8">
-                    <h2 class="text-2xl font-bold mb-2">Welcome Back</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Please authenticate to access the digital archives.</p>
+                    <h2 class="text-2xl font-bold mb-2">Selamat Datang Kembali</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Silakan autentikasi untuk mengakses arsip digital.</p>
                 </div>
 
                 <div class="relative my-8">
@@ -104,7 +101,7 @@
                             id="email" 
                             name="email" 
                             value="{{ old('email') }}"
-                            placeholder="Enter your Email / username" 
+                            placeholder="Masukkan email atau username Anda" 
                             type="text" 
                             required 
                             autofocus
@@ -116,7 +113,7 @@
 
                     <!-- Password -->
                     <div>
-                        <label class="block text-sm font-semibold mb-1 text-[#0d1b11] dark:text-gray-300" for="password">Password</label>
+                        <label class="block text-sm font-semibold mb-1 text-[#0d1b11] dark:text-gray-300" for="password">Kata Sandi</label>
                         <input 
                             class="w-full px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-700 dark:bg-[#0d1b11] focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
                             id="password" 
@@ -134,19 +131,19 @@
                     <div class="flex items-center justify-between text-sm">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input class="rounded border-gray-300 text-primary focus:ring-primary" type="checkbox" name="remember" />
-                            <span>Remember me</span>
+                            <span>Ingat saya</span>
                         </label>
                         @if (Route::has('password.request'))
-                            <a class="text-primary font-semibold hover:underline" href="{{ route('password.request') }}">Forgot password?</a>
+                            <a class="text-primary font-semibold hover:underline" href="{{ route('password.request') }}">Lupa kata sandi?</a>
                         @endif
                     </div>
 
                     <button type="submit" class="w-full bg-[#0d1b11] dark:bg-primary dark:text-[#0d1b11] text-white font-bold py-4 rounded-lg hover:opacity-90 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                        Login to Portal
+                        Masuk ke Portal
                     </button>
                     
                     <div class="text-center mt-4">
-                        <a href="{{ url('/') }}" class="text-xs text-gray-500 hover:text-gray-800 underline">Back to Landing Page</a>
+                        <a href="{{ url('/') }}" class="text-xs text-gray-500 hover:text-gray-800 underline">Kembali ke Halaman Utama</a>
                     </div>
                 </form>
 
@@ -154,7 +151,7 @@
                 <div class="mt-8 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg flex gap-3">
                     <span class="material-symbols-outlined text-yellow-600 dark:text-yellow-500 flex-shrink-0">gpp_maybe</span>
                     <p class="text-[11px] leading-relaxed text-yellow-800 dark:text-yellow-400">
-                        <strong>ATTENTION:</strong> This system is for authorized RS PKU Aisyiyah Boyolali personnel only. Unauthorized access is strictly prohibited.
+                        <strong>PERHATIAN:</strong> Sistem ini hanya untuk personel RS PKU Aisyiyah Boyolali yang berwenang. Akses tidak sah secara ketat dilarang.
                     </p>
                 </div>
             </div>
@@ -163,11 +160,11 @@
 
     <footer class="w-full py-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-[#e7f3ea] dark:border-[#22442a]">
         <div class="flex justify-center gap-6 mb-2">
-            <a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
-            <a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
-            <a class="hover:text-primary transition-colors" href="#">Help Center</a>
+            <a class="hover:text-primary transition-colors" href="#">Kebijakan Privasi</a>
+            <a class="hover:text-primary transition-colors" href="#">Syarat Layanan</a>
+            <a class="hover:text-primary transition-colors" href="#">Pusat Bantuan</a>
         </div>
-        <p>&copy; {{ date('Y') }} RS PKU Hospital. All rights reserved.</p>
+        <p>&copy; {{ date('Y') }} Rumah Sakit PKU. Semua hak dilindungi.</p>
     </footer>
 </body>
 </html>

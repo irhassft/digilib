@@ -10,14 +10,20 @@
     </x-slot:header>
 
     <div class="max-w-4xl mx-auto">
-        <form id="uploadForm" action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="uploadForm" action="{{ route('documents.store') }}" method="POST" enctype="multipart/form-data" novalidate>
             @csrf
             
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8 flex flex-col gap-6">
                 
                 {{-- ERROR CONTAINER --}}
                 <div id="errorContainer" class="hidden bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-300 px-4 py-3 rounded-xl text-sm">
-                    <ul class="list-disc list-inside" id="errorList"></ul>
+                    <div class="flex items-start gap-3">
+                        <span class="material-symbols-outlined text-base mt-0.5 flex-shrink-0">error</span>
+                        <div class="flex-1">
+                            <p class="font-bold mb-2">Mohon perbaiki kesalahan berikut:</p>
+                            <ul class="list-disc list-inside space-y-1" id="errorList"></ul>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- JUDUL & KATEGORI --}}
@@ -25,17 +31,22 @@
                     
                     <!-- Judul Dokumen -->
                     <div class="col-span-2 md:col-span-1">
-                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="title">Judul Dokumen</label>
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="title">
+                            Judul Dokumen <span class="text-red-500">*</span>
+                        </label>
                         <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
                             id="title" type="text" name="title" required placeholder="Contoh: SOP Pelayanan Pasien 2024" autofocus>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Wajib diisi</p>
                     </div>
 
                     <!-- Kategori dengan Alpine JS Modal -->
                     <div class="col-span-2 md:col-span-1" x-data="{ showModal: false, newCategory: '' }">
-                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="category_id">Kategori</label>
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="category_id">
+                            Kategori <span class="text-red-500">*</span>
+                        </label>
                         <div class="flex gap-2">
                             <div class="relative flex-grow">
-                                <select name="category_id" id="category_id" class="w-full px-4 py-3 rounded-l-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all cursor-pointer">
+                                <select name="category_id" id="category_id" class="w-full px-4 py-3 rounded-l-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all cursor-pointer" required>
                                     <option value="">-- Pilih Kategori --</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -89,13 +100,18 @@
 
                 {{-- DESKRIPSI --}}
                 <div>
-                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="description">Deskripsi Singkat</label>
-                    <textarea id="description" name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"></textarea>
+                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="description">
+                        Deskripsi Singkat <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="description" name="description" rows="3" class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" required placeholder="Jelaskan singkat isi dokumen ini..."></textarea>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Wajib diisi</p>
                 </div>
 
                 {{-- VISIBILITY --}}
                 <div>
-                    <label class="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-300">Visibilitas Dokumen</label>
+                    <label class="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-300">
+                        Visibilitas Dokumen <span class="text-red-500">*</span>
+                    </label>
                     <div class="space-y-3">
                         <label class="flex items-center gap-3 p-4 border border-gray-200 dark:border-gray-700 rounded-xl cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all" for="visibility_public">
                             <input type="radio" id="visibility_public" name="visibility" value="public" required checked class="w-4 h-4 accent-primary cursor-pointer">
@@ -157,7 +173,9 @@
                         const dt = new DataTransfer(); dt.items.add(file); return dt.files;
                     }
                 }">
-                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">Upload File (PDF)</label>
+                    <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300">
+                        Upload File PDF <span class="text-red-500">*</span>
+                    </label>
                     
                     <div 
                         @dragover.prevent="isDragging = true"
@@ -215,22 +233,46 @@
         <script>
             document.getElementById('uploadForm').addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Validasi form
+                let title = document.getElementById('title').value.trim();
+                let categoryId = document.getElementById('category_id').value.trim();
+                let description = document.getElementById('description').value.trim();
+                let visibility = document.querySelector('input[name="visibility"]:checked')?.value;
+                let documentFile = document.getElementById('document_file').files.length > 0;
+                
+                let errors = [];
+                
+                if (!title) errors.push('Judul dokumen tidak boleh kosong');
+                if (!categoryId) errors.push('Kategori harus dipilih');
+                if (!description) errors.push('Deskripsi tidak boleh kosong');
+                if (!visibility) errors.push('Visibilitas dokumen harus dipilih');
+                if (!documentFile) errors.push('File PDF harus dipilih');
+                
+                let errorContainer = document.getElementById('errorContainer');
+                let errorList = document.getElementById('errorList');
+                
+                if (errors.length > 0) {
+                    errorContainer.classList.remove('hidden');
+                    errorList.innerHTML = '';
+                    errors.forEach(err => {
+                        let li = document.createElement('li');
+                        li.innerText = err;
+                        errorList.appendChild(li);
+                    });
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    return;
+                }
+                
+                errorContainer.classList.add('hidden');
+                errorList.innerHTML = '';
+                
                 let form = this;
                 let formData = new FormData(form);
                 let progressBar = document.getElementById('progressBar');
                 let progressPercent = document.getElementById('progressPercent');
                 let progressContainer = document.getElementById('progressContainer');
                 let submitBtn = document.getElementById('submitBtn');
-                let errorContainer = document.getElementById('errorContainer');
-                let errorList = document.getElementById('errorList');
-
-                errorContainer.classList.add('hidden');
-                errorList.innerHTML = '';
-
-                if(!document.getElementById('document_file').files.length) {
-                    Swal.fire('Peringatan', 'Mohon pilih file PDF!', 'warning');
-                    return;
-                }
 
                 progressContainer.classList.remove('hidden');
                 submitBtn.disabled = true;
