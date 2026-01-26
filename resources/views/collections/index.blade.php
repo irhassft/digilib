@@ -1,242 +1,319 @@
 <x-new-layout title="Daftar Dokumen - RS PKU Digital Library">
     <x-slot:header>
-        <div class="max-w-6xl mx-auto flex items-center justify-between gap-8 h-full">
-            <div class="flex-1 max-w-2xl">
-                <h1 class="text-lg font-bold">Daftar Dokumen</h1>
-                <p class="text-sm text-gray-500 mt-1">Semua dokumen yang Anda unggah. Gunakan filter kategori untuk menyesuaikan tampilan.</p>
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-8 h-full">
+            <div class="flex-1">
+                <h1 class="text-2xl font-bold text-black">Daftar Dokumen</h1>
+                <p class="text-sm text-gray-650 mt-2">Kelola dan jelajahi semua dokumen Anda</p>
             </div>
         </div>
     </x-slot:header>
 
-    <div class="max-w-6xl mx-auto flex gap-8">
-        <div class="flex-1 flex flex-col gap-6 min-w-0">
-            <!-- Mode toggle & Categories Filter -->
-            <section class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-                <!-- Search & Mode Toggle Row -->
-                <div class="flex items-center justify-between mb-6 gap-4">
-                    <!-- Mode Toggle Tabs -->
-                    <div class="flex items-center gap-4 flex-wrap">
-                        @hasanyrole('admin|super-admin')
-                        <a href="{{ route('collections.index', array_merge(request()->except('page'), ['mode' => 'mine'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all {{ ($mode ?? 'mine') === 'mine' ? 'bg-primary text-[#0d1b11]' : 'text-gray-600 dark:text-gray-400 hover:text-primary' }}">
-                            <span class="flex items-center gap-2">
-                                <span class="material-symbols-outlined text-sm">upload_file</span>
-                                My Uploads
-                            </span>
-                        </a>
-                        @endhasanyrole
-                        <a href="{{ route('collections.index', array_merge(request()->except('page'), ['mode' => 'all'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all {{ ($mode ?? 'mine') === 'all' ? 'bg-primary text-[#0d1b11]' : 'text-gray-600 dark:text-gray-400 hover:text-primary' }}">
-                            All Documents
-                        </a>
-                        <a href="{{ route('collections.index', array_merge(request()->except('page'), ['mode' => 'favorites'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all flex items-center gap-2 {{ ($mode ?? 'mine') === 'favorites' ? 'bg-primary text-[#0d1b11]' : 'text-gray-600 dark:text-gray-400 hover:text-primary' }}">
-                            <span class="material-symbols-outlined text-sm">bookmark</span>
-                            Favorites
-                        </a>
-
-                        <!-- Visibility Filter -->
-                        <div class="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-4">
-                            <a href="{{ request('visibility') === 'public' ? route('collections.index', request()->except('visibility', 'page')) : route('collections.index', array_merge(request()->except('page'), ['visibility' => 'public'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all flex items-center gap-2 {{ request('visibility') === 'public' ? 'bg-green-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-green-500' }}">
-                                <span class="material-symbols-outlined text-sm">public</span>
-                                Public
+    <div class="max-w-7xl mx-auto">
+        <!-- Filter Section -->
+        <div class="mb-8">
+            <section class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <!-- Search & Filters Row -->
+                <div class="flex flex-col gap-4">
+                    <!-- Top Row: Mode Toggle & Search -->
+                    <div class="flex items-center justify-between gap-4 flex-wrap">
+                        <!-- Mode Toggle Tabs -->
+                        <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+                            @hasanyrole('admin|super-admin')
+                            <a href="{{ route('collections.index', array_merge(request()->except('page'), ['mode' => 'mine'])) }}" class="px-4 py-2 rounded-md font-medium text-sm transition-all {{ ($mode ?? 'mine') === 'mine' ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-gray-600 dark:text-gray-400' }}">
+                                <span class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">upload_file</span>
+                                    <span class="hidden sm:inline">My Uploads</span>
+                                </span>
                             </a>
-                            <a href="{{ request('visibility') === 'private' ? route('collections.index', request()->except('visibility', 'page')) : route('collections.index', array_merge(request()->except('page'), ['visibility' => 'private'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all flex items-center gap-2 {{ request('visibility') === 'private' ? 'bg-red-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-red-500' }}">
-                                <span class="material-symbols-outlined text-sm">lock</span>
-                                Private
+                            @endhasanyrole
+                            <a href="{{ route('collections.index', array_merge(request()->except('page'), ['mode' => 'all'])) }}" class="px-4 py-2 rounded-md font-medium text-sm transition-all {{ ($mode ?? 'mine') === 'all' ? 'bg-white dark:bg-gray-800 shadow-sm text-primary' : 'text-gray-600 dark:text-gray-400' }}">
+                                <span class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">public</span>
+                                    <span class="hidden sm:inline">All Documents</span>
+                                </span>
                             </a>
                         </div>
-                    </div>
 
-                    <!-- Search Form -->
-                    <form action="{{ route('collections.index') }}" method="GET" class="flex-shrink-0 max-w-xs">
-                        <!-- Keep other parameters -->
-                        <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
-                        @if(request('category_id'))
-                        <input type="hidden" name="category_id" value="{{ request('category_id') }}">
-                        @endif
-                        @if(request('visibility'))
-                        <input type="hidden" name="visibility" value="{{ request('visibility') }}">
-                        @endif
-
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <span class="material-symbols-outlined text-sm text-gray-400">search</span>
-                            </span>
-                            <input type="text" name="search" value="{{ request('search') }}" 
-                                   class="block w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
-                                   placeholder="Cari koleksi..."/>
-                            @if(request('search'))
-                            <a href="{{ route('collections.index', request()->except('search', 'page')) }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors">
-                                <span class="material-symbols-outlined text-sm">close</span>
-                            </a>
-                            @endif
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Category Filter -->
-                <div>
-                    <form action="{{ route('collections.index') }}" method="GET" class="flex items-center gap-3">
-                        <!-- Keep other parameters -->
-                        <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
-                        @if(request('visibility'))
-                        <input type="hidden" name="visibility" value="{{ request('visibility') }}">
-                        @endif
-                        @if(request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                        @endif
-
-                        <label for="category_filter" class="text-sm font-bold text-[#0d1b11] dark:text-white whitespace-nowrap">Kategori:</label>
-                        <select name="category_id" id="category_filter" onchange="this.form.submit()" class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer">
-                            <option value="">Semua Kategori</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
-                                    {{ $cat->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </form>
-                </div>
-            </section>
-
-            <!-- Documents List -->
-            <section>
-                <div class="mb-4">
-                    <h2 class="text-lg font-bold text-[#0d1b11] dark:text-white">Dokumen</h2>
-                    <p class="text-sm text-gray-500 mt-1">{{ $documents->total() }} dokumen ditemukan</p>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                    @forelse($documents as $doc)
-                    <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-lg transition-all no-underline group">
-                        <!-- Document Cover -->
-                        <div class="relative h-48 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden">
-                            @php
-                                $cover = $doc->cover_image;
-                                $coverUrl = null;
-                                $publicPath = $cover ? public_path('storage/'.$cover) : null;
-                                if ($cover) {
-                                    if ($publicPath && file_exists($publicPath)) {
-                                        $coverUrl = asset('storage/'.$cover);
-                                    } elseif (Storage::disk('public')->exists($cover)) {
-                                        $coverUrl = Storage::disk('public')->url($cover);
-                                    }
-                                }
-                            @endphp
-
-                            @if($coverUrl)
-                                <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                            @else
-                                <span class="material-symbols-outlined text-8xl text-gray-200 dark:text-gray-600">picture_as_pdf</span>
+                        <!-- Search Form -->
+                        <form action="{{ route('collections.index') }}" method="GET" class="flex-1 min-w-xs max-w-sm">
+                            <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
+                            @if(request('category_id'))
+                            <input type="hidden" name="category_id" value="{{ request('category_id') }}">
                             @endif
 
-                            <!-- Overlay on hover -->
-                            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
-
-                            <!-- Top Right Badges -->
-                            <div class="absolute right-3 top-3 flex flex-col gap-2" @click.prevent.stop>
-                                {{-- Visibility Badge --}}
-                                @if($doc->isPublic())
-                                    <span class="px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-lg">
-                                        <span class="material-symbols-outlined text-sm">public</span> Public
-                                    </span>
-                                @else
-                                    <span class="px-3 py-1 bg-red-500 text-white text-xs font-bold rounded-lg flex items-center gap-1 shadow-lg">
-                                        <span class="material-symbols-outlined text-sm">lock</span> Private
-                                    </span>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="material-symbols-outlined text-sm text-gray-400">search</span>
+                                </span>
+                                <input type="text" name="search" value="{{ request('search') }}" 
+                                       class="block w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                       placeholder="Cari dokumen..."/>
+                                @if(request('search'))
+                                <a href="{{ route('collections.index', request()->except('search', 'page')) }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <span class="material-symbols-outlined text-sm">close</span>
+                                </a>
                                 @endif
-
-                                {{-- Favorite Button --}}
-                                @php $isFav = $doc->isFavoritedBy(auth()->user()); @endphp
-                                <button class="favorite-btn w-10 h-10 rounded-lg bg-white dark:bg-gray-800 flex items-center justify-center shadow-lg hover:scale-110 transition-transform" data-id="{{ $doc->id }}" aria-pressed="{{ $isFav ? 'true' : 'false' }}">
-                                    <span class="material-symbols-outlined text-lg {{ $isFav ? 'text-primary' : 'text-gray-400' }}">{{ $isFav ? 'bookmark' : 'bookmark_border' }}</span>
-                                </button>
                             </div>
-                        </div>
-
-                        <!-- Document Info -->
-                        <div class="p-4 flex flex-col gap-3">
-                            <!-- Category Badge -->
-                            <div>
-                                <span class="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-lg">
-                                    <span class="material-symbols-outlined text-sm">folder</span>
-                                    {{ $doc->category->name ?? 'Uncategorized' }}
-                                </span>
-                            </div>
-
-                            <!-- Title -->
-                            <div>
-                                <h3 class="font-bold text-sm mb-2 text-[#0d1b11] dark:text-white group-hover:text-primary transition-colors line-clamp-2">{{ $doc->title }}</h3>
-                            </div>
-
-                            <!-- Meta Info -->
-                            <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-3">
-                                <span class="flex items-center gap-1">
-                                    <span class="material-symbols-outlined text-sm">event</span>
-                                    {{ $doc->created_at->format('d M Y') }}
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                    @empty
-                    <div class="md:col-span-2 lg:col-span-3 p-12 text-center bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-                        <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 block mb-4">folder_open</span>
-                        <p class="text-lg font-bold text-gray-600 dark:text-gray-400 mb-1">Tidak ada dokumen</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-500">Anda belum mengunggah dokumen apapun atau tidak ada dokumen yang sesuai dengan filter.</p>
+                        </form>
                     </div>
-                    @endforelse
-                </div>
 
-                <div class="mt-8">
-                    {{ $documents->links() }}
+                    <!-- Bottom Row: Category Filter -->
+                    <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+                        <form action="{{ route('collections.index') }}" method="GET" class="flex items-center gap-3">
+                            <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
+                            @if(request('search'))
+                            <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
+
+                            <label for="category_filter" class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Kategori:</label>
+                            <select name="category_id" id="category_filter" onchange="this.form.submit()" class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
+                                <option value="">Semua Kategori</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
+                    </div>
                 </div>
             </section>
         </div>
 
+        <!-- Documents Grid -->
+        <div>
+            <!-- Header -->
+            <div class="mb-6">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-2xl text-primary">description</span>
+                    <div>
+                        <h2 class="text-2xl font-bold text-[#0d1b11] dark:text-white">Dokumen</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ $documents->total() }} dokumen ditemukan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @forelse($documents as $doc)
+                <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col">
+                    <!-- Document Cover -->
+                    <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="relative h-40 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden no-underline block">
+                        @php
+                            $cover = $doc->cover_image;
+                            $coverUrl = null;
+                            $publicPath = $cover ? public_path('storage/'.$cover) : null;
+                            if ($cover) {
+                                if ($publicPath && file_exists($publicPath)) {
+                                    $coverUrl = asset('storage/'.$cover);
+                                } elseif (Storage::disk('public')->exists($cover)) {
+                                    $coverUrl = Storage::disk('public')->url($cover);
+                                }
+                            }
+                        @endphp
+
+                        @if($coverUrl)
+                            <img src="{{ $coverUrl }}" alt="{{ $doc->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @else
+                            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">picture_as_pdf</span>
+                        @endif
+
+                        <!-- Overlay on hover -->
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+
+                        <!-- Visibility Badge -->
+                        <div class="absolute top-3 right-3" @click.prevent.stop>
+                            @if($doc->isPublic())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-green-500 text-white text-xs font-bold rounded-full shadow-lg">
+                                    <span class="material-symbols-outlined text-xs">public</span>
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-red-500 text-white text-xs font-bold rounded-full shadow-lg">
+                                    <span class="material-symbols-outlined text-xs">lock</span>
+                                </span>
+                            @endif
+                        </div>
+                    </a>
+
+                    <!-- Content -->
+                    <div class="p-4 flex-1 flex flex-col gap-3">
+                        <!-- Category Badge -->
+                        <div>
+                            <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/15 text-primary dark:bg-primary/10 text-xs font-semibold rounded-full">
+                                {{ $doc->category->name ?? 'Uncategorized' }}
+                            </span>
+                        </div>
+
+                        <!-- Title -->
+                        <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="flex-1 no-underline">
+                            <h3 class="font-bold text-sm text-[#0d1b11] dark:text-white group-hover:text-primary transition-colors line-clamp-2">{{ $doc->title }}</h3>
+                        </a>
+
+                        <!-- Footer -->
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                            <div class="flex items-center justify-between gap-2">
+                                <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                    <span class="material-symbols-outlined text-xs">calendar_today</span>
+                                    {{ $doc->created_at->format('d M Y') }}
+                                </span>
+
+                                <!-- Action Icons -->
+                                <div class="flex items-center gap-1" @click.stop>
+                                    @can('update', $doc)
+                                    <a href="{{ route('documents.edit', $doc->id) }}" class="p-2 text-gray-400 hover:text-blue-500 dark:hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Edit dokumen">
+                                        <span class="material-symbols-outlined text-sm">edit</span>
+                                    </a>
+                                    @endcan
+
+                                    @can('delete', $doc)
+                                    <button type="button" onclick="event.stopPropagation(); openDeleteModal('{{ $doc->id }}', '{{ addslashes($doc->title) }}')" class="p-2 text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700" title="Hapus dokumen">
+                                        <span class="material-symbols-outlined text-sm">delete</span>
+                                    </button>
+                                    @endcan
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @empty
+                <div class="col-span-full p-16 text-center bg-white dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                    <span class="material-symbols-outlined text-7xl text-gray-300 dark:text-gray-600 block mb-4 mx-auto">folder_open</span>
+                    <p class="text-xl font-bold text-gray-600 dark:text-gray-400 mb-2">Tidak ada dokumen</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-500">Anda belum mengunggah dokumen apapun atau tidak ada dokumen yang sesuai dengan filter.</p>
+                </div>
+                @endforelse
+            </div>
+
+            <!-- Pagination -->
+            <div class="mt-10">
+                {{ $documents->links() }}
+            </div>
+        </div>
     </div>
 
     <x-slot:scripts>
         <script>
-            document.addEventListener('click', async function (e) {
-                const btn = e.target.closest('.favorite-btn');
-                if (!btn) return;
+            // Delete Modal Management
+            let deleteDocId = null;
 
-                const docId = btn.dataset.id;
-                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            function openDeleteModal(docId, docTitle) {
+                deleteDocId = docId;
+                const modal = document.getElementById('deleteModal');
+                const docTitleEl = document.getElementById('deleteDocTitle');
+                docTitleEl.textContent = docTitle;
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
 
-                try {
-                    btn.disabled = true;
-                    const res = await fetch("{{ url('/documents') }}/" + docId + '/favorite', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': token,
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({})
-                    });
+            function closeDeleteModal() {
+                const modal = document.getElementById('deleteModal');
+                modal.classList.remove('active');
+                deleteDocId = null;
+                document.body.style.overflow = '';
+            }
 
-                    const data = await res.json();
-                    if (data.success) {
-                        const icon = btn.querySelector('.material-symbols-outlined');
-                        if (data.favorited) {
-                            icon.textContent = 'bookmark';
-                            icon.classList.remove('text-gray-400');
-                            icon.classList.add('text-primary');
-                            btn.setAttribute('aria-pressed', 'true');
-                        } else {
-                            icon.textContent = 'bookmark_border';
-                            icon.classList.remove('text-primary');
-                            icon.classList.add('text-gray-400');
-                            btn.setAttribute('aria-pressed', 'false');
+            function confirmDelete() {
+                if (deleteDocId) {
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/documents/${deleteDocId}`;
+                    form.innerHTML = `
+                        @csrf
+                        @method('DELETE')
+                    `;
+                    document.body.appendChild(form);
+                    form.submit();
+                    closeDeleteModal();
+                }
+            }
+
+            // Close modal on outside click
+            document.addEventListener('DOMContentLoaded', function() {
+                const modal = document.getElementById('deleteModal');
+                if (modal) {
+                    modal.addEventListener('click', function(e) {
+                        if (e.target === modal) {
+                            closeDeleteModal();
                         }
-                    } else {
-                        console.warn('Failed to toggle favorite', data);
-                    }
-                } catch (err) {
-                    console.error(err);
-                } finally {
-                    btn.disabled = false;
+                    });
+                }
+            });
+
+            // Close modal on ESC key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeDeleteModal();
                 }
             });
         </script>
+        <style>
+            .delete-modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 50;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .delete-modal.active {
+                display: flex;
+                opacity: 1;
+            }
+
+            .delete-modal-content {
+                background: white;
+                border-radius: 10px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+                padding: 0;
+                max-width: 350px;
+                width: 90%;
+                animation: slideUp 0.3s ease;
+            }
+
+            .delete-modal-content.dark {
+                background: #1f2937;
+            }
+
+            @keyframes slideUp {
+                from {
+                    transform: scale(0.95);
+                    opacity: 0;
+                }
+                to {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+            }
+        </style>
     </x-slot:scripts>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="delete-modal">
+        <div class="delete-modal-content bg-white dark:bg-gray-800">
+            <!-- Header -->
+            <div class="p-6 pb-4">
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">Hapus Dokumen?</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    Anda akan menghapus dokumen: <span class="font-semibold text-gray-900 dark:text-white" id="deleteDocTitle"></span>
+                </p>
+            </div>
+
+            <!-- Footer -->
+            <div class="flex gap-2 p-4 border-t border-gray-200 dark:border-gray-700">
+                <button onclick="closeDeleteModal()" class="flex-1 px-3 py-2.5 bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm">
+                    Batal
+                </button>
+                <button onclick="confirmDelete()" class="flex-1 px-3 py-2.5 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors text-sm">
+                    Hapus
+                </button>
+            </div>
+        </div>
+    </div>
 </x-new-layout>

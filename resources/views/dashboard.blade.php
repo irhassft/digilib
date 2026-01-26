@@ -25,7 +25,7 @@
             </div>
         </div>
     </x-slot:header>
-
+    
     <div class="max-w-6xl mx-auto flex gap-8">
         <!-- Main Content -->
         <div class="flex-1 flex flex-col gap-8 min-w-0">
@@ -50,10 +50,6 @@
                     @foreach($documents->take(5) as $doc)
                     <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="min-w-[280px] h-[320px] bg-white dark:bg-gray-800 rounded-2xl p-4 flex flex-col justify-between relative shadow-sm hover:shadow-md transition-all snap-start border border-gray-100 dark:border-gray-800 group/card no-underline">
                         
-                        <div class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition-opacity cursor-pointer hover:bg-white hover:text-red-500 text-white" @click.prevent.stop>
-                            <span class="material-symbols-outlined text-sm">favorite</span>
-                        </div>
-
                         {{-- Cover Image or PDF Icon --}}
                         <div class="h-40 bg-gray-50 dark:bg-gray-700/50 rounded-xl flex items-center justify-center relative overflow-hidden group-hover/card:shadow-lg transition-all">
                             @php
