@@ -15,11 +15,6 @@ Route::get('/documents/{document}/view-public', [DocumentController::class, 'vie
 // Grup Route untuk User yang sudah Login
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    // Dashboard (Semua role bisa akses)
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
-
     Route::get('/documents/{document}/view', [DocumentController::class, 'view'])->name('documents.view');
     
     Route::get('/dashboard', [DocumentController::class, 'index'])->name('dashboard');
@@ -71,7 +66,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
 });
-
-
 
 require __DIR__.'/auth.php';

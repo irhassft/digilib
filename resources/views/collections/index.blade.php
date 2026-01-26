@@ -15,7 +15,7 @@
                 <!-- Search & Mode Toggle Row -->
                 <div class="flex items-center justify-between mb-6 gap-4">
                     <!-- Mode Toggle Tabs -->
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 flex-wrap">
                         @hasanyrole('admin|super-admin')
                         <a href="{{ route('collections.index', array_merge(request()->except('page'), ['mode' => 'mine'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all {{ ($mode ?? 'mine') === 'mine' ? 'bg-primary text-[#0d1b11]' : 'text-gray-600 dark:text-gray-400 hover:text-primary' }}">
                             <span class="flex items-center gap-2">
@@ -31,6 +31,18 @@
                             <span class="material-symbols-outlined text-sm">bookmark</span>
                             Favorites
                         </a>
+
+                        <!-- Visibility Filter -->
+                        <div class="flex items-center gap-2 border-l border-gray-200 dark:border-gray-700 pl-4">
+                            <a href="{{ request('visibility') === 'public' ? route('collections.index', request()->except('visibility', 'page')) : route('collections.index', array_merge(request()->except('page'), ['visibility' => 'public'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all flex items-center gap-2 {{ request('visibility') === 'public' ? 'bg-green-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-green-500' }}">
+                                <span class="material-symbols-outlined text-sm">public</span>
+                                Public
+                            </a>
+                            <a href="{{ request('visibility') === 'private' ? route('collections.index', request()->except('visibility', 'page')) : route('collections.index', array_merge(request()->except('page'), ['visibility' => 'private'])) }}" class="px-4 py-2 rounded-full font-medium text-sm transition-all flex items-center gap-2 {{ request('visibility') === 'private' ? 'bg-red-500 text-white' : 'text-gray-600 dark:text-gray-400 hover:text-red-500' }}">
+                                <span class="material-symbols-outlined text-sm">lock</span>
+                                Private
+                            </a>
+                        </div>
                     </div>
 
                     <!-- Search Form -->
@@ -39,6 +51,9 @@
                         <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
                         @if(request('category_id'))
                         <input type="hidden" name="category_id" value="{{ request('category_id') }}">
+                        @endif
+                        @if(request('visibility'))
+                        <input type="hidden" name="visibility" value="{{ request('visibility') }}">
                         @endif
 
                         <div class="relative">
@@ -59,26 +74,26 @@
 
                 <!-- Category Filter -->
                 <div>
-                    <label class="block text-sm font-bold text-[#0d1b11] dark:text-white mb-3">Filter Kategori</label>
-                    <div class="flex gap-2 flex-wrap">
-                        @foreach($categories as $cat)
-                            @php
-                                $isActive = request('category_id') == $cat->id;
-                                $params = request()->except('page');
-                                if ($isActive) {
-                                    unset($params['category_id']);
-                                } else {
-                                    $params['category_id'] = $cat->id;
-                                }
-                                $url = route('collections.index', $params);
-                            @endphp
-                            <a href="{{ $url }}" class="px-4 py-2 rounded-xl border font-medium text-sm transition-all flex items-center gap-2 {{ $isActive ? 'bg-primary text-[#0d1b11] border-primary shadow-sm' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-600 hover:border-primary hover:text-primary' }}">
-                                <span class="material-symbols-outlined text-sm">folder</span>
-                                {{ $cat->name }} 
-                                <span class="text-xs opacity-75">({{ $cat->documents_count }})</span>
-                            </a>
-                        @endforeach
-                    </div>
+                    <form action="{{ route('collections.index') }}" method="GET" class="flex items-center gap-3">
+                        <!-- Keep other parameters -->
+                        <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
+                        @if(request('visibility'))
+                        <input type="hidden" name="visibility" value="{{ request('visibility') }}">
+                        @endif
+                        @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                        @endif
+
+                        <label for="category_filter" class="text-sm font-bold text-[#0d1b11] dark:text-white whitespace-nowrap">Kategori:</label>
+                        <select name="category_id" id="category_filter" onchange="this.form.submit()" class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all cursor-pointer">
+                            <option value="">Semua Kategori</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
+                                    {{ $cat->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
                 </div>
             </section>
 
