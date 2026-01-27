@@ -14,44 +14,44 @@
                 extend: {
                     colors: {
                         "primary": "#008844",
-                        "pku-dark": "#0A140E",
-                        "pku-accent": "#E8F5E9",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0A140E",
                     },
                 },
             },
         }
     </script>
-    <style>
+    <style type="text/tailwindcss">
+        :root {
+            --pku-green: #008844;
+            --pku-glow: rgba(0, 136, 68, 0.4);
+        }
         body {
             font-family: 'Inter', sans-serif;
         }
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .dark .glass-card {
+            background: rgba(16, 34, 21, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .pku-shadow {
-            box-shadow: 0 10px 30px -10px rgba(0, 136, 68, 0.4);
-        }
-        .login-container {
-            display: flex;
-            height: 100vh;
-        }
-        @media (max-width: 1024px) {
-            .login-container {
-                flex-direction: column;
-                height: auto;
-                min-height: 100vh;
-            }
+            box-shadow: 0 10px 30px -10px var(--pku-glow);
         }
     </style>
 </head>
-<body class="bg-white dark:bg-pku-dark text-pku-dark dark:text-white antialiased overflow-hidden">
-    <div class="login-container">
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+    <div class="relative flex min-h-screen w-full flex-col lg:flex-row">
         <!-- Left Side: Hero Section -->
-        <div class="hidden lg:flex lg:w-3/5 relative bg-pku-dark overflow-hidden">
+        <div class="hidden lg:flex lg:w-3/5 relative bg-background-dark overflow-hidden">
             <div class="absolute inset-0 bg-cover bg-center opacity-40" style='background-image: url("{{ asset("img/background_1.jpg") }}");'></div>
-            <div class="absolute inset-0 bg-gradient-to-br from-pku-dark/95 via-pku-dark/80 to-primary/20"></div>
+            <div class="absolute inset-0 bg-gradient-to-br from-background-dark/95 via-background-dark/80 to-primary/20"></div>
             
             <div class="relative z-10 flex flex-col justify-between p-12 w-full">
                 <!-- Logo -->
@@ -59,7 +59,7 @@
                     <div class="bg-primary/20 p-2 rounded-lg">
                         <span class="material-symbols-outlined text-primary text-2xl">menu_book</span>
                     </div>
-                    <span class="text-white font-bold tracking-wider text-lg">Digilib PKU</span>
+                    <span class="text-white font-bold tracking-wider text-lg pku-glow-text">Digilib PKU</span>
                 </div>
 
                 <!-- Hero Content -->
@@ -71,21 +71,6 @@
                         Platform perpustakaan digital modern yang dirancang khusus untuk profesional kesehatan. Akses ribuan jurnal medis, panduan klinis, dan literatur penelitian terkini.
                     </p>
                     
-                    <!-- Features -->
-                    <div class="space-y-4 pt-6">
-                        <div class="flex items-center gap-3 text-white/80">
-                            <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                            <span class="text-sm font-medium">10,000+ jurnal dan publikasi medis</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-white/80">
-                            <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                            <span class="text-sm font-medium">Akses offline tersedia untuk membaca kapan saja</span>
-                        </div>
-                        <div class="flex items-center gap-3 text-white/80">
-                            <span class="material-symbols-outlined text-primary text-xl">check_circle</span>
-                            <span class="text-sm font-medium">Sinkronisasi lintas perangkat otomatis</span>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Footer Stats -->
@@ -107,7 +92,7 @@
         </div>
 
         <!-- Right Side: Login Form -->
-        <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-white dark:bg-pku-dark lg:overflow-y-auto">
+        <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-background-light dark:bg-background-dark lg:overflow-y-auto">
             <div class="w-full max-w-sm">
                 <!-- Mobile Logo -->
                 <div class="lg:hidden mb-8 flex items-center gap-2">
@@ -119,7 +104,7 @@
 
                 <!-- Header -->
                 <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-pku-dark dark:text-white mb-2">Selamat Datang</h2>
+                    <h2 class="text-3xl font-bold text-slate-900 dark:text-white mb-2">Selamat Datang</h2>
                     <p class="text-sm text-slate-500 dark:text-slate-400">Masuk ke akun Anda untuk mengakses perpustakaan digital</p>
                 </div>
 
@@ -129,7 +114,7 @@
 
                     <!-- Email / NIP -->
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-pku-dark dark:text-white" for="email">Username / NIP</label>
+                        <label class="block text-sm font-semibold mb-2 text-slate-900 dark:text-white" for="email">Username / NIP</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">person</span>
                             <input 
@@ -153,7 +138,7 @@
 
                     <!-- Password -->
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-pku-dark dark:text-white" for="password">Kata Sandi</label>
+                        <label class="block text-sm font-semibold mb-2 text-slate-900 dark:text-white" for="password">Kata Sandi</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">lock</span>
                             <input 
@@ -178,7 +163,7 @@
                     <div class="flex items-center justify-between text-xs">
                         <label class="flex items-center gap-2 cursor-pointer group">
                             <input class="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer" type="checkbox" name="remember" />
-                            <span class="text-slate-600 dark:text-slate-400 font-medium group-hover:text-pku-dark dark:group-hover:text-white transition-colors">Ingat saya</span>
+                            <span class="text-slate-600 dark:text-slate-400 font-medium group-hover:text-slate-900 dark:group-hover:text-white transition-colors">Ingat saya</span>
                         </label>
                         @if (Route::has('password.request'))
                             <a class="text-primary hover:underline font-semibold" href="{{ route('password.request') }}">Lupa password?</a>
@@ -193,7 +178,7 @@
 
                 <!-- Footer -->
                 <div class="mt-8 text-center text-xs text-slate-500 dark:text-slate-400">
-                    <p>© 2026 RS PKU Muhammadiyah 'Aisyiyah Boyolali</p>
+                    <p>© 2026 RS PKU Aisyiyah Boyolali</p>
                 </div>
             </div>
         </div>
