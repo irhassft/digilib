@@ -9,6 +9,9 @@ use App\Http\Controllers\WelcomeController;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
+// Route untuk katalog publik (menampilkan semua dokumen publik)
+Route::get('/catalogue', [WelcomeController::class, 'catalogue'])->name('catalogue');
+
 // Route Public untuk membuka dokumen publik tanpa login
 Route::get('/documents/{document}/view-public', [DocumentController::class, 'viewPublic'])->name('documents.view-public');
 

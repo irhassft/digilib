@@ -86,9 +86,7 @@
             </div>
             <div class="flex items-center gap-10">
                 <nav class="hidden md:flex gap-8">
-                    <a class="text-sm font-medium hover:text-primary transition-colors" href="#catalogue">Catalogue</a>
-                    <a class="text-sm font-medium hover:text-primary transition-colors" href="#features">Research Tools</a>
-                    <a class="text-sm font-medium hover:text-primary transition-colors" href="#footer">Library Help</a>
+                    <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ route('catalogue') }}">Katalog</a>
                 </nav>
                 <a href="{{ route('login') }}" class="px-6 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-[#00773b] transition-all pku-shadow">
                     Portal Login
@@ -110,7 +108,7 @@
                 <!-- Hero Content -->
                 <div class="container mx-auto px-8 md:px-16 relative z-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                     <div class="max-w-xl">
-                        <h1 class="text-6xl md:text-7xl font-bold leading-[1.1] mb-8 tracking-tight">
+                        <h1 class="text-6xl md:text-7xl font-bold leading-[1.1] mb-8 tracking-tight -mt-40">
                             Elevating <span class="text-primary pku-glow-text">Medical</span> Knowledge.
                         </h1>
                         <p class="text-lg md:text-xl text-slate-600 dark:text-slate-400 leading-relaxed mb-8 hover:text-slate-900 dark:hover:text-slate-200 transition-colors duration-300">
@@ -119,7 +117,7 @@
 
                         <!-- Search Bar -->
                         <div class="relative group mb-10">
-                            <form action="{{ url('/') }}" method="GET">
+                            <form action="{{ route('catalogue') }}" method="GET">
                                 <div class="search-glass p-2 rounded-2xl flex items-center gap-3 transition-all duration-300 group-focus-within:ring-2 group-focus-within:ring-primary/30 group-focus-within:bg-white/60 dark:group-focus-within:bg-white/10 shadow-lg">
                                     <div class="flex items-center justify-center pl-4 text-primary">
                                         <span class="material-symbols-outlined text-3xl">search</span>
@@ -134,11 +132,11 @@
 
                         <!-- CTA Buttons -->
                         <div class="flex flex-wrap gap-5">
-                            <a href="#" class="group flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-2xl text-lg font-bold transition-all hover:bg-[#00773b] pku-shadow hover:scale-[1.02]">
+                            <a href="{{ route('catalogue') }}" class="group flex items-center gap-2 px-8 py-4 bg-primary text-white rounded-2xl text-lg font-bold transition-all hover:bg-[#00773b] pku-shadow hover:scale-[1.02]">
                                 Mulai Sekarang
                                 <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                             </a>
-                            <a href="#catalogue" class="px-8 py-4 bg-white/50 dark:bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl text-lg font-semibold hover:bg-white/80 dark:hover:bg-white/10 transition-all">
+                            <a href="{{ route('catalogue') }}" class="px-8 py-4 bg-white/50 dark:bg-white/5 backdrop-blur-md border border-white/20 rounded-2xl text-lg font-semibold hover:bg-white/80 dark:hover:bg-white/10 transition-all">
                                 Jelajahi Arsip
                             </a>
                         </div>
