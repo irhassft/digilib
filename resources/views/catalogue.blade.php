@@ -3,44 +3,38 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Katalog - Digilib RS PKU</title>
+    <title>Katalog - Digital Library RS PKU Aisyiyah Boyolali</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style type="text/tailwindcss">
         :root {
             --pku-green: #008844;
-            --pku-glow: rgba(0, 136, 68, 0.4);  
+            --pku-glow: rgba(0, 136, 68, 0.15);  
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .dark .glass-card {
-            background: rgba(16, 34, 21, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
         .search-glass {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .dark .search-glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .search-glass:focus-within {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: rgba(0, 136, 68, 0.3);
+            box-shadow: 0 0 0 3px rgba(0, 136, 68, 0.1);
         }
         .pku-shadow {
-            box-shadow: 0 10px 30px -10px var(--pku-glow);
+            box-shadow: 0 20px 40px -15px var(--pku-glow);
         }
         .pku-glow-text {
             text-shadow: 0 0 20px var(--pku-glow);
@@ -49,91 +43,118 @@
             transform: translateY(-100%);
             opacity: 0;
         }
+        .doc-card {
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .doc-card:hover {
+            transform: translateY(-8px);
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
     <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class",
+            darkMode: false,
             theme: {
                 extend: {
                     colors: {
                         "primary": "#008844",
-                        "background-light": "#F8FAFC",
-                        "background-dark": "#0A140E",
+                        "primary-light": "#00a851",
+                        "primary-dark": "#006633",
+                        "background-light": "#FAFBFC",
+                        "surface-light": "#FFFFFF",
                     },
                     borderRadius: {
                         "2xl": "1rem",
                         "3xl": "1.5rem",
+                        "4xl": "2rem",
+                    },
+                    spacing: {
+                        "128": "32rem",
+                    },
+                    typography: {
+                        DEFAULT: {
+                            css: {
+                                maxWidth: 'none',
+                            },
+                        },
                     },
                 },
             },
         }
     </script>
 </head>
-<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased overflow-x-hidden">
+<body class="bg-background-light text-slate-900 antialiased overflow-x-hidden">
     <div class="relative flex min-h-screen w-full flex-col">
         <!-- Header -->
-        <header id="navbar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-8 md:px-16 py-6 transition-all duration-300 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
-            <div class="flex items-center gap-3">
-                <a href="{{ route('welcome') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                    <div class="p-2 bg-primary/10 rounded-xl backdrop-blur-md">
-                        <div class="size-7 text-primary">
-                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path clip-rule="evenodd" d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor" fill-rule="evenodd"></path>
-                                <path clip-rule="evenodd" d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z" fill="currentColor" fill-rule="evenodd"></path>
-                            </svg>
-                        </div>
+        <header id="navbar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 sm:px-8 md:px-12 lg:px-16 py-4 sm:py-5 transition-all duration-300 bg-background-light/90 backdrop-blur-xl border-b border-slate-200/50">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <a href="{{ route('welcome') }}" class="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity duration-200 group">
+                    <div class="relative">
+                        <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-9 sm:h-10 w-auto group-hover:scale-110 transition-transform duration-200">
                     </div>
-                    <h2 class="text-xl font-semibold tracking-tight">Digilib <span class="text-primary">PKU</span></h2>
+                    <div class="flex flex-col">
+                        <h2 class="text-lg sm:text-xl font-bold tracking-tight text-slate-900 leading-tight">Digital Library</h2>
+                        <p class="text-xs font-semibold text-primary uppercase tracking-widest hidden sm:block">RS PKU Aisyiyah</p>
+                    </div>
                 </a>
             </div>
-            <div class="flex items-center gap-10">
+            <div class="flex items-center gap-6 sm:gap-10">
                 <nav class="hidden md:flex gap-8">
-                    <a class="text-sm font-medium hover:text-primary transition-colors" href="{{ route('welcome') }}">Beranda</a>
-                    <a class="text-sm font-medium text-primary transition-colors" href="{{ route('catalogue') }}">Katalog</a>
+                    <a class="text-sm font-semibold text-slate-700 hover:text-primary transition-colors duration-200 relative group" href="{{ route('welcome') }}">
+                        Beranda
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a class="text-sm font-semibold text-primary transition-colors duration-200 relative group" href="{{ route('catalogue') }}">
+                        Katalog
+                        <span class="absolute bottom-0 left-0 w-full h-0.5 bg-primary transition-all duration-300"></span>
+                    </a>
                 </nav>
-                <a href="{{ route('login') }}" class="px-6 py-2.5 bg-primary text-white rounded-full text-sm font-semibold hover:bg-[#00773b] transition-all pku-shadow">
+                <a href="{{ route('login') }}" class="px-5 sm:px-6 py-2 sm:py-2.5 bg-primary hover:bg-primary-dark text-white rounded-xl sm:rounded-full text-xs sm:text-sm font-bold transition-all duration-200 pku-shadow hover:shadow-lg active:scale-95 transform">
                     Portal Login
                 </a>
             </div>
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 mt-24">
-            <!-- Page Header -->
-            <section class="py-12 bg-gradient-to-r from-primary/5 to-transparent dark:from-primary/10 dark:to-transparent">
-                <div class="container mx-auto px-8 md:px-16">
-                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Katalog Lengkap</h1>
-                    <p class="text-lg text-slate-600 dark:text-slate-400">Jelajahi seluruh koleksi dokumen medis kami yang telah dikurasi untuk profesional kesehatan.</p>
-                </div>
-            </section>
-
-            <!-- Search and Filter Section -->
-            <section class="py-8 bg-white dark:bg-[#0c1a11] border-b border-slate-200 dark:border-white/5">
-                <div class="container mx-auto px-8 md:px-16">
-                    <!-- Search Bar -->
-                    <form action="{{ route('catalogue') }}" method="GET" class="mb-8">
-                        <div class="relative group">
-                            <div class="search-glass p-2 rounded-2xl flex items-center gap-3 transition-all duration-300 group-focus-within:ring-2 group-focus-within:ring-primary/30">
-                                <div class="flex items-center justify-center pl-4 text-primary">
-                                    <span class="material-symbols-outlined text-2xl">search</span>
+        <main class="flex-1 mt-16 sm:mt-20">
+            <!-- Page Header with Search -->
+            <section class="py-4 sm:py-6 bg-gradient-to-br from-primary/8 via-primary/3 to-transparent">
+                <div class="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        
+                        <!-- Search Bar -->
+                        <form action="{{ route('catalogue') }}" method="GET" class="w-full md:w-auto md:flex-1 md:max-w-2xl">
+                            <div class="search-glass p-2.5 sm:p-3 rounded-2xl flex items-center gap-3 ring-1 ring-slate-200 focus-within:ring-2 focus-within:ring-primary/30">
+                                <div class="flex items-center justify-center pl-2 sm:pl-3 text-primary flex-shrink-0">
+                                    <span class="material-symbols-outlined text-xl">search</span>
                                 </div>
-                                <input name="search" value="{{ $searchQuery ?? '' }}" class="bg-transparent border-none focus:ring-0 w-full py-3 text-base text-slate-800 dark:text-white placeholder:text-slate-500/70 dark:placeholder:text-slate-400/50 font-medium" placeholder="Cari judul, kategori, atau tahun..." type="text"/>
+                                <input name="search" value="{{ $searchQuery ?? '' }}" class="bg-transparent border-none focus:ring-0 w-full py-2 text-sm text-slate-800 placeholder:text-slate-400 font-medium" placeholder="Cari dokumen..." type="text"/>
                                 @if($searchQuery)
-                                    <a href="{{ route('catalogue') }}" class="px-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
-                                        <span class="material-symbols-outlined">close</span>
+                                    <a href="{{ route('catalogue') }}" class="px-2 text-slate-400 hover:text-slate-600 transition-colors duration-200 flex-shrink-0">
+                                        <span class="material-symbols-outlined text-sm">close</span>
                                     </a>
                                 @endif
-                                <button type="submit" class="bg-primary text-white px-6 py-2 rounded-xl font-bold hover:bg-[#00773b] transition-all shadow-md active:scale-95 hidden sm:block mr-1">
+                                <button type="submit" class="bg-primary hover:bg-primary-dark text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold transition-all duration-200 pku-shadow hover:shadow-lg active:scale-95 hidden sm:block text-xs sm:text-sm flex-shrink-0">
                                     Cari
                                 </button>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
+                </div>
+            </section>
 
-                    <!-- Category Filter -->
-                    <div class="flex items-center gap-4">
-                        <label for="category-filter" class="text-sm font-medium text-slate-600 dark:text-slate-400">Kategori:</label>
-                        <select id="category-filter" name="category" onchange="window.location.href = this.value;" class="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-medium text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+            <!-- Category Filter Section -->
+            <section class="py-4 sm:py-5 bg-white border-b border-slate-100">
+                <div class="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+                        <label for="category-filter" class="text-sm font-semibold text-slate-700 flex-shrink-0">Kategori:</label>
+                        <select id="category-filter" name="category" onchange="window.location.href = this.value;" class="w-full sm:w-auto px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-transparent transition-all duration-200 cursor-pointer hover:border-primary/50">
                             <option value="{{ route('catalogue') }}">Semua Kategori</option>
                             @foreach($categories as $category)
                                 <option value="{{ route('catalogue', ['category' => $category->id]) }}" {{ $selectedCategory == $category->id ? 'selected' : '' }}>
@@ -146,56 +167,70 @@
             </section>
 
             <!-- Documents Grid -->
-            <section class="py-12 bg-white dark:bg-[#0c1a11]">
-                <div class="container mx-auto px-8 md:px-16">
+            <section class="py-6 sm:py-8 bg-white">
+                <div class="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
                     <!-- Results info -->
-                    <div class="mb-8">
-                        <p class="text-slate-600 dark:text-slate-400">
-                            Menampilkan <span class="font-semibold text-slate-900 dark:text-white">{{ $documents->count() }}</span> dari <span class="font-semibold text-slate-900 dark:text-white">{{ $documents->total() }}</span> dokumen
+                    <div class="mb-6 sm:mb-8">
+                        <p class="text-xs sm:text-sm text-slate-600">
+                            Menampilkan <span class="font-bold text-slate-900 text-primary">{{ $documents->count() }}</span> dari <span class="font-bold text-slate-900">{{ $documents->total() }}</span> dokumen
                         </p>
                     </div>
 
                     @if($documents->count() > 0)
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                             @foreach($documents as $doc)
-                                <a href="{{ route('documents.view-public', $doc->id) }}" target="_blank" class="group cursor-pointer no-underline block transition-all hover:scale-105">
-                                    <div class="relative overflow-hidden rounded-2xl mb-6 aspect-[3/4] bg-slate-100 dark:bg-slate-800">
-                                        @if($doc->cover_image && file_exists(public_path('storage/'.$doc->cover_image)))
-                                            <img src="{{ asset('storage/'.$doc->cover_image) }}" alt="{{ $doc->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                                        @else
-                                            <div class="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                                                <span class="material-symbols-outlined text-6xl text-primary/40">description</span>
-                                            </div>
-                                        @endif
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                                    </div>
-                                    
-                                    <div class="space-y-3">
-                                        @if($doc->category)
-                                            <div class="inline-block">
-                                                <span class="text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary">
-                                                    {{ $doc->category->name }}
-                                                </span>
-                                            </div>
-                                        @endif
+                                <a href="{{ route('documents.view-public', $doc->id) }}" target="_blank" class="group cursor-pointer no-underline block transition-all duration-300 doc-card">
+                                    <!-- Card Container -->
+                                    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-slate-200/50 transition-all duration-300 hover:border-primary/30 pku-shadow hover:shadow-xl h-full flex flex-col">
+                                        <!-- Image Container -->
+                                        <div class="relative overflow-hidden aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 flex-shrink-0">
+                                            @if($doc->cover_image && file_exists(public_path('storage/'.$doc->cover_image)))
+                                                <img src="{{ asset('storage/'.$doc->cover_image) }}" alt="{{ $doc->title }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                                            @else
+                                                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                                                    <span class="material-symbols-outlined text-7xl sm:text-8xl text-primary/30 group-hover:text-primary/50 transition-colors duration-300">description</span>
+                                                </div>
+                                            @endif
+                                            <!-- Overlay Gradient -->
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                            <!-- Badge Background -->
+                                            <div class="absolute top-4 left-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                        </div>
                                         
-                                        <h3 class="text-xl font-bold leading-snug text-slate-900 dark:text-white group-hover:text-primary transition-colors line-clamp-2">
-                                            {{ $doc->title }}
-                                        </h3>
-                                        
-                                        <p class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">
-                                            {{ $doc->description ?? 'Tidak ada deskripsi tersedia' }}
-                                        </p>
+                                        <!-- Content -->
+                                        <div class="flex flex-col flex-grow p-4 sm:p-5 space-y-2 sm:space-y-3">
+                                            <!-- Category Badge -->
+                                            @if($doc->category)
+                                                <div class="inline-flex items-center gap-2 w-fit">
+                                                    <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-primary/15 text-primary uppercase tracking-wide">
+                                                        {{ $doc->category->name }}
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            
+                                            <!-- Title -->
+                                            <h3 class="text-sm sm:text-base font-bold leading-snug text-slate-900 group-hover:text-primary transition-colors duration-300 line-clamp-2">
+                                                {{ $doc->title }}
+                                            </h3>
+                                            
+                                            <!-- Description -->
+                                            <p class="text-xs text-slate-600 line-clamp-1 leading-relaxed flex-grow">
+                                                {{ $doc->description ?? 'Dokumen medis profesional' }}
+                                            </p>
 
-                                        <div class="flex items-center justify-between pt-3">
-                                            <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-500">
-                                                @if($doc->year)
-                                                    <span class="material-symbols-outlined text-sm">calendar_today</span>
-                                                    <span>{{ $doc->year }}</span>
-                                                @endif
-                                            </div>
-                                            <div class="flex items-center gap-1 text-slate-400 group-hover:text-primary transition-colors">
-                                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                                            <!-- Meta Info -->
+                                            <div class="flex items-center justify-between pt-2 sm:pt-3 border-t border-slate-200/50">
+                                                <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                                                    @if($doc->year)
+                                                        <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                                        <span>{{ $doc->year }}</span>
+                                                    @else
+                                                        <span>Tahun tidak tersedia</span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex items-center gap-1 text-slate-400 group-hover:text-primary transition-colors duration-300">
+                                                    <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -205,36 +240,36 @@
 
                         <!-- Pagination -->
                         @if($documents->hasPages())
-                            <div class="mt-12 flex justify-center">
-                                <div class="flex flex-wrap gap-2 justify-center">
+                            <div class="mt-6 sm:mt-8 flex justify-center">
+                                <div class="flex flex-wrap gap-2 sm:gap-3 justify-center">
                                     {{-- Previous Page Link --}}
                                     @if ($documents->onFirstPage())
-                                        <span class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed">
-                                            <span class="material-symbols-outlined">chevron_left</span>
+                                        <span class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed font-semibold">
+                                            <span class="material-symbols-outlined text-lg">chevron_left</span>
                                         </span>
                                     @else
-                                        <a href="{{ $documents->previousPageUrl() }}" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-[#00773b] transition-all">
-                                            <span class="material-symbols-outlined">chevron_left</span>
+                                        <a href="{{ $documents->previousPageUrl() }}" class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white transition-all duration-200 font-semibold pku-shadow hover:shadow-lg active:scale-95">
+                                            <span class="material-symbols-outlined text-lg">chevron_left</span>
                                         </a>
                                     @endif
 
                                     {{-- Pagination Elements --}}
                                     @foreach ($documents->getUrlRange(1, $documents->lastPage()) as $page => $url)
                                         @if ($page == $documents->currentPage())
-                                            <span class="px-4 py-2 rounded-lg bg-primary text-white font-semibold">{{ $page }}</span>
+                                            <span class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-primary text-white font-bold text-sm sm:text-base">{{ $page }}</span>
                                         @else
-                                            <a href="{{ $url }}" class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">{{ $page }}</a>
+                                            <a href="{{ $url }}" class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-900 transition-all duration-200 font-semibold text-sm sm:text-base">{{ $page }}</a>
                                         @endif
                                     @endforeach
 
                                     {{-- Next Page Link --}}
                                     @if ($documents->hasMorePages())
-                                        <a href="{{ $documents->nextPageUrl() }}" class="px-4 py-2 rounded-lg bg-primary text-white hover:bg-[#00773b] transition-all">
-                                            <span class="material-symbols-outlined">chevron_right</span>
+                                        <a href="{{ $documents->nextPageUrl() }}" class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white transition-all duration-200 font-semibold pku-shadow hover:shadow-lg active:scale-95">
+                                            <span class="material-symbols-outlined text-lg">chevron_right</span>
                                         </a>
                                     @else
-                                        <span class="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-400 cursor-not-allowed">
-                                            <span class="material-symbols-outlined">chevron_right</span>
+                                        <span class="px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg bg-slate-100 text-slate-400 cursor-not-allowed font-semibold">
+                                            <span class="material-symbols-outlined text-lg">chevron_right</span>
                                         </span>
                                     @endif
                                 </div>
@@ -242,13 +277,16 @@
                         @endif
                     @else
                         <!-- Empty State -->
-                        <div class="py-24 text-center">
-                            <div class="mb-6 flex justify-center">
-                                <span class="material-symbols-outlined text-8xl text-slate-300 dark:text-slate-700">library_books</span>
+                        <div class="py-8 sm:py-12 text-center">
+                            <div class="mb-4 sm:mb-6 flex justify-center">
+                                <div class="relative">
+                                    <div class="absolute inset-0 bg-primary/10 blur-3xl rounded-full"></div>
+                                    <span class="material-symbols-outlined text-7xl sm:text-8xl text-slate-300 relative">library_books</span>
+                                </div>
                             </div>
-                            <h3 class="text-2xl font-bold text-slate-900 dark:text-white mb-2">Tidak ada dokumen ditemukan</h3>
-                            <p class="text-slate-600 dark:text-slate-400 mb-6">Coba ubah kata kunci pencarian atau pilih kategori yang berbeda.</p>
-                            <a href="{{ route('catalogue') }}" class="inline-block px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-[#00773b] transition-all">
+                            <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">Tidak ada dokumen ditemukan</h3>
+                            <p class="text-slate-600 mb-6 text-xs sm:text-sm">Coba ubah kata kunci pencarian atau pilih kategori yang berbeda.</p>
+                            <a href="{{ route('catalogue') }}" class="inline-block px-5 sm:px-6 py-2 sm:py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg sm:rounded-xl font-bold transition-all duration-200 pku-shadow hover:shadow-lg active:scale-95">
                                 Lihat Semua Dokumen
                             </a>
                         </div>
@@ -258,58 +296,51 @@
         </main>
 
         <!-- Footer -->
-        <footer class="bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-white/5 py-12">
-            <div class="container mx-auto px-8 md:px-16">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div class="flex items-center gap-3 grayscale opacity-70">
-                        <div class="size-6 text-primary">
-                            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M24 18.4228L42 11.475V34.3663C42 34.7796 41.7457 35.1504 41.3601 35.2992L24 42V18.4228Z" fill="currentColor"></path>
-                            </svg>
-                        </div>
-                        <span class="text-sm font-semibold tracking-tight uppercase">Digilib RS PKU</span>
-                    </div>
-                    <div class="flex flex-wrap justify-center gap-10">
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="{{ route('login') }}">Portal Rumah Sakit</a>
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="{{ route('catalogue') }}">Katalog</a>
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Pusat Bantuan</a>
-                        <a class="text-sm font-medium text-slate-500 hover:text-primary transition-colors" href="#footer">Privasi</a>
-                    </div>
-                    <div class="flex items-center gap-2 text-slate-400">
-                        <span class="material-symbols-outlined text-sm">verified_user</span>
-                        <p class="text-xs font-medium uppercase tracking-widest">Konten Medis Terverifikasi</p>
-                    </div>
-                </div>
-                <div class="mt-12 text-center text-slate-400 text-xs">
-                    © {{ date('Y') }} Platform Perpustakaan Digital RS PKU. Dioptimalkan untuk keunggulan staf medis.
-                </div>
+        <footer class="bg-slate-50 border-t border-slate-200 py-6 sm:py-8">
+            <div class="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16 text-center">
+                <p class="text-xs sm:text-sm text-slate-500">
+                    © {{ date('Y') }} RS PKU Aisyiyah Boyolali. All rights reserved.
+                </p>
             </div>
         </footer>
     </div>
 
     <script>
-        // Hide navbar on scroll down
+        // Hide navbar on scroll down with smooth animation
         let lastScrollTop = 0;
         const navbar = document.getElementById('navbar');
         const scrollThreshold = 50;
+        let isHidden = false;
 
         window.addEventListener('scroll', function() {
             let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
             
             if (currentScroll > scrollThreshold) {
-                if (currentScroll > lastScrollTop) {
-                    // Scrolling DOWN
+                if (currentScroll > lastScrollTop && !isHidden) {
+                    // Scrolling DOWN - hide navbar
                     navbar.classList.add('navbar-hidden');
-                } else {
-                    // Scrolling UP
+                    isHidden = true;
+                } else if (currentScroll < lastScrollTop && isHidden) {
+                    // Scrolling UP - show navbar
                     navbar.classList.remove('navbar-hidden');
+                    isHidden = false;
                 }
             } else {
                 // At top of page
                 navbar.classList.remove('navbar-hidden');
+                isHidden = false;
             }
             
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+
+        // Add active class to current link
+        const currentLocation = location.pathname;
+        const menuItems = document.querySelectorAll('nav a');
+        menuItems.forEach(item => {
+            if (item.getAttribute('href') === currentLocation) {
+                item.classList.add('text-primary');
+            }
         });
     </script>
 </body>

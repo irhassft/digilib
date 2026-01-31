@@ -46,10 +46,16 @@
                                     <span class="material-symbols-outlined text-sm text-gray-400">search</span>
                                 </span>
                                 <input type="text" name="search" value="{{ request('search') }}" 
-                                       class="block w-full pl-10 pr-10 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                       class="block w-full pl-10 pr-20 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
                                        placeholder="Cari dokumen..."/>
+
+                                <!-- Search button -->
+                                <button type="submit" class="absolute inset-y-0 right-0 pr-3 flex items-center text-white bg-primary hover:bg-primary/90 px-3 py-1 rounded-md">
+                                    <span class="material-symbols-outlined text-sm">search</span>
+                                </button>
+
                                 @if(request('search'))
-                                <a href="{{ route('collections.index', request()->except('search', 'page')) }}" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                <a href="{{ route('collections.index', request()->except('search', 'page')) }}" class="absolute inset-y-0 right-10 pr-3 flex items-center text-gray-400 hover:text-gray-600">
                                     <span class="material-symbols-outlined text-sm">close</span>
                                 </a>
                                 @endif
