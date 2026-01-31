@@ -3,19 +3,19 @@
 <head>
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>Masuk - DIGILIB RS PKU</title>
+    <title>Masuk - Digital Library RS PKU Aisyiyah Boyolali</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script id="tailwind-config">
         tailwind.config = {
-            darkMode: "class", 
+            darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#008844", 
-                        "primary-hover": "#007038",
-                        "text-dark": "#1e293b", 
+                        "primary": "#008844",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0A140E",
                     },
                 },
             },
@@ -26,24 +26,25 @@
             font-family: 'Inter', sans-serif;
         }
         .white-gradient {
-            background: linear-gradient(to right, rgba(255, 255, 255, 0.85) 50%, rgba(255, 255, 255, 0) 100%);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.85) 35%, rgba(255, 255, 255, 0) 100%);
         }
     </style>
 </head>
-<body class="bg-white text-slate-800 antialiased overflow-x-hidden">
+<body class="bg-background-light dark:bg-background-dark text-slate-800 dark:text-slate-100 antialiased overflow-x-hidden">
     <div class="relative flex min-h-screen w-full flex-col lg:flex-row">
         
-        <div class="hidden lg:flex lg:w-3/5 relative bg-slate-50 overflow-hidden">
+        <div class="hidden lg:flex lg:w-3/5 relative bg-gradient-to-br from-primary/5 to-transparent dark:from-primary/10 dark:to-transparent overflow-hidden">
             <div class="absolute inset-0 bg-cover bg-center" style='background-image: url("{{ asset("img/background_1.jpg") }}");'></div>
             
             <div class="absolute inset-0 white-gradient"></div>
             
             <div class="relative z-10 flex flex-col justify-between p-12 w-full">
-                <div class="flex items-center gap-3">
-                    <div class="bg-white p-2 rounded-lg shadow-sm border border-slate-200">
-                        <span class="material-symbols-outlined text-primary text-2xl">menu_book</span>
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-12 w-auto">
+                    <div class="flex flex-col">
+                        <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Digital Library</h3>
+                        <p class="text-xs font-medium text-primary uppercase tracking-wider">RS PKU Aisyiyah Boyolali</p>
                     </div>
-                    <span class="text-text-dark font-bold tracking-wider text-lg">Digilib <span class="text-primary">PKU</span></span>
                 </div>
 
                 <div class="space-y-6">
@@ -73,13 +74,14 @@
             </div>
         </div>
 
-        <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-white lg:overflow-y-auto">
+        <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-background-light dark:bg-background-dark lg:overflow-y-auto">
             <div class="w-full max-w-sm">
-                <div class="lg:hidden mb-8 flex items-center gap-2">
-                    <div class="bg-primary/10 p-2 rounded-lg">
-                        <span class="material-symbols-outlined text-primary">menu_book</span>
+                <div class="lg:hidden mb-8 flex items-center gap-3">
+                    <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-8 w-auto">
+                    <div class="flex flex-col">
+                        <p class="text-sm font-bold text-slate-900 leading-tight">Digital Library</p>
+                        <p class="text-xs font-medium text-primary uppercase tracking-wider">RS PKU Aisyiyah</p>
                     </div>
-                    <span class="font-bold tracking-tight text-primary">Digilib RS PKU</span>
                 </div>
 
                 <div class="mb-8">
@@ -151,7 +153,7 @@
                 </form>
 
                 <div class="mt-8 text-center text-xs text-slate-400">
-                    <p>© 2026 RS PKU Aisyiyah Boyolali</p>
+                    © {{ date('Y') }} RS PKU Aisyiyah Boyolali. All rights reserved.
                 </div>
             </div>
         </div>

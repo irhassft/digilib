@@ -4,14 +4,10 @@
             <div class="flex">
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                        {{-- Ikon Buku/Logo Putih Sederhana --}}
-                        <div class="bg-white p-1.5 rounded-full text-green-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
-                            </svg>
-                        </div>
+                        <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-12 w-auto">
+                        <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-12 w-auto">
                         <h1 class="text-xl font-bold text-white tracking-wide leading-tight">
-                            DIGILIB <br><span class="text-sm font-light text-green-50">RSPKU BOYOLALI</span>
+                            Digital Library <br><span class="text-sm font-light text-green-50">RS PKU Aisyiyah Boyolali</span>
                         </h1>
                     </a>
                 </div>
@@ -57,14 +53,6 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -99,18 +87,15 @@
             @endhasanyrole
 
         </div>
-        <div class="pt-4 pb-1 border-t border-green-500">
-            <div class="px-4">
-                <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-            </div>
-            <div class="mt-3 space-y-1">
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <x-responsive-nav-link :href="route('logout')" class="text-green-100 hover:text-white" onclick="event.preventDefault(); this.closest('form').submit();">
-                        {{ __('Log Out') }}
+            <div class="pt-4 pb-1 border-t border-green-500">
+                <div class="px-4">
+                    <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" class="text-white">
+                        {{ __('Profile') }}
                     </x-responsive-nav-link>
-                </form>
+                </div>
             </div>
-        </div>
     </div>
 </nav>

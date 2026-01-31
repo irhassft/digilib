@@ -1,38 +1,33 @@
-<x-app-layout>
-    <div class="py-12 bg-gray-50 min-h-screen">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            
-            {{-- Header Profile --}}
-            <div class="flex items-center gap-4 mb-8 px-4 sm:px-0">
-                <div class="bg-green-100 p-3 rounded-full">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<x-new-layout title="Pengaturan Akun - RS PKU Digital Library">
+    <x-slot:header>
+        <div class="w-full px-6 flex items-center justify-between gap-4 h-full">
+            <div class="flex items-center gap-4">
+                <div class="bg-green-100 p-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </div>
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Pengaturan Akun</h2>
-                    <p class="text-sm text-gray-500">Kelola informasi profil dan keamanan akun Anda.</p>
+                    <h1 class="text-lg font-bold text-[#0d1b11]">Pengaturan Akun</h1>
+                    <p class="text-xs text-gray-500">Kelola informasi profil dan keamanan akun Anda.</p>
+                </div>
+            </div>
+        </div>
+    </x-slot:header>
+
+    <div class="w-full px-6 flex flex-col gap-6">
+        <div class="flex-1">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    @include('profile.partials.update-profile-information-form')
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    @include('profile.partials.update-password-form')
                 </div>
             </div>
 
-            {{-- Grid Layout --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                
-                {{-- Kiri: Update Info --}}
-                <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-xl border-t-4 border-green-500">
-                    <div class="max-w-xl">
-                        @include('profile.partials.update-profile-information-form')
-                    </div>
-                </div>
-
-                {{-- Kanan: Update Password --}}
-                <div class="p-4 sm:p-8 bg-white shadow-sm sm:rounded-xl border-t-4 border-green-500">
-                    <div class="max-w-xl">
-                        @include('profile.partials.update-password-form')
-                    </div>
-                </div>
-            </div>
-
+            {{-- Logout kini tersedia di sidebar; card aksi dihilangkan dari halaman ini --}}
         </div>
     </div>
-</x-app-layout>
+</x-new-layout>
