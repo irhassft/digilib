@@ -59,27 +59,24 @@
     {{ $head ?? '' }}
 </head>
 <body class="bg-background-light dark:bg-background-dark text-[#0d1b11] dark:text-white min-h-screen">
-    <div class="flex w-full">
-        <!-- Sidebar Navigation -->
-        <x-sidebar />
-
+    <x-sidebar>
         <!-- Main Content -->
-        <main class="ml-64 flex-1 min-h-screen relative flex flex-col">
+        <main class="flex-1 min-h-screen relative flex flex-col overflow-hidden">
             
-            <!-- Header (Optional Slot) -->
+            <!-- Header (Optional Slot) - Visible on all screen sizes -->
             @if(isset($header))
-                <header class="sticky top-0 z-40 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-8 py-4 border-b border-gray-100 dark:border-gray-800">
+                <header class="sticky top-0 z-30 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 sm:px-6 lg:px-8 py-4 border-b border-gray-200 dark:border-gray-800">
                     {{ $header }}
                 </header>
             @endif
 
-            <!-- Main Page Content -->
-            <div class="{{ $padding ?? 'px-8 py-8' }} flex-1">
+            <!-- Main Page Content - Scrollable -->
+            <div class="flex-1 overflow-y-auto {{ $padding ?? 'px-4 sm:px-6 lg:px-8 py-8' }}">
                 {{ $slot }}
             </div>
             
         </main>
-    </div>
+    </x-sidebar>
     
     {{ $scripts ?? '' }}
 </body>

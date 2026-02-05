@@ -1,21 +1,17 @@
 <x-new-layout title="Manajemen User - RS PKU Digital Library">
     
     <x-slot:header>
-        <div class="max-w-6xl mx-auto flex items-center justify-between gap-8 h-full">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 md:gap-8">
             <div class="flex-1 max-w-2xl">
                 {{-- Search Users --}}
-                <div class="relative group">
+                <form method="GET" action="{{ route('users.index') }}" class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <span class="material-symbols-outlined text-gray-400 group-focus-within:text-primary transition-colors">search</span>
+                        <span class="material-symbols-outlined text-primary text-[22px]">search</span>
                     </div>
-                    <input disabled class="block w-full pl-11 pr-4 py-2.5 bg-gray-100 dark:bg-gray-800 border-none rounded-xl text-sm text-gray-500 cursor-not-allowed" placeholder="Search function coming soon..." type="text"/>
-                </div>
+                    <input name="search" value="{{ request('search') }}" class="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border-none rounded-2xl text-base text-gray-700 dark:text-white placeholder-gray-400 focus:outline-none shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700" placeholder="Cari nama atau email user..." type="text"/>
+                </form>
             </div>
-            <div class="flex items-center gap-4">
-                <button class="w-10 h-10 rounded-xl bg-white dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-primary transition-colors shadow-sm">
-                    <span class="material-symbols-outlined">notifications</span>
-                </button>
-                
+            <div class="hidden md:flex items-center gap-4">
                 <a href="{{ route('users.create') }}" class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-xl flex items-center gap-2 shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
                     <span class="material-symbols-outlined text-sm">person_add</span>
                     Tambah User
@@ -24,7 +20,7 @@
         </div>
     </x-slot:header>
 
-    <div class="max-w-6xl mx-auto flex flex-col gap-6">
+    <div class="flex flex-col gap-6">
         
         <div class="flex items-center justify-between">
             <h2 class="text-2xl font-bold tracking-tight text-[#0d1b11] dark:text-white">Daftar Pengguna</h2>
@@ -46,8 +42,8 @@
         </script>
         @endif
 
-        <!-- Users Table Card -->
-        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
+        <!-- Users Table - Desktop View -->
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hidden md:block">
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
@@ -122,6 +118,63 @@
                 {{ $users->links() }}
             </div>
         </div>
+
+        <!-- Users Card Grid - Mobile View -->
+        <div class="md:hidden grid gap-4">
+            @foreach($users as $user)
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4">
+                <!-- User Info -->
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold shrink-0">
+                        {{ substr($user->name, 0, 1) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-[#0d1b11] dark:text-white truncate">{{ $user->name }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ $user->email }}</p>
+                    </div>
+                </div>
+
+                <!-- Role and Date -->
+                <div class="flex items-center justify-between gap-2 mb-4">
+                    @php
+                        $roleColor = 'bg-gray-100 text-gray-600';
+                        if ($user->hasRole('super-admin')) $roleColor = 'bg-red-100 text-red-700 border border-red-200';
+                        elseif ($user->hasRole('admin')) $roleColor = 'bg-blue-100 text-blue-700 border border-blue-200';
+                        else $roleColor = 'bg-green-100 text-green-700 border border-green-200';
+                    @endphp
+                    <span class="px-3 py-1 rounded-full text-xs font-bold {{ $roleColor }}">
+                        {{ ucfirst($user->getRoleNames()->first() ?? 'Staff') }}
+                    </span>
+                    <span class="text-xs text-gray-500 whitespace-nowrap">{{ $user->created_at->format('d M Y') }}</span>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2">
+                    @if($user->id !== 1 && $user->id !== Auth::id())
+                        <a href="{{ route('users.edit', $user) }}" class="flex-1 px-3 py-2 bg-yellow-50 text-yellow-600 rounded-lg flex items-center justify-center gap-2 hover:bg-yellow-100 transition-colors text-sm font-medium">
+                            <span class="material-symbols-outlined text-base">edit</span>
+                            Edit
+                        </a>
+                        
+                        <form id="delete-form-{{ $user->id }}" action="{{ route('users.destroy', $user) }}" method="POST">
+                            @csrf @method('DELETE')
+                            <button type="button" onclick="confirmDelete({{ $user->id }}, '{{ addslashes($user->name) }}')" class="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg flex items-center justify-center gap-2 hover:bg-red-100 transition-colors text-sm font-medium">
+                                <span class="material-symbols-outlined text-base">delete</span>
+                                Hapus
+                            </button>
+                        </form>
+                    @else
+                        <span class="flex-1 text-center text-xs text-gray-400 italic py-2">Protected</span>
+                    @endif
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        <!-- Pagination -->
+        <div class="md:hidden">
+            {{ $users->links() }}
+        </div>
     </div>
 
     {{-- Script Confirmation --}}
@@ -152,4 +205,10 @@
             }
         </script>
     </x-slot:scripts>
+@role('super-admin')
+<a href="{{ route('users.create') }}" class="fixed bottom-6 right-6 lg:hidden z-30 w-14 h-14 bg-primary text-[#0d1b11] rounded-full flex items-center justify-center shadow-lg shadow-primary/40 hover:scale-110 active:scale-95 transition-all">
+    <span class="material-symbols-outlined text-2xl">person_add</span>
+</a>
+@endrole
+
 </x-new-layout>

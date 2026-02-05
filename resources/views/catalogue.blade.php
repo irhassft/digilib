@@ -177,7 +177,7 @@
                     </div>
 
                     @if($documents->count() > 0)
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6">
                             @foreach($documents as $doc)
                                 <a href="{{ route('documents.view-public', $doc->id) }}" target="_blank" class="group cursor-pointer no-underline block transition-all duration-300 doc-card">
                                     <!-- Card Container -->
@@ -220,16 +220,23 @@
 
                                             <!-- Meta Info -->
                                             <div class="flex items-center justify-between pt-2 sm:pt-3 border-t border-slate-200/50">
-                                                <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
-                                                    @if($doc->year)
-                                                        <span class="material-symbols-outlined text-sm">calendar_today</span>
-                                                        <span>{{ $doc->year }}</span>
-                                                    @else
-                                                        <span>Tahun tidak tersedia</span>
-                                                    @endif
+                                                <div class="flex items-center gap-2">
+                                                    <div class="flex items-center gap-1 text-xs text-slate-500 font-medium">
+                                                        @if($doc->year)
+                                                            <span class="material-symbols-outlined text-sm">calendar_today</span>
+                                                            <span>{{ $doc->year }}</span>
+                                                        @else
+                                                            <span>Tahun tidak tersedia</span>
+                                                        @endif
+                                                    </div>
                                                 </div>
-                                                <div class="flex items-center gap-1 text-slate-400 group-hover:text-primary transition-colors duration-300">
-                                                    <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="text-xs text-slate-500 font-medium">
+                                                        {{ $doc->formatted_file_size }}
+                                                    </span>
+                                                    <div class="flex items-center gap-1 text-slate-400 group-hover:text-primary transition-colors duration-300">
+                                                        <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform duration-300">arrow_forward</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
