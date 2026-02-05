@@ -3,7 +3,7 @@
         <div class="flex justify-between h-20"> {{-- Tinggi sedikit ditambah agar gagah --}}
             <div class="flex">
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
+                    <a href="{{ route('welcome') }}" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
                         <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-12 w-auto">
                         <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-12 w-auto">
                         <h1 class="text-xl font-bold text-white tracking-wide leading-tight">
@@ -13,6 +13,10 @@
                 </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <a href="{{ route('welcome') }}" class="inline-flex items-center px-1 pt-1 border-b-4 {{ request()->routeIs('welcome') ? 'border-white text-white' : 'border-transparent text-green-100 hover:text-white hover:border-green-200' }} text-base font-bold transition duration-150 ease-in-out">
+                        {{ __('Landing') }}
+                    </a>
+
                     <a href="{{ route('dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-4 {{ request()->routeIs('dashboard') ? 'border-white text-white' : 'border-transparent text-green-100 hover:text-white hover:border-green-200' }} text-base font-bold transition duration-150 ease-in-out">
                         {{ __('Dashboard') }}
                     </a>
@@ -70,6 +74,10 @@
     {{-- Responsive Menu (Mobile) --}}
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-green-700">
         <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('welcome')" :active="request()->routeIs('welcome')" class="text-white">
+                {{ __('Landing') }}
+            </x-responsive-nav-link>
+
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>

@@ -92,4 +92,20 @@ class Document extends Model
         if (!$user) return false;
         return $this->favoritedBy()->where('user_id', $user->id)->exists();
     }
+
+    /**
+     * Get formatted file size (MB, KB, Bytes)
+     */
+    public function getFormattedFileSizeAttribute()
+    {
+        $bytes = $this->file_size;
+        
+        if ($bytes >= 1024 * 1024) {
+            return round($bytes / (1024 * 1024), 2) . ' MB';
+        } elseif ($bytes >= 1024) {
+            return round($bytes / 1024, 2) . ' KB';
+        } else {
+            return $bytes . ' B';
+        }
+    }
 }

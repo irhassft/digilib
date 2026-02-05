@@ -165,7 +165,7 @@
                         </div>
                     @endif
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
                         @php
                             $featureImages = [
                                 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80',
@@ -180,7 +180,7 @@
                             $featureCount = 0;
                         @endphp
 
-                        @forelse($documents->take(3) as $doc)
+                        @forelse($documents->take(4) as $doc)
                             @php
                                 $cover = $doc->cover_image;
                                 $publicPath = $cover ? public_path('storage/'.$cover) : null;
