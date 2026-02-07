@@ -74,8 +74,8 @@
             </div>
         </div>
 
-        <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-background-light dark:bg-background-dark lg:overflow-y-auto">
-            <div class="w-full max-w-sm">
+        <div class="w-full lg:w-2/5 flex items-center justify-center bg-background-light dark:bg-background-dark">
+            <div class="w-full max-w-sm p-8 md:p-12 bg-white dark:bg-slate-800 rounded-xl shadow-lg flex flex-col items-center justify-center">
                 <div class="lg:hidden mb-8 flex items-center gap-3">
                     <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-8 w-auto">
                     <div class="flex flex-col">
@@ -89,8 +89,8 @@
                     <div class="inline-flex p-3 bg-primary/10 rounded-full mb-4">
                         <span class="material-symbols-outlined text-primary text-3xl">lock_reset</span>
                     </div>
-                    <h2 class="text-3xl font-bold text-slate-900 mb-2">Atur Ulang Kata Sandi</h2>
-                    <p class="text-sm text-slate-600 leading-relaxed">Masukkan alamat email terdaftar Anda dan kami akan mengirimkan link untuk mengatur ulang kata sandi.</p>
+                    <h2 class="text-xl font-bold text-slate-900 mb-2">Atur Ulang Kata Sandi</h2>
+                    <p class="text-xl font-extrabold text-primary leading-relaxed">Hubungi Tim IT</p>
                 </div>
 
                 <!-- Session Status -->
@@ -104,54 +104,20 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
-                    @csrf
 
-                    <!-- Email Address -->
-                    <div>
-                        <label class="block text-sm font-semibold mb-2 text-slate-700" for="email">Alamat Email</label>
-                        <div class="relative">
-                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">mail</span>
-                            <input 
-                                class="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-sm text-slate-800 @error('email') border-red-500 @enderror" 
-                                id="email" 
-                                type="email" 
-                                name="email" 
-                                :value="old('email')"
-                                value="{{ old('email') }}"
-                                placeholder="nama@example.com"
-                                required 
-                                autofocus
-                            />
-                        </div>
-                        @error('email')
-                            <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-xs">error</span>
-                                {{ $message }}
-                            </p>
-                        @enderror
-                    </div>
 
-                    <!-- Submit Button -->
-                    <button type="submit" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3 rounded-lg shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all active:scale-[0.98] text-sm mt-6 flex items-center justify-center gap-2">
-                        <span class="material-symbols-outlined text-lg">send</span>
-                        Kirim Link Reset Kata Sandi
-                    </button>
-                </form>
-
-                <!-- Back to Login Link -->
-                <div class="mt-6 text-center">
-                    <p class="text-sm text-slate-600">
-                        Kembali ke halaman 
-                        <a href="{{ route('login') }}" class="text-primary hover:underline font-semibold">masuk</a>
-                    </p>
+                <div class="mt-8 text-center text-sm">
+                    <a href="{{ route('login') }}" class="text-primary hover:text-primary-dark font-semibold text-base flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Kembali ke halaman masuk
+                    </a>
                 </div>
 
-                <div class="mt-8 text-center text-xs text-slate-400">
-                    © {{ date('Y') }} RS PKU Aisyiyah Boyolali. All rights reserved.
-                </div>
             </div>
         </div>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 p-4 text-center text-xs text-slate-400">
+        © {{ date('Y') }} RS PKU Aisyiyah Boyolali. All rights reserved.
     </div>
 </body>
 </html>

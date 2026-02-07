@@ -149,7 +149,7 @@
                                 </div>
                             </div>
                             <p class="text-slate-600 dark:text-slate-300 leading-relaxed">
-                                Sinkronkan daftar bacaan Anda di berbagai workstation rumah sakit dan perangkat pribadi. Akses 10.000+ jurnal medis dan makalah peer-review dengan lancar.
+                                Sinkronkan daftar bacaan Anda di berbagai workstation rumah sakit dan perangkat pribadi. Akses jurnal medis dan makalah peer-review dengan lancar.
                             </p>
                         </div>
                     </div>

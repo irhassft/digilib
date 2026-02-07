@@ -57,6 +57,9 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>
+                        <x-dropdown-link :href="url('/profile/full-edit')">
+                            {{ __('Edit Profil Lengkap') }}
+                        </x-dropdown-link>
                     </x-slot>
                 </x-dropdown>
             </div>
@@ -102,6 +105,9 @@
                 <div class="mt-3 space-y-1">
                     <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')" class="text-white">
                         {{ __('Profile') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="url('/profile/full-edit')" class="text-white">
+                        {{ __('Edit Profil Lengkap') }}
                     </x-responsive-nav-link>
                 </div>
             </div>
