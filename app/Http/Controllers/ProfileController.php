@@ -22,6 +22,16 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display the standalone full edit profile page.
+     */
+    public function fullEdit(Request $request): View
+    {
+        return view('profile.full-edit', [
+            'user' => $request->user(),
+        ]);
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse

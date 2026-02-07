@@ -8,14 +8,14 @@
         </div>
     </x-slot:header>
 
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-7xl mx-auto px-4">
         <!-- Filter Section -->
-        <div class="mb-8">
-            <section class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
+        <div class="mb-4 sm:mb-8">
+            <section class="bg-white dark:bg-gray-800 rounded-xl p-4 sm:p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
                 <!-- Search & Filters Row -->
-                <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-3">
                     <!-- Top Row: Mode Toggle & Search -->
-                    <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div class="flex items-center justify-between gap-2 flex-wrap">
                         <!-- Mode Toggle Tabs -->
                         <div class="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
                             @hasanyrole('admin|super-admin')
@@ -45,9 +45,9 @@
                                 <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <span class="material-symbols-outlined text-sm text-gray-400">search</span>
                                 </span>
-                                <input type="text" name="search" value="{{ request('search') }}" 
-                                       class="block w-full pl-10 pr-20 py-2.5 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
-                                       placeholder="Cari dokumen..."/>
+                                    <input type="text" name="search" value="{{ request('search') }}" 
+                                        class="block w-full pl-10 pr-20 py-2 bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" 
+                                        placeholder="Cari dokumen..."/>
 
                                 <!-- Search button -->
                                 <button type="submit" class="absolute inset-y-0 right-0 pr-3 flex items-center text-white bg-primary hover:bg-primary/90 px-3 py-1 rounded-md">
@@ -64,15 +64,15 @@
                     </div>
 
                     <!-- Bottom Row: Category Filter -->
-                    <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
-                        <form action="{{ route('collections.index') }}" method="GET" class="flex items-center gap-3">
+                    <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                        <form action="{{ route('collections.index') }}" method="GET" class="flex items-center gap-2 flex-wrap">
                             <input type="hidden" name="mode" value="{{ $mode ?? 'mine' }}">
                             @if(request('search'))
                             <input type="hidden" name="search" value="{{ request('search') }}">
                             @endif
 
                             <label for="category_filter" class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Kategori:</label>
-                            <select name="category_id" id="category_filter" onchange="this.form.submit()" class="px-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
+                            <select name="category_id" id="category_filter" onchange="this.form.submit()" class="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
                                 <option value="">Semua Kategori</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
@@ -100,11 +100,11 @@
             </div>
 
             <!-- Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 @forelse($documents as $doc)
-                <div class="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col">
+                <div class="bg-white dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col">
                     <!-- Document Cover -->
-                    <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="relative h-40 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden no-underline block">
+                    <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="relative h-28 sm:h-40 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden no-underline block">
                         @php
                             $cover = $doc->cover_image;
                             $coverUrl = null;
@@ -142,7 +142,7 @@
                     </a>
 
                     <!-- Content -->
-                    <div class="p-4 flex-1 flex flex-col gap-3">
+                    <div class="p-3 sm:p-4 flex-1 flex flex-col gap-2">
                         <!-- Category Badge -->
                         <div>
                             <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-primary/15 text-primary dark:bg-primary/10 text-xs font-semibold rounded-full">
@@ -151,12 +151,12 @@
                         </div>
 
                         <!-- Title -->
-                        <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="flex-1 no-underline">
-                            <h3 class="font-bold text-sm text-[#0d1b11] dark:text-white group-hover:text-primary transition-colors line-clamp-2">{{ $doc->title }}</h3>
+                            <a href="{{ route('documents.view', $doc->id) }}" target="_blank" class="flex-1 no-underline">
+                            <h3 class="font-bold text-xs sm:text-sm text-[#0d1b11] dark:text-white group-hover:text-primary transition-colors line-clamp-2">{{ $doc->title }}</h3>
                         </a>
 
                         <!-- Footer -->
-                        <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                        <div class="border-t border-gray-100 dark:border-gray-700 pt-2">
                             <div class="flex items-center justify-between gap-2">
                                 <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                                     <span class="material-symbols-outlined text-xs">calendar_today</span>

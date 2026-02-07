@@ -4,11 +4,32 @@
         <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 md:gap-8">
             <div class="flex-1 max-w-2xl">
                 {{-- Search Users --}}
-                <form method="GET" action="{{ route('users.index') }}" class="relative group">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <span class="material-symbols-outlined text-primary text-[22px]">search</span>
-                    </div>
-                    <input name="search" value="{{ request('search') }}" class="block w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border-none rounded-2xl text-base text-gray-700 dark:text-white placeholder-gray-400 focus:outline-none shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700" placeholder="Cari nama atau email user..." type="text"/>
+                <form method="GET" action="{{ route('users.index') }}" class="relative group" id="searchForm">
+                    <input 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        class="block w-full pl-4 pr-20 py-3 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-700 border-none rounded-2xl text-base text-gray-700 dark:text-white placeholder-gray-400 focus:outline-none shadow-lg hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 focus:ring-2 focus:ring-primary/20" 
+                        placeholder="Cari nama atau email user..." 
+                        type="text"
+                        id="searchInput"
+                        autocomplete="off"
+                    />
+                    
+                    {{-- Clear Button --}}
+                    @if(request('search'))
+                    <a href="{{ route('users.index') }}" class="absolute inset-y-0 right-12 flex items-center pr-4 cursor-pointer group/clear hover:text-red-500 transition-colors" title="Hapus pencarian">
+                        <span class="material-symbols-outlined text-[20px] text-gray-400 group-hover/clear:text-red-500">close</span>
+                    </a>
+                    @endif
+                    
+                    {{-- Search Button --}}
+                    <button 
+                        type="submit" 
+                        class="absolute inset-y-0 right-0 px-4 py-3 text-primary hover:text-primary/80 active:scale-95 transition-all flex items-center justify-center"
+                        title="Cari (Enter)"
+                    >
+                        <span class="material-symbols-outlined text-[22px]">search</span>
+                    </button>
                 </form>
             </div>
             <div class="hidden md:flex items-center gap-4">
@@ -23,7 +44,14 @@
     <div class="flex flex-col gap-6">
         
         <div class="flex items-center justify-between">
-            <h2 class="text-2xl font-bold tracking-tight text-[#0d1b11] dark:text-white">Daftar Pengguna</h2>
+            <div class="flex items-center gap-3">
+                <h2 class="text-2xl font-bold tracking-tight text-[#0d1b11] dark:text-white">Daftar Pengguna</h2>
+                @if(request('search'))
+                <span class="px-3 py-1 bg-primary/10 text-primary text-xs font-bold rounded-full">
+                    "{{ request('search') }}"
+                </span>
+                @endif
+            </div>
             <span class="text-sm text-gray-500">Total: {{ $users->total() }} User</span>
         </div>
         
@@ -41,6 +69,21 @@
             });
         </script>
         @endif
+
+        <!-- Empty State -->
+        @if($users->isEmpty())
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+            <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">person_off</span>
+            @if(request('search'))
+            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-2">Tidak ada hasil pencarian</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Coba gunakan kata kunci yang berbeda</p>
+            <a href="{{ route('users.index') }}" class="text-primary font-medium hover:underline">Lihat semua user</a>
+            @else
+            <h3 class="text-lg font-bold text-gray-700 dark:text-gray-300 mb-2">Belum ada user</h3>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Mulai dengan membuat user baru</p>
+            @endif
+        </div>
+        @else
 
         <!-- Users Table - Desktop View -->
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden hidden md:block">
@@ -175,6 +218,7 @@
         <div class="md:hidden">
             {{ $users->links() }}
         </div>
+        @endif
     </div>
 
     {{-- Script Confirmation --}}
@@ -203,6 +247,13 @@
                     }
                 })
             }
+
+            // Search enhancement
+            document.getElementById('searchInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchForm').submit();
+                }
+            });
         </script>
     </x-slot:scripts>
 @role('super-admin')

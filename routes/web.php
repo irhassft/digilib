@@ -67,6 +67,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // Standalone full edit view (uses existing partials)
+    Route::get('/profile/full-edit', [ProfileController::class, 'fullEdit'])->name('profile.full-edit');
 
 });
 
