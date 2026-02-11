@@ -39,13 +39,13 @@
             <div class="absolute inset-0 white-gradient"></div>
             
             <div class="relative z-10 flex flex-col justify-between p-12 w-full">
-                <div class="flex items-center gap-4">
+                <a href="{{ route('welcome') }}" aria-label="Kembali ke landing page" class="flex items-center gap-4">
                     <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-12 w-auto">
                     <div class="flex flex-col">
                         <h3 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Digital Library</h3>
                         <p class="text-xs font-medium text-primary uppercase tracking-wider">RS PKU Aisyiyah Boyolali</p>
                     </div>
-                </div>
+                </a>
 
                 <div class="space-y-6">
                     <h1 class="text-5xl font-bold text-slate-900 leading-tight">
@@ -76,13 +76,13 @@
 
         <div class="w-full lg:w-2/5 flex items-center justify-center px-6 sm:px-8 py-8 lg:py-0 bg-background-light dark:bg-background-dark lg:overflow-y-auto">
             <div class="w-full max-w-sm">
-                <div class="lg:hidden mb-8 flex items-center gap-3">
+                <a href="{{ route('welcome') }}" aria-label="Kembali ke landing page" class="lg:hidden mb-8 flex items-center gap-3">
                     <img src="{{ asset('img/logo-rspku.png') }}" alt="Logo RS PKU" class="h-8 w-auto">
                     <div class="flex flex-col">
                         <p class="text-sm font-bold text-slate-900 leading-tight">Digital Library</p>
                         <p class="text-xs font-medium text-primary uppercase tracking-wider">RS PKU Aisyiyah</p>
                     </div>
-                </div>
+                </a>
 
                 <div class="mb-8">
                     <h2 class="text-3xl font-bold text-slate-900 mb-2">Selamat Datang</h2>
@@ -93,7 +93,7 @@
                     @csrf
 
                     <div>
-                        <label class="block text-sm font-semibold mb-2 text-slate-700" for="email">Username / NIP</label>
+                        <label class="block text-sm font-semibold mb-2 text-slate-700" for="email">Username</label>
                         <div class="relative">
                             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">person</span>
                             <input 
@@ -101,7 +101,7 @@
                                 id="email" 
                                 name="email" 
                                 value="{{ old('email') }}"
-                                placeholder="Masukkan NIP Anda" 
+                                placeholder="Masukkan Username Anda" 
                                 type="text" 
                                 required 
                                 autofocus

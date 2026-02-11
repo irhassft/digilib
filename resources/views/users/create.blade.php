@@ -26,15 +26,31 @@
                     <!-- Nama Lengkap -->
                     <div class="col-span-2 md:col-span-1">
                         <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="name">Nama Lengkap</label>
-                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
-                            id="name" type="text" name="name" required placeholder="Contoh: Dr. Budi Santoso">
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all @error('name') border-red-500 @enderror" 
+                            id="name" type="text" name="name" required placeholder="Contoh: Dr. Budi Santoso" value="{{ old('name') }}">
+                        @error('name')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Username -->
+                    <div class="col-span-2 md:col-span-1">
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="username">Username</label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all @error('username') border-red-500 @enderror" 
+                            id="username" type="text" name="username" required placeholder="username (tanpa spasi)" value="{{ old('username') }}">
+                        @error('username')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Email -->
                     <div class="col-span-2 md:col-span-1">
-                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="email">Email</label>
-                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
-                            id="email" type="email" name="email" required placeholder="email@rspku.com">
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="email">Email <span class="text-xs text-gray-400">(Opsional)</span></label>
+                        <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all @error('email') border-red-500 @enderror" 
+                            id="email" type="email" name="email" placeholder="email@rspku.com" value="{{ old('email') }}">
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Role Selection -->
@@ -43,7 +59,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             @foreach($roles as $role)
                             <label class="cursor-pointer">
-                                <input type="radio" name="role" value="{{ $role->name }}" class="peer sr-only" required>
+                                <input type="radio" name="role" value="{{ $role->name }}" class="peer sr-only" required {{ old('role') == $role->name ? 'checked' : '' }}>
                                 <div class="p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all flex items-center gap-3">
                                     <div class="w-5 h-5 rounded-full border border-gray-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
                                         <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
@@ -53,6 +69,9 @@
                             </label>
                             @endforeach
                         </div>
+                        @error('role')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Password Section -->
@@ -61,8 +80,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="password">Password</label>
-                                <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                                <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all @error('password') border-red-500 @enderror" 
                                     id="password" type="password" name="password" required>
+                                @error('password')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                             <div>
                                 <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="password_confirmation">Konfirmasi Password</label>

@@ -25,8 +25,19 @@ class DocumentController extends Controller
                   });
         }
 
+        // Filter by visibility (public/private)
+        if ($request->filled('visibility')) {
+            $visibility = $request->get('visibility');
+            if ($visibility === 'public') {
+                $query->public();
+            } elseif ($visibility === 'private') {
+                // Only show private documents that belong to the current user
+                $query->private()->where('user_id', auth()->id());
+            }
+        }
+
         // Ambil Data (Pagination 10 per halaman)
-        $documents = $query->latest()->paginate(10);
+        $documents = $query->latest()->paginate(10)->withQueryString();
 
         // STATISTIK DASHBOARD
         $totalDocuments = Document::count();
@@ -95,7 +106,8 @@ class DocumentController extends Controller
             if ($visibility === 'public') {
                 $query->public();
             } elseif ($visibility === 'private') {
-                $query->private();
+                // Tampilkan hanya dokumen privat milik user saat ini
+                $query->private()->where('user_id', $userId);
             }
         }
 
@@ -364,6 +376,9 @@ class DocumentController extends Controller
     // 6. HALAMAN EDIT
     public function edit(Document $document)
     {
+        // Pastikan user terauthorisasi untuk edit dokumen ini
+        $this->authorize('update', $document);
+        
         $categories = Category::all();
         return view('documents.edit', compact('document', 'categories'));
     }
@@ -371,6 +386,9 @@ class DocumentController extends Controller
     // 7. PROSES UPDATE
     public function update(Request $request, Document $document)
     {
+        // Pastikan user terauthorisasi untuk update dokumen ini
+        $this->authorize('update', $document);
+        
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -473,6 +491,9 @@ class DocumentController extends Controller
     // 8. HAPUS DOKUMEN
     public function destroy(Document $document)
     {
+        // Pastikan user terauthorisasi untuk delete dokumen ini
+        $this->authorize('delete', $document);
+        
         // Hapus cover image public jika ada
         if ($document->cover_image && Storage::disk('public')->exists($document->cover_image)) {
             try {

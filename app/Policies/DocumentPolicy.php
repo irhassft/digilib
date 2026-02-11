@@ -39,17 +39,35 @@ class DocumentPolicy
 
     /**
      * Determine whether the user can update the model.
+     * - Owner bisa edit dokumentnya sendiri
+     * - Super-admin bisa edit semua dokumen
+     * - Admin biasa hanya bisa edit dokumen miliknya sendiri
      */
     public function update(User $user, Document $document): bool
     {
-        return $user->id === $document->user_id || $user->hasRole('admin|super-admin');
+        // Owner dokumen bisa edit
+        if ($user->id === $document->user_id) {
+            return true;
+        }
+
+        // Hanya super-admin yang bisa edit dokumen orang lain
+        return $user->hasRole('super-admin');
     }
 
     /**
      * Determine whether the user can delete the model.
+     * - Owner bisa hapus dokumentnya sendiri
+     * - Super-admin bisa hapus semua dokumen
+     * - Admin biasa hanya bisa hapus dokumen miliknya sendiri
      */
     public function delete(User $user, Document $document): bool
     {
-        return $user->id === $document->user_id || $user->hasRole('admin|super-admin');
+        // Owner dokumen bisa hapus
+        if ($user->id === $document->user_id) {
+            return true;
+        }
+
+        // Hanya super-admin yang bisa hapus dokumen orang lain
+        return $user->hasRole('super-admin');
     }
 }

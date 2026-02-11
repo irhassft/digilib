@@ -4,7 +4,7 @@
         <div class="w-full flex flex-col gap-1 sm:gap-4">
             <!-- Search Bar & Upload Button -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-                <form action="{{ route('collections.index') }}" method="GET" id="dashboardSearchForm" class="relative group flex-1 min-w-0">
+                <form action="{{ route('dashboard') }}" method="GET" id="dashboardSearchForm" class="relative group flex-1 min-w-0">
                     <div class="relative flex-1 bg-white dark:bg-gray-900/60 backdrop-blur-md rounded-full shadow-md hover:shadow-lg transition-all border border-gray-300 dark:border-gray-700 focus-within:border-primary flex items-center px-2 sm:px-0">
                            <input id="dashboardSearchInput" name="search" value="{{ request('search') }}"
                                class="block w-full pl-4 pr-12 py-2.5 sm:py-2.5 bg-transparent border-none text-lg sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 font-medium rounded-full transition-all" 
@@ -19,6 +19,18 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Visibility Dropdown -->
+                <div class="relative">
+                    <select name="visibility" id="visibilityFilter" form="dashboardSearchForm" class="block w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-white dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 text-sm font-medium pr-10 appearance-none">
+                        <option value="all" {{ request('visibility') == 'all' ? 'selected' : '' }}>Semua Visibilitas</option>
+                        <option value="public" {{ request('visibility') == 'public' ? 'selected' : '' }}>Publik</option>
+                        <option value="private" {{ request('visibility') == 'private' ? 'selected' : '' }}>Privat</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700 dark:text-gray-300">
+                        <span class="material-symbols-outlined text-[20px]">arrow_drop_down</span>
+                    </div>
+                </div>
 
                 <!-- Upload Button - Desktop Only -->
                 @hasanyrole('admin|super-admin')
@@ -190,6 +202,8 @@
 document.addEventListener('DOMContentLoaded', function(){
     const input = document.getElementById('dashboardSearchInput');
     const clearBtn = document.getElementById('clearSearchBtn');
+    const visibilityFilter = document.getElementById('visibilityFilter');
+    const searchForm = document.getElementById('dashboardSearchForm');
 
     function updateClear(){
         if(!input || !clearBtn) return;
@@ -199,6 +213,24 @@ document.addEventListener('DOMContentLoaded', function(){
 
     if(input){
         input.addEventListener('input', updateClear);
+        updateClear(); // Set initial state
+    }
+
+    if(clearBtn){
+        clearBtn.addEventListener('click', function(){
+            if(input) input.value = '';
+            updateClear();
+            if(searchForm) searchForm.submit(); // Submit form after clearing search
+        });
+    }
+
+    if(visibilityFilter){
+        visibilityFilter.addEventListener('change', function(){
+            if(searchForm) searchForm.submit(); // Submit form when visibility changes
+        });
+    }
+});
+</script>        input.addEventListener('input', updateClear);
         input.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ input.value = ''; updateClear(); } });
         updateClear();
     }

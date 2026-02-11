@@ -154,7 +154,7 @@
                 <div class="container mx-auto px-6 sm:px-8 md:px-12 lg:px-16">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
                         <label for="category-filter" class="text-sm font-semibold text-slate-700 flex-shrink-0">Kategori:</label>
-                        <select id="category-filter" name="category" onchange="window.location.href = this.value;" class="w-full sm:w-auto px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-transparent transition-all duration-200 cursor-pointer hover:border-primary/50">
+                        <select id="category-filter" name="category" onchange="window.location.href = this.value;" class="w-full sm:w-44 md:w-56 px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-900 font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-transparent transition-all duration-200 cursor-pointer hover:border-primary/50">
                             <option value="{{ route('catalogue') }}">Semua Kategori</option>
                             @foreach($categories as $category)
                                 <option value="{{ route('catalogue', ['category' => $category->id]) }}" {{ $selectedCategory == $category->id ? 'selected' : '' }}>
@@ -293,9 +293,6 @@
                             </div>
                             <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">Tidak ada dokumen ditemukan</h3>
                             <p class="text-slate-600 mb-6 text-xs sm:text-sm">Coba ubah kata kunci pencarian atau pilih kategori yang berbeda.</p>
-                            <a href="{{ route('catalogue') }}" class="inline-block px-5 sm:px-6 py-2 sm:py-2.5 bg-primary hover:bg-primary-dark text-white rounded-lg sm:rounded-xl font-bold transition-all duration-200 pku-shadow hover:shadow-lg active:scale-95">
-                                Lihat Semua Dokumen
-                            </a>
                         </div>
                     @endif
                 </div>
