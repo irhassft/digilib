@@ -15,6 +15,34 @@
             @method('PUT')
             
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
+
+                <!-- Notification: success or error -->
+                @if(session('success'))
+                    <script>
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: "{{ session('success') }}",
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000
+                        });
+                    </script>
+                @endif
+                @if(session('error'))
+                    <script>
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            text: "{{ session('error') }}",
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 4000
+                        });
+                    </script>
+                @endif
                 
                 <div class="flex gap-4 mb-6 items-center bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-xl text-yellow-800 dark:text-yellow-300">
                      <span class="material-symbols-outlined">edit_square</span>
@@ -31,11 +59,11 @@
                             id="name" type="text" name="name" value="{{ old('name', $user->name) }}" required>
                     </div>
 
-                    <!-- Email -->
+                    <!-- Username -->
                     <div class="col-span-2 md:col-span-1">
-                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="email">Email</label>
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="username">Username</label>
                         <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
-                            id="email" type="email" name="email" value="{{ old('email', $user->email) }}" required>
+                            id="username" type="text" name="username" value="{{ old('username', $user->username) }}" required>
                     </div>
 
                     <!-- Role Selection -->
@@ -48,13 +76,16 @@
                                 <input type="radio" name="role" value="{{ $role->name }}" class="peer sr-only" required {{ $user->hasRole($role->name) ? 'checked' : '' }}>
                                 <div class="p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all flex items-center gap-3">
                                     <div class="w-5 h-5 rounded-full border border-gray-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
-                                        <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                                        <span class="material-symbols-outlined text-xs text-white opacity-0 peer-checked:opacity-100">check</span>
                                     </div>
                                     <span class="text-sm font-bold capitalize">{{ $role->name }}</span>
                                 </div>
                             </label>
                             @endforeach
                         </div>
+                        @error('role')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <!-- Password Section (Optional) -->
@@ -65,8 +96,11 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="password">Password Baru</label>
-                                <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" 
+                                <input class="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all @error('password') border-red-500 @enderror" 
                                     id="password" type="password" name="password" autocomplete="new-password">
+                                @error('password')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
                             </div>
                             <div>
                                 <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" for="password_confirmation">Konfirmasi Password</label>

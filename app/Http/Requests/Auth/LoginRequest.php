@@ -5,6 +5,7 @@ namespace App\Http\Requests\Auth;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -27,7 +28,7 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required', 'string'],
         ];
     }
@@ -41,14 +42,34 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $input = $this->only('email', 'password');
+        $credentials = [];
+
+        // Log input untuk debug
+        Log::info('Login attempt', [
+            'input_email_username' => $input['email'],
+            'password_length' => strlen($input['password']),
+        ]);
+
+        // Check if input is email or username
+        if (filter_var($input['email'], FILTER_VALIDATE_EMAIL)) {
+            $credentials = ['email' => $input['email'], 'password' => $input['password']];
+            Log::info('Login attempt - using email', ['email' => $input['email']]);
+        } else {
+            $credentials = ['username' => $input['email'], 'password' => $input['password']];
+            Log::info('Login attempt - using username', ['username' => $input['email']]);
+        }
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
+            Log::warning('Login failed', ['credentials_key' => key($credentials)]);
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
+        Log::info('Login success');
         RateLimiter::clear($this->throttleKey());
     }
 

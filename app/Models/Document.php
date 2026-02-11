@@ -20,6 +20,7 @@ class Document extends Model
         'file_path',
         'file_size',
         'mime_type',
+        'download_count',
         'category_id',
         'user_id',
     ];

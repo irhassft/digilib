@@ -28,9 +28,6 @@
                                     {{ strtoupper(substr($user->name,0,1)) }}
                                 @endif
                             </div>
-                            <a href="{{ url('/profile/full-edit') }}" class="absolute -bottom-2 right-0 bg-white dark:bg-gray-800 rounded-full p-1 shadow-md text-xs text-gray-600 hover:bg-gray-50">
-                                <span class="material-symbols-outlined text-sm">edit</span>
-                            </a>
                         </div>
 
                         <div class="flex-1 w-full">
@@ -45,9 +42,7 @@
                                     </div>
                                 </div>
 
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ url('/profile/full-edit') }}" class="inline-flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm font-semibold shadow">Edit Profil</a>
-                                </div>
+
                             </div>
 
                             <div class="mt-4 grid grid-cols-1 gap-4 text-sm text-gray-600 dark:text-gray-400">

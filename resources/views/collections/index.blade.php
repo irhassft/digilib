@@ -72,13 +72,21 @@
                             @endif
 
                             <label for="category_filter" class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Kategori:</label>
-                            <select name="category_id" id="category_filter" onchange="this.form.submit()" class="px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer">
+                            <select name="category_id" id="category_filter" onchange="this.form.submit()" class="min-w-[220px] px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
                                 <option value="">Semua Kategori</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}" {{ request('category_id') == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->name }}
                                     </option>
                                 @endforeach
+                            </select>
+
+                            <!-- Visibilitas Filter (Bahasa Indonesia) -->
+                            <label for="visibility_filter" class="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">Visibilitas:</label>
+                            <select name="visibility" id="visibility_filter" onchange="this.form.submit()" class="min-w-[160px] px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
+                                <option value="all" {{ request('visibility') == 'all' ? 'selected' : (request()->has('visibility') ? '' : 'selected') }}>Semua Visibilitas</option>
+                                <option value="public" {{ request('visibility') == 'public' ? 'selected' : '' }}>Publik</option>
+                                <option value="private" {{ request('visibility') == 'private' ? 'selected' : '' }}>Privat</option>
                             </select>
                         </form>
                     </div>

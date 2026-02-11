@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+// use Illuminate\Support\Facades\Hash; // removed to use plain passwords in seeders
 
 class RoleSeeder extends Seeder
 {
@@ -30,8 +30,8 @@ class RoleSeeder extends Seeder
         // 3. Buat Roles & Assign Permissions
 
         // A. Role KARYAWAN (Hanya bisa lihat dan download)
-        $roleEmployee = Role::firstOrCreate(['name' => 'employee']);
-        $roleEmployee->syncPermissions(['view_documents', 'download_documents']);
+        $roleKaryawan = Role::firstOrCreate(['name' => 'karyawan']);
+        $roleKaryawan->syncPermissions(['view_documents', 'download_documents']);
 
         // B. Role ADMIN (Bisa kelola dokumen & kategori)
         $roleAdmin = Role::firstOrCreate(['name' => 'admin']);
@@ -55,7 +55,7 @@ class RoleSeeder extends Seeder
             ['email' => 'acidprjct@gmail.com'],
             [
                 'name' => 'Super Administrator',
-                'password' => Hash::make('password123'),
+                'password' => 'password123',
                 'email_verified_at' => now(),
             ]
         );
@@ -68,7 +68,7 @@ class RoleSeeder extends Seeder
             ['email' => 'admin@digilib.com'],
             [
                 'name' => 'Admin Divisi',
-                'password' => Hash::make('password123'),
+                'password' => 'password123',
             ]
         );
         $admin->assignRole($roleAdmin);
@@ -77,9 +77,9 @@ class RoleSeeder extends Seeder
             ['email' => 'budi@digilib.com'],
             [
                 'name' => 'Budi Karyawan',
-                'password' => Hash::make('password123'),
+                'password' => 'password123',
             ]
         );
-        $karyawan->assignRole($roleEmployee);
+        $karyawan->assignRole($roleKaryawan);
     }
 }

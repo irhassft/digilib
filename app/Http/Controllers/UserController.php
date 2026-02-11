@@ -4,8 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+// use Illuminate\Support\Facades\Hash; // Import ini tidak diperlukan jika tidak menggunakan Hash
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -13,7 +12,6 @@ class UserController extends Controller
     // Tampilkan daftar user
     public function index()
     {
-        // Ambil semua user kecuali diri sendiri (optional)
         $users = User::with('roles')->latest()->paginate(10);
         return view('users.index', compact('users'));
     }
@@ -21,7 +19,6 @@ class UserController extends Controller
     // Tampilkan form tambah user
     public function create()
     {
-        // Ambil semua role untuk dropdown
         $roles = Role::all();
         return view('users.create', compact('roles'));
     }
@@ -31,15 +28,18 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'username' => ['required', 'string', 'max:255', 'unique:users', 'regex:/^\S*$/'],
+            'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255'],
+            'password' => ['required', 'confirmed', 'string'],
             'role' => ['required', 'exists:roles,name'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            // 'password' => Hash::make($request->password), // <--- BAGIAN INI DI-KOMEN (HASH MATI)
+            'password' => $request->password, // <--- Password disimpan apa adanya (Plain Text)
         ]);
 
         $user->assignRole($request->role);
@@ -50,7 +50,6 @@ class UserController extends Controller
     // Hapus user
     public function destroy(User $user)
     {
-        // Cegah hapus diri sendiri atau Super Admin utama (id 1)
         if ($user->id == auth()->user()->id || $user->id == 1) {
             return back()->with('error', 'Tidak bisa menghapus akun ini.');
         }
@@ -62,7 +61,6 @@ class UserController extends Controller
     // 1. TAMPILKAN FORM EDIT
     public function edit(User $user)
     {
-        // Cegah edit Super Admin Utama (ID 1)
         if ($user->id == 1) {
             return back()->with('error', 'Akun Super Admin utama tidak bisa diedit.');
         }
@@ -74,34 +72,44 @@ class UserController extends Controller
     // 2. PROSES UPDATE DATA
     public function update(Request $request, User $user)
     {
-        // Cegah edit Super Admin Utama
         if ($user->id == 1) {
             return back()->with('error', 'Restricted.');
         }
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            // Email unique, tapi abaikan email milik user ini sendiri
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$user->id, 'regex:/^\S*$/'],
+            'email' => ['nullable', 'string', 'email', 'max:255'],
             'role' => ['required', 'exists:roles,name'],
-            'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+            'password' => ['nullable', 'confirmed', 'string'],
         ]);
 
-        // Update data dasar
-        $user->name = $request->name;
-        $user->email = $request->email;
+        try {
+            \DB::beginTransaction();
 
-        // Update password HANYA JIKA diisi
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
+            // Update data dasar
+            $user->username = $request->username;
+            $user->name = $request->name;
+            $user->email = $request->email;
+
+            // Update password HANYA JIKA diisi
+            if ($request->filled('password')) {
+                // $user->password = Hash::make($request->password); // <--- BAGIAN INI DI-KOMEN (HASH MATI)
+                $user->password = $request->password; // <--- Password disimpan apa adanya (Plain Text)
+            }
+
+            $user->save();
+
+            // Update Role
+            $user->syncRoles($request->role);
+
+            \DB::commit();
+
+            return redirect()->route('users.index')->with('success', 'Data user berhasil diperbarui!');
+        } catch (\Throwable $e) {
+            \Log::error('Gagal memperbarui user: '.$e->getMessage(), ['user_id' => $user->id]);
+            \DB::rollBack();
+            return back()->with('error', 'Terjadi kesalahan saat memperbarui data user. Silakan coba lagi.');
         }
-
-        $user->save();
-
-        // Update Role (Sync = Hapus role lama, pasang role baru)
-        $user->syncRoles($request->role);
-
-        return redirect()->route('users.index')->with('success', 'Data user berhasil diperbarui!');
     }
-        
 }
