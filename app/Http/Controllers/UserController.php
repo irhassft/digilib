@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Hash; // Import ini tidak diperlukan jika tidak menggunakan Hash
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -38,8 +38,7 @@ class UserController extends Controller
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
-            // 'password' => Hash::make($request->password), // <--- BAGIAN INI DI-KOMEN (HASH MATI)
-            'password' => $request->password, // <--- Password disimpan apa adanya (Plain Text)
+            'password' => Hash::make($request->password),
         ]);
 
         $user->assignRole($request->role);
@@ -94,8 +93,7 @@ class UserController extends Controller
 
             // Update password HANYA JIKA diisi
             if ($request->filled('password')) {
-                // $user->password = Hash::make($request->password); // <--- BAGIAN INI DI-KOMEN (HASH MATI)
-                $user->password = $request->password; // <--- Password disimpan apa adanya (Plain Text)
+                $user->password = Hash::make($request->password);
             }
 
             $user->save();
