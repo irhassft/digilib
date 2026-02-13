@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 class LoginRequest extends FormRequest
@@ -60,16 +62,47 @@ class LoginRequest extends FormRequest
             Log::info('Login attempt - using username', ['username' => $input['email']]);
         }
 
-        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
+        // Manual authentication to support unhashed stored passwords
+        $field = key($credentials);
+        $value = $credentials[$field];
+
+        $user = User::where($field, $value)->first();
+
+        // If user not found or password doesn't match, treat as failed
+        if (! $user) {
             RateLimiter::hit($this->throttleKey());
-            Log::warning('Login failed', ['credentials_key' => key($credentials)]);
+            Log::warning('Login failed - user not found', ['field' => $field, 'value' => $value]);
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
 
-        Log::info('Login success');
+        $stored = $user->password;
+
+        $matches = false;
+
+        // If stored looks like a bcrypt hash, use Hash::check
+        if (is_string($stored) && preg_match('/^\$2[aby]\$/', $stored)) {
+            $matches = Hash::check($input['password'], $stored);
+        } else {
+            // Plaintext comparison (use hash_equals to mitigate timing attacks)
+            $matches = hash_equals((string) $stored, (string) $input['password']);
+        }
+
+        if (! $matches) {
+            RateLimiter::hit($this->throttleKey());
+            Log::warning('Login failed - invalid password', ['user_id' => $user->id]);
+
+            throw ValidationException::withMessages([
+                'email' => trans('auth.failed'),
+            ]);
+        }
+
+        // Authentication successful — log the user in
+        Auth::login($user, $this->boolean('remember'));
+
+        Log::info('Login success', ['user_id' => $user->id]);
         RateLimiter::clear($this->throttleKey());
     }
 

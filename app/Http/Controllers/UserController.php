@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-// use Illuminate\Support\Facades\Hash; // Import ini tidak diperlukan jika tidak menggunakan Hash
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
@@ -28,7 +28,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users', 'regex:/^\S*$/'],
+            'username' => ['required', 'string', 'max:255', 'unique:user', 'regex:/^\S*$/'],
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255'],
             'password' => ['required', 'confirmed', 'string'],
             'role' => ['required', 'exists:roles,name'],
@@ -38,8 +38,7 @@ class UserController extends Controller
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
-            // 'password' => Hash::make($request->password), // <--- BAGIAN INI DI-KOMEN (HASH MATI)
-            'password' => $request->password, // <--- Password disimpan apa adanya (Plain Text)
+            'password' => $request->password,
         ]);
 
         $user->assignRole($request->role);
@@ -78,7 +77,7 @@ class UserController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$user->id, 'regex:/^\S*$/'],
+            'username' => ['required', 'string', 'max:255', 'unique:user,username,'.$user->id, 'regex:/^\S*$/'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'role' => ['required', 'exists:roles,name'],
             'password' => ['nullable', 'confirmed', 'string'],
@@ -94,8 +93,7 @@ class UserController extends Controller
 
             // Update password HANYA JIKA diisi
             if ($request->filled('password')) {
-                // $user->password = Hash::make($request->password); // <--- BAGIAN INI DI-KOMEN (HASH MATI)
-                $user->password = $request->password; // <--- Password disimpan apa adanya (Plain Text)
+                $user->password = $request->password;
             }
 
             $user->save();

@@ -7,11 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles; // <--- 1. Import Trait Spatie
+use Illuminate\Support\Facades\Hash;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles; // <--- 2. Pasang Trait di sini
+
+    protected $table = 'user';
 
     protected $fillable = [
         'name',
@@ -30,6 +33,15 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Set password attribute - otomatis hash jika belum ter-hash
+     */
+    protected function setPasswordAttribute(string $value): void
+    {
+        // Simpan password persis seperti yang diberikan (tidak di-hash)
+        $this->attributes['password'] = $value;
     }
 
     // Relasi tambahan: User memiliki banyak dokumen yang diupload

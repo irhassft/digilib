@@ -55,22 +55,27 @@
 
                     <!-- Role Selection -->
                     <div class="col-span-2">
-                        <label class="block text-sm font-bold mb-3 text-gray-700 dark:text-gray-300">Hak Akses Role</label>
+                        <label class="block text-sm font-bold mb-4 text-gray-700 dark:text-gray-300">Hak Akses Role</label>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             @foreach($roles as $role)
-                            <label class="cursor-pointer">
+                            <label class="cursor-pointer flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800/50 peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/40 hover:shadow-md transition-all">
                                 <input type="radio" name="role" value="{{ $role->name }}" class="peer sr-only" required {{ old('role') == $role->name ? 'checked' : '' }}>
-                                <div class="p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 peer-checked:border-primary peer-checked:bg-primary/5 hover:border-primary/50 transition-all flex items-center gap-3">
-                                    <div class="w-5 h-5 rounded-full border border-gray-300 peer-checked:border-primary peer-checked:bg-primary flex items-center justify-center">
-                                        <div class="w-2 h-2 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
-                                    </div>
-                                    <span class="text-sm font-bold capitalize">{{ $role->name }}</span>
+                                
+                                <!-- Radio Button Circle -->
+                                <div class="flex-shrink-0 w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 peer-checked:border-blue-500 peer-checked:bg-blue-500 flex items-center justify-center transition-all">
+                                    <span class="material-symbols-outlined text-sm text-white opacity-0 peer-checked:opacity-100">check</span>
                                 </div>
+                                
+                                <!-- Content -->
+                                <h3 class="text-sm font-bold text-gray-900 dark:text-white capitalize">{{ $role->name }}</h3>
                             </label>
                             @endforeach
                         </div>
                         @error('role')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            <p class="text-red-500 text-xs mt-2 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-sm">error</span>
+                                {{ $message }}
+                            </p>
                         @enderror
                     </div>
 
