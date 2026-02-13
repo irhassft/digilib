@@ -28,7 +28,7 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users', 'regex:/^\S*$/'],
+            'username' => ['required', 'string', 'max:255', 'unique:user', 'regex:/^\S*$/'],
             'email' => ['nullable', 'string', 'lowercase', 'email', 'max:255'],
             'password' => ['required', 'confirmed', 'string'],
             'role' => ['required', 'exists:roles,name'],
@@ -38,7 +38,7 @@ class UserController extends Controller
             'name' => $request->name,
             'username' => $request->username,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
         ]);
 
         $user->assignRole($request->role);
@@ -77,7 +77,7 @@ class UserController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['required', 'string', 'max:255', 'unique:users,username,'.$user->id, 'regex:/^\S*$/'],
+            'username' => ['required', 'string', 'max:255', 'unique:user,username,'.$user->id, 'regex:/^\S*$/'],
             'email' => ['nullable', 'string', 'email', 'max:255'],
             'role' => ['required', 'exists:roles,name'],
             'password' => ['nullable', 'confirmed', 'string'],
@@ -93,7 +93,7 @@ class UserController extends Controller
 
             // Update password HANYA JIKA diisi
             if ($request->filled('password')) {
-                $user->password = Hash::make($request->password);
+                $user->password = $request->password;
             }
 
             $user->save();

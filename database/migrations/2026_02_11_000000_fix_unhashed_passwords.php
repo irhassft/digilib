@@ -11,18 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Ambil semua users
-        $users = DB::table('users')->get();
-
-        foreach ($users as $user) {
-            // Cek apakah password sudah ter-hash (dimulai dengan $2y$, $2a$, atau $2b$)
-            if (!preg_match('/^\$2[aby]\$/', $user->password)) {
-                // Password belum ter-hash, hash sekarang
-                DB::table('users')
-                    ->where('id', $user->id)
-                    ->update(['password' => Hash::make($user->password)]);
-            }
-        }
+        // Migration intentionally left blank to avoid hashing existing passwords.
+        // Passwords will be stored as provided by application logic.
     }
 
     /**

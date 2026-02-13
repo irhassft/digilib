@@ -14,6 +14,8 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles; // <--- 2. Pasang Trait di sini
 
+    protected $table = 'user';
+
     protected $fillable = [
         'name',
         'username',
@@ -38,14 +40,8 @@ class User extends Authenticatable
      */
     protected function setPasswordAttribute(string $value): void
     {
-        // Cek apakah password sudah ter-hash (dimulai dengan $2y$, $2a$, atau $2b$)
-        if (preg_match('/^\$2[aby]\$/', $value)) {
-            // Password sudah di-hash, gunakan langsung
-            $this->attributes['password'] = $value;
-        } else {
-            // Password belum di-hash, hash sekarang
-            $this->attributes['password'] = Hash::make($value);
-        }
+        // Simpan password persis seperti yang diberikan (tidak di-hash)
+        $this->attributes['password'] = $value;
     }
 
     // Relasi tambahan: User memiliki banyak dokumen yang diupload

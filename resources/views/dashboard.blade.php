@@ -20,17 +20,7 @@
                     </div>
                 </form>
 
-                <!-- Visibility Dropdown -->
-                <div class="relative">
-                    <select name="visibility" id="visibilityFilter" form="dashboardSearchForm" class="block w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-white dark:bg-gray-900/60 border border-gray-300 dark:border-gray-700 rounded-full text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-opacity-50 text-sm font-medium pr-10 appearance-none">
-                        <option value="all" {{ request('visibility') == 'all' ? 'selected' : '' }}>Semua Visibilitas</option>
-                        <option value="public" {{ request('visibility') == 'public' ? 'selected' : '' }}>Publik</option>
-                        <option value="private" {{ request('visibility') == 'private' ? 'selected' : '' }}>Privat</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-700 dark:text-gray-300">
-                        <span class="material-symbols-outlined text-[20px]">arrow_drop_down</span>
-                    </div>
-                </div>
+                <!-- (Visibility filter removed) -->
 
                 <!-- Upload Button - Desktop Only -->
                 @hasanyrole('admin|super-admin')
@@ -199,44 +189,25 @@
 </a>
 @endhasanyrole
     <script>
-document.addEventListener('DOMContentLoaded', function(){
-    const input = document.getElementById('dashboardSearchInput');
-    const clearBtn = document.getElementById('clearSearchBtn');
-    const visibilityFilter = document.getElementById('visibilityFilter');
-    const searchForm = document.getElementById('dashboardSearchForm');
+    document.addEventListener('DOMContentLoaded', function(){
+        const input = document.getElementById('dashboardSearchInput');
+        const clearBtn = document.getElementById('clearSearchBtn');
+        const searchForm = document.getElementById('dashboardSearchForm');
 
-    function updateClear(){
-        if(!input || !clearBtn) return;
-        if(input.value && input.value.trim() !== '') clearBtn.classList.remove('hidden');
-        else clearBtn.classList.add('hidden');
-    }
+        function updateClear(){
+            if(!input || !clearBtn) return;
+            if(input.value && input.value.trim() !== '') clearBtn.classList.remove('hidden');
+            else clearBtn.classList.add('hidden');
+        }
 
-    if(input){
-        input.addEventListener('input', updateClear);
-        updateClear(); // Set initial state
-    }
+        if(input){
+            input.addEventListener('input', updateClear);
+            input.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ input.value = ''; updateClear(); } });
+            updateClear(); // Set initial state
+        }
 
-    if(clearBtn){
-        clearBtn.addEventListener('click', function(){
-            if(input) input.value = '';
-            updateClear();
-            if(searchForm) searchForm.submit(); // Submit form after clearing search
-        });
-    }
-
-    if(visibilityFilter){
-        visibilityFilter.addEventListener('change', function(){
-            if(searchForm) searchForm.submit(); // Submit form when visibility changes
-        });
-    }
-});
-</script>        input.addEventListener('input', updateClear);
-        input.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ input.value = ''; updateClear(); } });
-        updateClear();
-    }
-
-    if(clearBtn && input){
-        clearBtn.addEventListener('click', function(){ input.value = ''; updateClear(); input.focus(); });
-    }
-});
-</script>
+        if(clearBtn && input){
+            clearBtn.addEventListener('click', function(){ input.value = ''; updateClear(); input.focus(); if(searchForm) searchForm.submit(); });
+        }
+    });
+    </script>
